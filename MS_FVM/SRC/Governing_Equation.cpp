@@ -12,15 +12,14 @@ std::vector<Scalar_Conservation_Law::Physical_Flux> Linear_Advection_2D::calcula
 	return physical_fluxes;
 }
 
-std::array<std::vector<double>, 2> Linear_Advection_2D::calculate_coordinate_projected_maximum_lambdas(const std::vector<Solution>& solutions) {
+std::vector<std::array<double, Linear_Advection_2D::physical_domain_dimension_>> Linear_Advection_2D::calculate_coordinate_projected_maximum_lambdas(const std::vector<Solution>& solutions) {
 	static size_t num_solution = solutions.size();
 
 	static double absolute_x_advection_speed = std::abs(advection_speeds_[0]);
 	static double absolute_y_advection_speed = std::abs(advection_speeds_[1]);
 
-	std::vector<double> x_projected_maximum_lambdas(num_solution, absolute_x_advection_speed);
-	std::vector<double> y_projected_maximum_lambdas(num_solution, absolute_y_advection_speed);
-	return { x_projected_maximum_lambdas, y_projected_maximum_lambdas };
+	std::vector<std::array<double, Linear_Advection_2D::physical_domain_dimension_>> projected_maximum_lambdas(num_solution, { absolute_x_advection_speed,absolute_y_advection_speed });
+	return projected_maximum_lambdas;
 }
 
 double Linear_Advection_2D::calculate_inner_face_maximum_lambdas(const Solution& solution_o, const Solution& solution_n, const Physical_Domain_Vector& nomal_vector) {
@@ -39,15 +38,16 @@ std::vector<Scalar_Conservation_Law::Physical_Flux> Burgers_2D::calculate_physic
 	return physical_fluxes;
 }
 
-std::array<std::vector<double>, 2> Burgers_2D::calculate_coordinate_projected_maximum_lambdas(const std::vector<Solution>& solutions) {
+std::vector<std::array<double, Burgers_2D::physical_domain_dimension_>> Burgers_2D::calculate_coordinate_projected_maximum_lambdas(const std::vector<Solution>& solutions) {
 	static size_t num_solution = solutions.size();
 
-	std::vector<double> x_projected_maximum_lambdas(num_solution);
-	for (size_t i = 0; i < num_solution; ++i) 
-		x_projected_maximum_lambdas[i] = std::abs(solutions[i][0]);
+	std::vector<std::array<double, Burgers_2D::physical_domain_dimension_>> projected_maximum_lambdas(num_solution);
+	for (size_t i = 0; i < num_solution; ++i) {
+		const auto maximum_lambdas = std::abs(solutions[i][0]);
+		projected_maximum_lambdas[i] = { maximum_lambdas, maximum_lambdas };
+	}
 
-	const auto& y_projected_maximum_lambdas = x_projected_maximum_lambdas;	
-	return { x_projected_maximum_lambdas, y_projected_maximum_lambdas };
+	return projected_maximum_lambdas;
 }
 
 double Burgers_2D::calculate_inner_face_maximum_lambdas(const Solution& solution_o, const Solution& solution_n, const Physical_Domain_Vector& nomal_vector) {

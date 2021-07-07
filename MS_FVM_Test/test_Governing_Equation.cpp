@@ -27,9 +27,7 @@ GTEST_TEST(Linear_Advection_2D, calculate_coordinate_projected_maximum_lambdas_1
 		solutions[i] = { i };
 	const auto result = Linear_Advection_2D::calculate_coordinate_projected_maximum_lambdas(solutions);
 
-	std::vector<double> x_projected_maximum_lambdas(num, 1.0);
-	std::vector<double> y_projected_maximum_lambdas(num, 0.5);
-	std::array<std::vector<double>, 2> ref = { x_projected_maximum_lambdas,y_projected_maximum_lambdas };
+	std::vector<std::array<double, 2>> ref(num, { 1.0,0.5 });
 	EXPECT_EQ(result, ref);
 }
 
@@ -83,14 +81,9 @@ GTEST_TEST(Burgers_2D, calculate_coordinate_projected_maximum_lambdas_1) {
 		solutions[i] = { i };
 	const auto result = Burgers_2D::calculate_coordinate_projected_maximum_lambdas(solutions);
 
-	std::vector<double> x_projected_maximum_lambdas(num);
-	std::vector<double> y_projected_maximum_lambdas(num);
-	for (size_t i = 0; i < num; ++i) {
-		x_projected_maximum_lambdas[i] = static_cast<double>(i);
-		y_projected_maximum_lambdas[i] = static_cast<double>(i);
-	}
-
-	const std::array<std::vector<double>, 2> ref = { x_projected_maximum_lambdas,y_projected_maximum_lambdas };
+	std::vector<std::array<double, 2>> ref(num);
+	for (size_t i = 0; i < num; ++i) 
+		ref[i] = { static_cast<double>(i) ,static_cast<double>(i) };
 	EXPECT_EQ(result, ref);
 }
 GTEST_TEST(Burgers_2D, calculate_coordinate_projected_maximum_lambdas_2) {
@@ -101,14 +94,9 @@ GTEST_TEST(Burgers_2D, calculate_coordinate_projected_maximum_lambdas_2) {
 		solutions[i] = { -i };
 	const auto result = Burgers_2D::calculate_coordinate_projected_maximum_lambdas(solutions);
 
-	std::vector<double> x_projected_maximum_lambdas(num);
-	std::vector<double> y_projected_maximum_lambdas(num);
-	for (int i = 0; i < num; ++i) {
-		x_projected_maximum_lambdas[i] = static_cast<double>(i);
-		y_projected_maximum_lambdas[i] = static_cast<double>(i);
-	}
-
-	const std::array<std::vector<double>, 2> ref = { x_projected_maximum_lambdas,y_projected_maximum_lambdas };
+	std::vector<std::array<double, 2>> ref(num);
+	for (size_t i = 0; i < num; ++i)
+		ref[i] = { static_cast<double>(i) ,static_cast<double>(i) };
 	EXPECT_EQ(result, ref);
 }
 

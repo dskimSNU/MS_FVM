@@ -24,12 +24,39 @@
     <ClInclude Include="INC\Matrix.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="INC\Text.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Grid_Reader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="RSC\Setting.h">
+      <Filter>리소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Grid_Information_Builder.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Geometry.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SRC\Governing_Equation.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SRC\main.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SRC\Text.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SRC\Grid_Reader.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SRC\Geometry.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SRC\Grid_Information_Builder.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

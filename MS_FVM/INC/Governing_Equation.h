@@ -19,7 +19,7 @@ class Linear_Advection_2D : public Scalar_Conservation_Law
 public:
     static std::vector<Physical_Flux> calculate_physical_fluxes(const std::vector<Solution>& solutions);
 
-    static std::array<std::vector<double>, 2> calculate_coordinate_projected_maximum_lambdas(const std::vector<Solution>& solutions);
+    static std::vector<std::array<double, physical_domain_dimension_>> calculate_coordinate_projected_maximum_lambdas(const std::vector<Solution>& solutions);
 
     static double calculate_inner_face_maximum_lambdas(const Solution& solution_o, const Solution& solution_n, const Physical_Domain_Vector& nomal_vector);
 
@@ -32,7 +32,7 @@ class Burgers_2D : public Scalar_Conservation_Law
 public:
     static std::vector<Physical_Flux> calculate_physical_fluxes(const std::vector<Solution>& solutions);
 
-    static std::array<std::vector<double>, 2> calculate_coordinate_projected_maximum_lambdas(const std::vector<Solution>& solutions);
+    static std::vector<std::array<double, physical_domain_dimension_>> calculate_coordinate_projected_maximum_lambdas(const std::vector<Solution>& solutions);
 
     static double calculate_inner_face_maximum_lambdas(const Solution& solution_o, const Solution& solution_n, const Physical_Domain_Vector& nomal_vector);
 };

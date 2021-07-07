@@ -1,17 +1,18 @@
 #include "gtest/gtest.h"
 
 #include "../MS_FVM/INC/Matrix.h"
+#include "../MS_FVM/INC/Text.h"
+#include "../MS_FVM/INC/Grid_Reader.h"
 
+//#include <iomanip>
 
-TEST(TestCaseName, TestName) {
-	Matrix<2, 2> m1;
-	//Matrix<2, 2> m2 = { 1,2,3 };
-	Matrix<2, 2> m3 = { 1,2,3,4 };
+GTEST_TEST(TestBed, test){
+	std::string str = "0.9443476362451639";
 
-	std::vector<Matrix<2, 2>> mvec(6);
-	for (size_t i = 0; i < 6; ++i) {
-		mvec[i] = { 1,0,0,1 };
-		//std::cout << mvec[i];
-	}
+	std::istringstream iss(str);
+	double value1;
+	iss >> value1;
 
+	const auto value2 = std::stod(str);
+	EXPECT_EQ(value1, value2);
 }

@@ -33,6 +33,7 @@ public:
 
 	//constexpr size_t dimension(void) const;
 	double inner_product(const EuclideanVector& y) const;
+	double norm(void) const;
 	std::string to_string(void) const;
 	
 
@@ -53,7 +54,7 @@ EuclideanVector<small> operator*(const double constant, const EuclideanVector<sm
 
 namespace ms {
 	inline std::string double_to_string(const double val) {
-		constexpr size_t precision = 15;
+		constexpr size_t precision = 16;
 		std::stringstream stream;
 		stream << std::setprecision(precision) << std::noshowpoint << val;
 		return stream.str();
@@ -111,13 +112,17 @@ double EuclideanVector<small>::inner_product(const EuclideanVector& y) const {
 	return result;
 }
 
+template <size_t small>
+double EuclideanVector<small>::norm(void) const {
+	return std::sqrt(this->inner_product(*this));
+}
+
 template <size_t small> 
 std::string EuclideanVector<small>::to_string(void) const {
-	std::string result = "[";
+	std::string result;
 	for (const auto& element : this->small_buffer_)
-		result += ms::double_to_string(element) + ",";
-	result.pop_back();
-	result += "]";
+		result += ms::double_to_string(element) + " ";
+	result.pop_back();	
 	return result;
 }
 

@@ -35,8 +35,11 @@
   <ItemGroup>
     <ClCompile Include="test.cpp" />
     <ClCompile Include="test_Euclidean_Vector.cpp" />
+    <ClCompile Include="test_Geometry.cpp" />
     <ClCompile Include="test_Governing_Equation.cpp" />
+    <ClCompile Include="test_Grid_Reader.cpp" />
     <ClCompile Include="test_Matrix.cpp" />
+    <ClCompile Include="test_Text.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MS_FVM\MS_FVM.vcxproj">
