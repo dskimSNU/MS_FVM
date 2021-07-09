@@ -38,7 +38,7 @@ GTEST_TEST(Linear_Advection_2D, calculate_inner_face_maximum_lambdas_1) {
 	constexpr size_t num = 5;
 	for (size_t i = 0; i < num; ++i) {
 		Linear_Advection_2D::Physical_Domain_Vector normal = { i, i };
-		const auto result = Linear_Advection_2D::calculate_inner_face_maximum_lambdas(solution_o, solution_n, normal);
+		const auto result = Linear_Advection_2D::calculate_inner_face_maximum_lambda(solution_o, solution_n, normal);
 
 		const auto ref = 1.5 * i;
 		EXPECT_EQ(result, ref);
@@ -51,7 +51,7 @@ GTEST_TEST(Linear_Advection_2D, calculate_inner_face_maximum_lambdas_2) {
 	constexpr size_t num = 5;
 	for (int i = 0; i < num; ++i) {
 		Linear_Advection_2D::Physical_Domain_Vector normal = { -1 * i, -1 * i };
-		const auto result = Linear_Advection_2D::calculate_inner_face_maximum_lambdas(solution_o, solution_n, normal);
+		const auto result = Linear_Advection_2D::calculate_inner_face_maximum_lambda(solution_o, solution_n, normal);
 
 		const auto ref = 1.5 * i;
 		EXPECT_EQ(result, ref);
@@ -112,7 +112,7 @@ GTEST_TEST(Burgers_2D, calculate_inner_face_maximum_lambdas_1) {
 		Burgers_2D::Solution solution_n = dis1(gen);
 
 		Burgers_2D::Physical_Domain_Vector normal = { dis2(gen), dis2(gen) };
-		const auto result = Burgers_2D::calculate_inner_face_maximum_lambdas(solution_o, solution_n, normal);
+		const auto result = Burgers_2D::calculate_inner_face_maximum_lambda(solution_o, solution_n, normal);
 
 		const auto ref = std::max(std::abs(solution_o[0] * (normal[0]+normal[1])), std::abs(solution_n[0] * (normal[0] + normal[1])));
 		EXPECT_EQ(result, ref);

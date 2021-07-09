@@ -1,23 +1,5 @@
 #include "../INC/Grid_Reader.h"
 namespace ms {
-	//std::string to_string(const ElementType element_type) {
-	//	switch (element_type) {
-	//	case ElementType::cell:
-	//		return "Cell";
-	//	case ElementType::slip_wall_2D:
-	//		return "SlipWall2D";
-	//	case ElementType::supersonic_outlet_2D:
-	//		return "SuperSonicOutlet2D";
-	//	case ElementType::x_periodic:
-	//		return "Xperiodic";
-	//	case ElementType::y_periodic:
-	//		return "Yperiodic";
-	//	default:
-	//		throw std::runtime_error("wrong element_type");
-	//		return std::string();
-	//	}
-	//}
-
 	ElementType string_to_element_type(const std::string& str) {
 		if (ms::is_there_icase(str, "Unspecified"))
 			return ElementType::cell;
@@ -41,16 +23,18 @@ Grid_Data Gmsh_Grid_Reader::read(const std::string& grid_file_path) {
 	dynamic_require(grid_file_stream.is_open(), "fail to open grid file!");
 
 	const auto node_text			= Gmsh_Grid_Reader::read_about(grid_file_stream, "Nodes");
-	const auto node_grid_data_set	= Gmsh_Grid_Reader::make_node_grid_data(node_text);
+	const auto node_grid_datas	= Gmsh_Grid_Reader::make_node_grid_data(node_text);
 
 	const auto element_text			= Gmsh_Grid_Reader::read_about(grid_file_stream, "Elements");
 	const auto physical_name_text	= Gmsh_Grid_Reader::read_about(grid_file_stream, "PhysicalNames");
-	const auto element_data_set		= Gmsh_Grid_Reader::make_element_data(element_text, physical_name_text);
+	const auto element_datas		= Gmsh_Grid_Reader::make_element_data(element_text, physical_name_text);
 
-	return { node_grid_data_set, element_data_set[0], element_data_set[1], element_data_set[2] };
+	return { node_grid_datas, element_datas[0], element_datas[1], element_datas[2] };
 }
 
 std::vector<Physical_Domain_Vector> Gmsh_Grid_Reader::make_node_grid_data(const Text& node_text) {
+	constexpr size_t dimension = Physical_Domain_Vector::dimension();
+	
 	std::vector<Physical_Domain_Vector> node_datas;
 	node_datas.reserve(node_text.size());
 	for (const auto& node_data : node_text) {
@@ -58,8 +42,8 @@ std::vector<Physical_Domain_Vector> Gmsh_Grid_Reader::make_node_grid_data(const 
 		auto parsed_data_set = ms::parse(node_data, delimiter);
 
 		//const auto node_index = ms::string_to_value<size_t>(parsed_data_set[0]);
-		std::array<double, s_physical_domain_dimension> node_coords;
-		for (size_t i = 0; i < s_physical_domain_dimension; ++i)
+		std::array<double, dimension> node_coords;
+		for (size_t i = 0; i < dimension; ++i)
 			node_coords[i] = ms::string_to_value<double>(parsed_data_set[i + 1]);
 
 		node_datas.push_back(node_coords);
@@ -71,12 +55,12 @@ std::array<std::vector<ElementGridData>, 3> Gmsh_Grid_Reader::make_element_data(
 	std::map<size_t, ElementType> physical_group_index_to_element_type;
 	for (const auto& physical_name_sentence : physical_name_text) {
 		const char delimiter = ' ';
-		const auto parsed_sentence_set = ms::parse(physical_name_sentence, delimiter);
+		const auto parsed_sentence_set	= ms::parse(physical_name_sentence, delimiter);
 
-		//const size_t dimension = parsed_sentence_set[0].toValue<size_t>();
-		const auto index = ms::string_to_value<size_t>(parsed_sentence_set[1]);
-		const auto name = ms::erase(parsed_sentence_set[2], "\"");
-		const auto element_type = ms::string_to_element_type(name);
+		//const size_t dimension		= parsed_sentence_set[0].toValue<size_t>();
+		const auto index				= ms::string_to_value<size_t>(parsed_sentence_set[1]);
+		const auto name					= ms::erase(parsed_sentence_set[2], "\"");
+		const auto element_type			= ms::string_to_element_type(name);
 
 		physical_group_index_to_element_type.emplace(index, element_type);
 	}
@@ -86,13 +70,13 @@ std::array<std::vector<ElementGridData>, 3> Gmsh_Grid_Reader::make_element_data(
 	std::vector<ElementGridData> periodic_face_data;
 	for (const auto& element_sentence : element_text) {
 		const auto delimiter = ' ';
-		auto parsed_sentence_set = ms::parse(element_sentence, delimiter);
+		const auto parsed_sentences = ms::parse(element_sentence, delimiter);
 
-		auto value_set = ms::string_to_value_set<size_t>(parsed_sentence_set);
+		auto value_set = ms::string_to_value_set<size_t>(parsed_sentences);
 
 		const auto index					= value_set[0];
 		const auto figure_type_index		= value_set[1];
-		//const auto num_tag				= value_set[2];
+		//const auto tag_index				= value_set[2];
 		const auto physical_gorup_index		= value_set[3];
 		//const auto element_group_index	= value_set[4];
 
@@ -102,9 +86,9 @@ std::array<std::vector<ElementGridData>, 3> Gmsh_Grid_Reader::make_element_data(
 		const auto figure				= Gmsh_Grid_Reader::figure_type_index_to_element_figure(figure_type_index);
 		const auto figure_order			= Gmsh_Grid_Reader::figure_type_index_to_figure_order(figure_type_index);
 		const auto type					= physical_group_index_to_element_type.at(physical_gorup_index);
-		auto& consisting_node_index_set = value_set;
+		auto& consisting_node_indexes	= value_set;
 
-		ElementGridData element_data = { index, figure, figure_order, type, std::move(consisting_node_index_set) };
+		ElementGridData element_data = { index, figure, figure_order, type, std::move(consisting_node_indexes) };
 
 		switch (type) {
 		case ElementType::cell:

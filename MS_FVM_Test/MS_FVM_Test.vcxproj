@@ -37,6 +37,7 @@
     <ClCompile Include="test_Euclidean_Vector.cpp" />
     <ClCompile Include="test_Geometry.cpp" />
     <ClCompile Include="test_Governing_Equation.cpp" />
+    <ClCompile Include="test_Grid_Information_Builder.cpp" />
     <ClCompile Include="test_Grid_Reader.cpp" />
     <ClCompile Include="test_Matrix.cpp" />
     <ClCompile Include="test_Text.cpp" />

@@ -23,6 +23,7 @@ Grid_Information Grid_Information_Builder::build(const Grid_Data& grid_data) {
 
 	// build cell_grid_info
 	Cell_Grid_Information cell_grid_info;	
+	cell_grid_info.centers.resize(num_cell);
 	cell_grid_info.volumes.resize(num_cell);
 	cell_grid_info.coordinate_projected_volumes.resize(num_cell);
 	for (size_t i = 0; i < num_cell; ++i) {
@@ -33,6 +34,7 @@ Grid_Information Grid_Information_Builder::build(const Grid_Data& grid_data) {
 		Geometry geometry(ref_geometry, std::move(consisting_nodes), std::move(node_indexes));
 		
 		//
+		cell_grid_info.centers[i] = geometry.center_node();
 		cell_grid_info.volumes[i] = geometry.volume();
 		cell_grid_info.coordinate_projected_volumes[i] = geometry.coordinate_projected_volume();
 
@@ -134,21 +136,19 @@ Grid_Information Grid_Information_Builder::build(const Grid_Data& grid_data) {
 
 		//i : one of periodic face, j : matched periodic face of i
 		for (const auto& [i_data_index, j_data_index] : data_index_to_matched_index) {
-			auto& [i_index, i_figure, i_figure_order, i_type, i_node_indexes] = periodic_boundary_grid_datas[i_data_index];
-			auto& [j_index, j_figure, j_figure_order, j_type, j_node_indexes] = periodic_boundary_grid_datas[j_data_index];
+			const auto& owner_side_geometry = data_index_to_geometry.at(i_data_index);
+			const auto& neighbor_side_geometry = data_index_to_geometry.at(j_data_index);
 
 			//find owner/neighbor cell container indexes
 			//we will designate i as owner cell side face		
-			const auto cell_index_set_have_i = Grid_Information_Builder::find_cell_index_has_these_nodes(vertex_node_index_to_cell_index, i_node_indexes);
-			const auto cell_index_set_have_j = Grid_Information_Builder::find_cell_index_has_these_nodes(vertex_node_index_to_cell_index, j_node_indexes);
+			const auto cell_index_set_have_i = Grid_Information_Builder::find_cell_index_has_these_nodes(vertex_node_index_to_cell_index, owner_side_geometry.vertex_node_indexes());
+			const auto cell_index_set_have_j = Grid_Information_Builder::find_cell_index_has_these_nodes(vertex_node_index_to_cell_index, neighbor_side_geometry.vertex_node_indexes());
 			dynamic_require(cell_index_set_have_i.size() == 1, " periodic boundary have not unique owner cell");
 			dynamic_require(cell_index_set_have_j.size() == 1, " periodic boundary have not unique neighbor cell");
 
 			const auto owner_cell_index = cell_index_set_have_i.front();
 			const auto neighbor_cell_index = cell_index_set_have_j.front();
-			
-			const auto& owner_side_geometry = data_index_to_geometry.at(i_data_index);
-			const auto& neighbor_side_geometry = data_index_to_geometry.at(j_data_index);
+	
 
 			const auto owner_cell_container_index = cell_index_to_container_index.at(owner_cell_index);
 			const auto neighbor_cell_container_index = cell_index_to_container_index.at(neighbor_cell_index);

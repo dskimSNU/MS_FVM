@@ -143,6 +143,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="INC\Cells.h" />
+    <ClInclude Include="INC\Discrete_Equation.h" />
     <ClInclude Include="INC\EuclideanVector.h" />
     <ClInclude Include="INC\Geometry.h" />
     <ClInclude Include="INC\Governing_Equation.h">
@@ -158,16 +160,20 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="INC\Inner_Faces.h" />
     <ClInclude Include="INC\Matrix.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="INC\Numerical_Flux.h" />
     <ClInclude Include="INC\Text.h" />
+    <ClInclude Include="INC\Inital_Condition.h" />
     <ClInclude Include="RSC\Setting.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="SRC\Cells.cpp" />
     <ClCompile Include="SRC\Geometry.cpp" />
     <ClCompile Include="SRC\Governing_Equation.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -187,6 +193,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="SRC\Initial_Condition.cpp" />
     <ClCompile Include="SRC\main.cpp" />
     <ClCompile Include="SRC\Text.cpp" />
   </ItemGroup>

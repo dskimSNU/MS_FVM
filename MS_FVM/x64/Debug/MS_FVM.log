@@ -1,6 +1,2 @@
-﻿  Geometry.cpp
-  Governing_Equation.cpp
-  Grid_Information_Builder.cpp
-  Grid_Reader.cpp
-  코드를 생성하고 있습니다...
+﻿  Grid_Information_Builder.cpp
   MS_FVM.vcxproj -> C:\Users\KimMinSeok\source\repos\MS_FVM\x64\Debug\MS_FVM.lib

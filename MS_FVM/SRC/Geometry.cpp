@@ -202,7 +202,7 @@ size_t ReferenceGeometry::dimension(void) const {
 	}
 }
 
-std::array<double, s_physical_domain_dimension> Geometry::coordinate_projected_volume(void) const {
+std::array<double, Geometry::dimension_> Geometry::coordinate_projected_volume(void) const {
 	if (this->reference_geometry_.dimension() == 2) {
 		double x_projected_volume = 0.0;
 		double y_projected_volume = 0.0;
@@ -221,7 +221,7 @@ std::array<double, s_physical_domain_dimension> Geometry::coordinate_projected_v
 	}
 	else {
 		throw std::runtime_error("not supproted dimension");
-		return std::array<double, s_physical_domain_dimension>();
+		return {};
 	}
 }
 
@@ -345,7 +345,7 @@ bool Geometry::is_perioidc_pair_node(const Physical_Domain_Vector& node, const E
 bool Geometry::is_axis_translation(const Physical_Domain_Vector& node1, const Physical_Domain_Vector& node2, const size_t axis_tag) const {
 	const auto line_vector = node2 - node1;
 
-	for (size_t i = 0; i < s_physical_domain_dimension; ++i) {
+	for (size_t i = 0; i < Physical_Domain_Vector::dimension(); ++i) {
 		if (i == axis_tag)
 			continue;
 

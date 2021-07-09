@@ -36,8 +36,8 @@ public:
 	bool operator==(const EuclideanVector& y) const;
 	double operator[](const size_t position) const;
 
-	//constexpr size_t dimension(void) const;
 	EuclideanVector& be_normalize(void);
+	static constexpr size_t dimension(void);
 	const double* data(void) const;
 	double inner_product(const EuclideanVector& y) const;
 	double norm(void) const;	
@@ -140,6 +140,12 @@ EuclideanVector<small>& EuclideanVector<small>::be_normalize(void) {
 	const auto scale_factor = 1.0 / this->norm();
 	return (*this) *= scale_factor;
 }
+
+template <size_t small>
+constexpr size_t EuclideanVector<small>::dimension(void) {
+	return small;
+}
+
 
 template <size_t small>
 const double* EuclideanVector<small>::data(void) const {

@@ -5,9 +5,8 @@
 
 #include <random>
 
-
 GTEST_TEST(Gmsh_Grid_Reader, read_about){
-	const std::string grid_file_path = "../MS_FVM/RSC/Grid/Mix_20.msh";
+	const std::string grid_file_path = "RSC/Grid/Mix_20.msh";
 	std::ifstream grid_file_stream(grid_file_path);
 	dynamic_require(grid_file_stream.is_open(), "fail to open grid file!");
 
@@ -22,7 +21,7 @@ GTEST_TEST(Gmsh_Grid_Reader, read_about){
 }
 
 GTEST_TEST(Gmsh_Grid_Reader, make_node_data) {
-	const std::string grid_file_path = "../MS_FVM/RSC/Grid/Mix_20.msh";
+	const std::string grid_file_path = "RSC/Grid/Mix_20.msh";
 	std::ifstream grid_file_stream(grid_file_path);
 	dynamic_require(grid_file_stream.is_open(), "fail to open grid file!");
 
@@ -36,7 +35,7 @@ GTEST_TEST(Gmsh_Grid_Reader, make_node_data) {
 }
 
 GTEST_TEST(Gmsh_Grid_Reader, physical_name) {
-	const std::string grid_file_path = "../MS_FVM/RSC/Grid/Mix_20.msh";
+	const std::string grid_file_path = "RSC/Grid/Mix_20.msh";
 	std::ifstream grid_file_stream(grid_file_path);
 	dynamic_require(grid_file_stream.is_open(), "fail to open grid file!");
 
@@ -109,7 +108,7 @@ bool operator==(const ElementGridData& ed1, const ElementGridData& ed2) {
 }
 
 GTEST_TEST(Gmsh_Grid_Reader, cell_data) {
-	const std::string grid_file_path = "../MS_FVM/RSC/Grid/Mix_20.msh";
+	const std::string grid_file_path = "RSC/Grid/Mix_20.msh";
 	std::ifstream grid_file_stream(grid_file_path);
 	dynamic_require(grid_file_stream.is_open(), "fail to open grid file!");
 
@@ -125,7 +124,7 @@ GTEST_TEST(Gmsh_Grid_Reader, cell_data) {
 }
 
 GTEST_TEST(Gmsh_Grid_Reader, boudnary_data) {
-	const std::string grid_file_path = "../MS_FVM/RSC/Grid/Mix_20.msh";
+	const std::string grid_file_path = "RSC/Grid/Mix_20.msh";
 	std::ifstream grid_file_stream(grid_file_path);
 	dynamic_require(grid_file_stream.is_open(), "fail to open grid file!");
 
@@ -141,7 +140,7 @@ GTEST_TEST(Gmsh_Grid_Reader, boudnary_data) {
 }
 
 GTEST_TEST(Gmsh_Grid_Reader, periodic_data) {
-	const std::string grid_file_path = "../MS_FVM/RSC/Grid/Mix_20.msh";
+	const std::string grid_file_path = "RSC/Grid/Mix_20.msh";
 	std::ifstream grid_file_stream(grid_file_path);
 	dynamic_require(grid_file_stream.is_open(), "fail to open grid file!");
 

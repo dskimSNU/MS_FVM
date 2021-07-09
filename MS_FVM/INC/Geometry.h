@@ -25,6 +25,8 @@ private:
 
 class Geometry
 {
+	static constexpr size_t dimension_ = Physical_Domain_Vector::dimension();
+
 public:
 	Geometry(const ReferenceGeometry& reference_geometry, std::vector<Physical_Domain_Vector>&& consisting_nodes, std::vector<size_t>&& consisting_node_indexes)
 		: reference_geometry_(reference_geometry), nodes_(std::move(consisting_nodes)), node_indexes_(std::move(consisting_node_indexes)) {};
@@ -35,7 +37,7 @@ public:
 	Physical_Domain_Vector center_node(void) const;
 	Physical_Domain_Vector normal_vector(const Physical_Domain_Vector& owner_cell_center) const;
 	double volume(void) const;
-	std::array<double, s_physical_domain_dimension> coordinate_projected_volume(void) const;
+	std::array<double, dimension_> coordinate_projected_volume(void) const;
 
 	//std::vector<std::vector<size_t>> calculate_faces_node_indexes(const std::vector<size_t>& consisting_node_indexes) const;
 	std::vector<Geometry> face_geometries(void) const;

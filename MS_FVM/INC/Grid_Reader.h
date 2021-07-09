@@ -5,6 +5,9 @@
 #include <map>
 
 
+using Physical_Domain_Vector = EuclideanVector<PHYSICAL_DOMAIN_DIMENSION>;
+
+
 enum class ElementFigure
 {	
 	point,	
@@ -23,10 +26,6 @@ enum class ElementType
 	x_periodic, y_periodic,
 	not_in_list
 };
-
-
-using Physical_Domain_Vector = EuclideanVector<s_physical_domain_dimension>;
-
 
 struct ElementGridData
 {
@@ -69,10 +68,10 @@ enum class GmshFigureType
 class Gmsh_Grid_Reader
 {
 public:
+	Gmsh_Grid_Reader(void) = delete;
 	static Grid_Data read(const std::string& grid_file_name);
 
 //private: for test
-
 	static Text read_about(std::ifstream& grid_file_stream, const std::string& target);
 	static std::vector<Physical_Domain_Vector> make_node_grid_data(const Text& node_text);
 	static std::array<std::vector<ElementGridData>, 3> make_element_data(const Text& element_text, const Text& physical_name_text);

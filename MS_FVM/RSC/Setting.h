@@ -1,3 +1,33 @@
 #pragma once
 
-static constexpr size_t s_physical_domain_dimension = 2;
+
+#define PHYSICAL_DOMAIN_DIMENSION		2
+#define GRID_TYPE						Gmsh
+#define GRID_FILE_PATH					"RSC/Grid/Quad_10.msh"
+#define GOVERNING_EQUATION_NAME			Linear_Advection
+#define INITIAL_CONDITION_NAME			Sine_Wave
+#define CFL								0.9
+
+
+
+
+
+
+
+
+
+//FORMAT SETTER
+#define FORMAT1(x,y) x ## _ ## y ## D
+#define SET_FORMAT1(x,y) FORMAT1(x,y) 
+#define FORMAT2(x,y) x ## _ ## y 
+#define SET_FORMAT2(x,y) FORMAT2(x,y)
+
+//USING MACRO
+//FORMAT1(X,Y) := X_YD
+#define GOVERNING_EQUATION		SET_FORMAT1(GOVERNING_EQUATION_NAME	, PHYSICAL_DOMAIN_DIMENSION)
+#define INITIAL_CONDITION		SET_FORMAT1(INITIAL_CONDITION_NAME	, PHYSICAL_DOMAIN_DIMENSION)
+
+//FORAMT2(X,Y) := X_Y
+#define GRID_READER				SET_FORMAT2(GRID_TYPE				, Grid_Reader)
+
+
