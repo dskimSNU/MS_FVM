@@ -27,7 +27,7 @@ GTEST_TEST(Gmsh_Grid_Reader, make_node_data) {
 	dynamic_require(grid_file_stream.is_open(), "fail to open grid file!");
 
 	const auto node_text = Gmsh_Grid_Reader::read_about(grid_file_stream, "Nodes");
-	const auto node_data_set = Gmsh_Grid_Reader::make_node_data(node_text);
+	const auto node_data_set = Gmsh_Grid_Reader::make_node_grid_data(node_text);
 		
 	for (size_t i = 0; i < node_data_set.size(); ++i) {
 		const auto result = node_data_set[i].to_string() + " ";

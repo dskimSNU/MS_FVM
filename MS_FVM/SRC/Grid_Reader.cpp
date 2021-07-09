@@ -1,25 +1,22 @@
 #include "../INC/Grid_Reader.h"
-
-
-
 namespace ms {
-	std::string to_string(const ElementType element_type) {
-		switch (element_type) {
-		case ElementType::cell:
-			return "Cell";
-		case ElementType::slip_wall_2D:
-			return "SlipWall2D";
-		case ElementType::supersonic_outlet_2D:
-			return "SuperSonicOutlet2D";
-		case ElementType::x_periodic:
-			return "Xperiodic";
-		case ElementType::y_periodic:
-			return "Yperiodic";
-		default:
-			throw std::runtime_error("wrong element_type");
-			return std::string();
-		}
-	}
+	//std::string to_string(const ElementType element_type) {
+	//	switch (element_type) {
+	//	case ElementType::cell:
+	//		return "Cell";
+	//	case ElementType::slip_wall_2D:
+	//		return "SlipWall2D";
+	//	case ElementType::supersonic_outlet_2D:
+	//		return "SuperSonicOutlet2D";
+	//	case ElementType::x_periodic:
+	//		return "Xperiodic";
+	//	case ElementType::y_periodic:
+	//		return "Yperiodic";
+	//	default:
+	//		throw std::runtime_error("wrong element_type");
+	//		return std::string();
+	//	}
+	//}
 
 	ElementType string_to_element_type(const std::string& str) {
 		if (ms::is_there_icase(str, "Unspecified"))
@@ -43,17 +40,17 @@ Grid_Data Gmsh_Grid_Reader::read(const std::string& grid_file_path) {
 	std::ifstream grid_file_stream(grid_file_path);
 	dynamic_require(grid_file_stream.is_open(), "fail to open grid file!");
 
-	const auto node_text	= Gmsh_Grid_Reader::read_about(grid_file_stream, "Nodes");
-	auto node_data_set		= Gmsh_Grid_Reader::make_node_data(node_text);
+	const auto node_text			= Gmsh_Grid_Reader::read_about(grid_file_stream, "Nodes");
+	const auto node_grid_data_set	= Gmsh_Grid_Reader::make_node_grid_data(node_text);
 
 	const auto element_text			= Gmsh_Grid_Reader::read_about(grid_file_stream, "Elements");
 	const auto physical_name_text	= Gmsh_Grid_Reader::read_about(grid_file_stream, "PhysicalNames");
 	const auto element_data_set		= Gmsh_Grid_Reader::make_element_data(element_text, physical_name_text);
 
-	return { node_data_set, element_data_set[0], element_data_set[1], element_data_set[2] };
+	return { node_grid_data_set, element_data_set[0], element_data_set[1], element_data_set[2] };
 }
 
-std::vector<Physical_Domain_Vector> Gmsh_Grid_Reader::make_node_data(const Text& node_text) {
+std::vector<Physical_Domain_Vector> Gmsh_Grid_Reader::make_node_grid_data(const Text& node_text) {
 	std::vector<Physical_Domain_Vector> node_datas;
 	node_datas.reserve(node_text.size());
 	for (const auto& node_data : node_text) {

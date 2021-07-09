@@ -30,25 +30,25 @@ using Physical_Domain_Vector = EuclideanVector<s_physical_domain_dimension>;
 
 struct ElementGridData
 {
-	const size_t index;
-	const ElementFigure figure;
-	const size_t figure_order;
-	const ElementType type;
-	const std::vector<size_t> node_indexes;
+	size_t index;
+	ElementFigure figure;
+	size_t figure_order;
+	ElementType type;
+	std::vector<size_t> node_indexes;
 };
 
 
 struct Grid_Data
 {
 	std::vector<Physical_Domain_Vector> node_grid_datas;
-	std::vector<ElementGridData> cell_grid_data_set;
-	std::vector<ElementGridData> boundary_grid_data_set;
-	std::vector<ElementGridData> periodic_boundary_grid_data_set;
+	std::vector<ElementGridData> cell_grid_datas;
+	std::vector<ElementGridData> boundary_grid_datas;
+	std::vector<ElementGridData> periodic_boundary_grid_datas;
 };
 
 
 namespace ms {
-	std::string to_string(const ElementType element_type);
+	//std::string to_string(const ElementType element_type);
 	ElementType string_to_element_type(const std::string& str);
 }
 
@@ -74,7 +74,7 @@ public:
 //private: for test
 
 	static Text read_about(std::ifstream& grid_file_stream, const std::string& target);
-	static std::vector<Physical_Domain_Vector> make_node_data(const Text& node_text);
+	static std::vector<Physical_Domain_Vector> make_node_grid_data(const Text& node_text);
 	static std::array<std::vector<ElementGridData>, 3> make_element_data(const Text& element_text, const Text& physical_name_text);
 	static size_t figure_type_index_to_figure_order(const size_t figure_type_indx);
 	static ElementFigure figure_type_index_to_element_figure(const size_t figure_type_index);
