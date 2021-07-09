@@ -9,7 +9,7 @@ class Sine_Wave_2D {
     using Physical_Domain_Vector = EuclideanVector<physical_domain_dimension_>;
 public:
     using Solution = EuclideanVector<num_eqation_>;
-    static std::vector<Solution> calculate_initial_solutions(const std::vector<Physical_Domain_Vector>& cell_centers);
+    static std::vector<Solution> calculate_solutions(const std::vector<Physical_Domain_Vector>& cell_centers);
 
 private:
     Sine_Wave_2D(void) = delete;

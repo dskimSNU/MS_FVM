@@ -28,6 +28,7 @@ public:
 	EuclideanVector(const std::vector<double>& other) : elements_(other) {};
 
 	EuclideanVector& operator+=(const EuclideanVector& y);
+	EuclideanVector& operator-=(const EuclideanVector& y);
 	EuclideanVector& operator*=(const double scalar);
 	EuclideanVector operator+(const EuclideanVector& y) const;	
 	EuclideanVector operator-(const EuclideanVector& y) const;
@@ -86,6 +87,13 @@ EuclideanVector<small>& EuclideanVector<small>::operator+=(const EuclideanVector
 }
 
 template <size_t small>
+EuclideanVector<small>& EuclideanVector<small>::operator-=(const EuclideanVector& y) {
+	for (size_t i = 0; i < small; ++i)
+		this->small_buffer_[i] -= y.small_buffer_[i];
+	return *this;
+}
+
+template <size_t small>
 EuclideanVector<small>& EuclideanVector<small>::operator*=(const double scalar) {
 	for (size_t i = 0; i < small; ++i)
 		this->small_buffer_[i] *= scalar;
@@ -100,9 +108,7 @@ EuclideanVector<small> EuclideanVector<small>::operator+(const EuclideanVector& 
 
 template <size_t small> EuclideanVector<small> EuclideanVector<small>::operator-(const EuclideanVector& y) const {
 	auto result = *this;
-	for (size_t i = 0; i < small; ++i)
-		result.small_buffer_[i] -= y.small_buffer_[i];
-	return result;
+	return result -= y;
 }
 
 template <size_t small> EuclideanVector<small> EuclideanVector<small>::operator*(const double scalar) const {

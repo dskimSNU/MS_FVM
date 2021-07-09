@@ -1,6 +1,6 @@
 #include "../INC/Grid_Information_Builder.h"
 
-Grid_Information Grid_Information_Builder::build(const Grid_Data& grid_data) {
+Grid_Information Grid_Data_Converter::convert(const Grid_Data& grid_data) {
 	auto [node_grid_datas, cell_grid_datas, boundary_grid_datas, periodic_boundary_grid_datas] = grid_data;
 
 	// make 'vertex node index to cell index' to find owner/neighbor cell index
@@ -30,7 +30,7 @@ Grid_Information Grid_Information_Builder::build(const Grid_Data& grid_data) {
 		auto& [index, figure, figure_order, type, node_indexes] = cell_grid_datas[i];
 
 		ReferenceGeometry ref_geometry(figure, figure_order);
-		auto consisting_nodes = Grid_Information_Builder::extract_by_index(node_grid_datas, node_indexes);
+		auto consisting_nodes = Grid_Data_Converter::extract_by_index(node_grid_datas, node_indexes);
 		Geometry geometry(ref_geometry, std::move(consisting_nodes), std::move(node_indexes));
 		
 		//
@@ -69,11 +69,11 @@ Grid_Information Grid_Information_Builder::build(const Grid_Data& grid_data) {
 			auto& [index, figure, figure_order, type, node_indexes] = boundary_grid_datas[i];
 			
 			ReferenceGeometry ref_geometry(figure, figure_order);
-			auto consisting_nodes = Grid_Information_Builder::extract_by_index(node_grid_datas, node_indexes);
+			auto consisting_nodes = Grid_Data_Converter::extract_by_index(node_grid_datas, node_indexes);
 			Geometry geometry(ref_geometry, std::move(consisting_nodes), std::move(node_indexes));
 
 			//find owner cell container index
-			const auto cell_indexes = Grid_Information_Builder::find_cell_index_has_these_nodes(vertex_node_index_to_cell_index, node_indexes);
+			const auto cell_indexes = Grid_Data_Converter::find_cell_index_has_these_nodes(vertex_node_index_to_cell_index, node_indexes);
 			dynamic_require(cell_indexes.size() == 1, std::to_string(index) + " boundary does not have unique owner cell");
 			const auto owner_cell_index = cell_indexes.front();
 			const auto owner_cell_container_index = cell_index_to_container_index.at(owner_cell_index);
@@ -108,7 +108,7 @@ Grid_Information Grid_Information_Builder::build(const Grid_Data& grid_data) {
 			auto& [index, figure, figure_order, type, node_indexes] = periodic_boundary_grid_datas[i];
 
 			ReferenceGeometry ref_geometry(figure, figure_order);
-			auto consisting_nodes = Grid_Information_Builder::extract_by_index(node_grid_datas, node_indexes);
+			auto consisting_nodes = Grid_Data_Converter::extract_by_index(node_grid_datas, node_indexes);
 			Geometry geometry(ref_geometry, std::move(consisting_nodes), std::move(node_indexes));
 
 			switch (type) {
@@ -126,8 +126,8 @@ Grid_Information Grid_Information_Builder::build(const Grid_Data& grid_data) {
 
 		std::unordered_map<size_t, size_t> data_index_to_matched_index;
 		data_index_to_matched_index.reserve(num_inner_face);
-		data_index_to_matched_index.merge(Grid_Information_Builder::match_periodic_boudnary_index(data_index_to_x_periodic_geoemty, ElementType::x_periodic));
-		data_index_to_matched_index.merge(Grid_Information_Builder::match_periodic_boudnary_index(data_index_to_y_periodic_geoemty, ElementType::y_periodic));
+		data_index_to_matched_index.merge(Grid_Data_Converter::match_periodic_boudnary_index(data_index_to_x_periodic_geoemty, ElementType::x_periodic));
+		data_index_to_matched_index.merge(Grid_Data_Converter::match_periodic_boudnary_index(data_index_to_y_periodic_geoemty, ElementType::y_periodic));
 
 		std::unordered_map<size_t, Geometry> data_index_to_geometry;
 		data_index_to_geometry.reserve(num_periodic_boundary);
@@ -141,8 +141,8 @@ Grid_Information Grid_Information_Builder::build(const Grid_Data& grid_data) {
 
 			//find owner/neighbor cell container indexes
 			//we will designate i as owner cell side face		
-			const auto cell_index_set_have_i = Grid_Information_Builder::find_cell_index_has_these_nodes(vertex_node_index_to_cell_index, owner_side_geometry.vertex_node_indexes());
-			const auto cell_index_set_have_j = Grid_Information_Builder::find_cell_index_has_these_nodes(vertex_node_index_to_cell_index, neighbor_side_geometry.vertex_node_indexes());
+			const auto cell_index_set_have_i = Grid_Data_Converter::find_cell_index_has_these_nodes(vertex_node_index_to_cell_index, owner_side_geometry.vertex_node_indexes());
+			const auto cell_index_set_have_j = Grid_Data_Converter::find_cell_index_has_these_nodes(vertex_node_index_to_cell_index, neighbor_side_geometry.vertex_node_indexes());
 			dynamic_require(cell_index_set_have_i.size() == 1, " periodic boundary have not unique owner cell");
 			dynamic_require(cell_index_set_have_j.size() == 1, " periodic boundary have not unique neighbor cell");
 
@@ -172,7 +172,7 @@ Grid_Information Grid_Information_Builder::build(const Grid_Data& grid_data) {
 	//build inner face
 	for (const auto& face_geometry : face_geometries) { 
 		// need to know face geometry consisting node indexes
-		const auto cell_indexes = Grid_Information_Builder::find_cell_index_has_these_nodes(vertex_node_index_to_cell_index, face_geometry.vertex_node_indexes());
+		const auto cell_indexes = Grid_Data_Converter::find_cell_index_has_these_nodes(vertex_node_index_to_cell_index, face_geometry.vertex_node_indexes());
 		dynamic_require(cell_indexes.size() == 2, "inner face does not have unique owner neighbor cell");
 
 		const auto owner_cell_index = cell_indexes[0];
@@ -191,7 +191,7 @@ Grid_Information Grid_Information_Builder::build(const Grid_Data& grid_data) {
 	return { cell_grid_info, boundary_grid_info, inner_face_grid_info };
 }
 
-std::vector<Physical_Domain_Vector> Grid_Information_Builder::extract_by_index(const std::vector<Physical_Domain_Vector>& nodes, const std::vector<size_t>& indexes) {
+std::vector<Physical_Domain_Vector> Grid_Data_Converter::extract_by_index(const std::vector<Physical_Domain_Vector>& nodes, const std::vector<size_t>& indexes) {
 	const auto num_consisting_node = indexes.size();
 	std::vector<Physical_Domain_Vector> consisting_nodes(num_consisting_node);
 	for (size_t i = 0; i < num_consisting_node; ++i)
@@ -200,7 +200,7 @@ std::vector<Physical_Domain_Vector> Grid_Information_Builder::extract_by_index(c
 	return consisting_nodes;
 }
 
-std::vector<size_t> Grid_Information_Builder::find_cell_index_has_these_nodes(const std::unordered_map<size_t, std::set<size_t>>& vertex_node_index_to_cell_index, const std::vector<size_t>& face_node_indexes) {
+std::vector<size_t> Grid_Data_Converter::find_cell_index_has_these_nodes(const std::unordered_map<size_t, std::set<size_t>>& vertex_node_index_to_cell_index, const std::vector<size_t>& face_node_indexes) {
 	const auto start_node_index = face_node_indexes[0];
 	const auto end_node_index = face_node_indexes[1];
 
@@ -213,7 +213,7 @@ std::vector<size_t> Grid_Information_Builder::find_cell_index_has_these_nodes(co
 	return cell_index_intersection;
 }
 
-std::unordered_map<size_t, size_t> Grid_Information_Builder::match_periodic_boudnary_index(const std::unordered_map<size_t, Geometry>& data_index_to_geometry, const ElementType type){
+std::unordered_map<size_t, size_t> Grid_Data_Converter::match_periodic_boudnary_index(const std::unordered_map<size_t, Geometry>& data_index_to_geometry, const ElementType type){
 	const auto num_periodic_face = data_index_to_geometry.size();
 
 	if (num_periodic_face == 0)

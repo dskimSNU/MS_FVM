@@ -14,12 +14,14 @@ template<size_t num_row, size_t num_column>
 class Matrix
 {
 public:
-	Matrix(void) = default;	
-	template <typename... Args, ms::is_same<sizeof...(Args), num_row*num_column> = true, ms::are_arithmetics<Args...> = true>
+	Matrix(void) = default;
+	template <typename... Args, ms::is_same<sizeof...(Args), num_row* num_column> = true, ms::are_arithmetics<Args...> = true>
 	Matrix(Args... args) : values_{ static_cast<double>(args)... } {};
 
-	EuclideanVector<num_column> operator*(const EuclideanVector<num_column>& x) const;
-	bool operator==(const Matrix& A) const;
+	Matrix operator+(const Matrix & A) const;
+	Matrix operator*(const double scalar) const;
+	EuclideanVector<num_row> operator*(const EuclideanVector<num_column>&x) const;
+	bool operator==(const Matrix & A) const;
 
 	double at(const size_t row_index, const size_t column_index) const;
 	std::string to_string(void) const;
@@ -29,10 +31,31 @@ private:
 };
 
 template<size_t num_row, size_t num_column>
+Matrix<num_row, num_column> operator*(const double scalar, const Matrix<num_row, num_column>& A) {
+	return A * scalar;
+}
+
+template<size_t num_row, size_t num_column>
 std::ostream& operator<<(std::ostream& os, const Matrix<num_row, num_column>& m);
 
 
 //template definition part
+
+template<size_t num_row, size_t num_column>
+Matrix<num_row, num_column> Matrix<num_row, num_column>::operator+(const Matrix& A) const {
+	Matrix result;
+	for (size_t i = 0; i < num_row * num_column; ++i)
+		result.values_[i] += A.values_[i];
+	return result;
+}
+
+template<size_t num_row, size_t num_column>
+Matrix<num_row, num_column> Matrix<num_row, num_column>::operator*(const double scalar) const {
+	Matrix result;
+	for (size_t i = 0; i < num_row * num_column; ++i)
+		result.values_[i] *= scalar;
+	return result;
+}
 
 template<size_t num_row, size_t num_column>
 bool Matrix<num_row, num_column>::operator==(const Matrix& A) const {
@@ -40,8 +63,8 @@ bool Matrix<num_row, num_column>::operator==(const Matrix& A) const {
 }
 
 template<size_t num_row, size_t num_column>
-EuclideanVector<num_column> Matrix<num_row, num_column>::operator*(const EuclideanVector<num_column>& x) const {
-	std::array<double, num_column> result = { 0 };
+EuclideanVector<num_row> Matrix<num_row, num_column>::operator*(const EuclideanVector<num_column>& x) const {
+	std::array<double, num_row> result = { 0 };
 	if constexpr (num_row * num_column < blas_mv_criteria) {
 		for (size_t i = 0; i < num_row; ++i)
 			for (size_t j = 0; j < num_column; ++j)

@@ -39,9 +39,6 @@
     <ClInclude Include="INC\Geometry.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Inital_Condition.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="INC\Discrete_Equation.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -51,7 +48,19 @@
     <ClInclude Include="INC\Inner_Faces.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Numerical_Flux.h">
+    <ClInclude Include="INC\Numerical_Flux_Function.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Time_Integral_Method.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Semi_Discrete_Equation.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Inital_Condition.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Solve_Condition.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -75,9 +84,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SRC\Initial_Condition.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SRC\Cells.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

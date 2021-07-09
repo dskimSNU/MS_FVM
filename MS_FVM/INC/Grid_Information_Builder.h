@@ -27,18 +27,18 @@ struct Boundary_Grid_Information
 struct Grid_Information
 {
 	Cell_Grid_Information cell_grid_information;
-	Boundary_Grid_Information boundary_face_grid_information;
+	Boundary_Grid_Information boundary_grid_information;
 	Inner_Face_Grid_Information inner_face_grid_information;
 };
 
 
-class Grid_Information_Builder
+class Grid_Data_Converter
 {
 public:
-	static Grid_Information build(const Grid_Data& grid_data);
+	static Grid_Information convert(const Grid_Data& grid_data);
 
 private:
-	Grid_Information_Builder(void) = delete;
+	Grid_Data_Converter(void) = delete;
 
 	static std::vector<Physical_Domain_Vector> extract_by_index(const std::vector<Physical_Domain_Vector>& nodes, const std::vector<size_t>& indexes);
 	static std::vector<size_t> find_cell_index_has_these_nodes(const std::unordered_map<size_t, std::set<size_t>>& vertex_node_index_to_cell_index, const std::vector<size_t>& face_node_indexes);

@@ -144,7 +144,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="INC\Cells.h" />
-    <ClInclude Include="INC\Discrete_Equation.h" />
+    <ClInclude Include="INC\Discrete_Equation.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="INC\EuclideanVector.h" />
     <ClInclude Include="INC\Geometry.h" />
     <ClInclude Include="INC\Governing_Equation.h">
@@ -167,13 +172,15 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="INC\Numerical_Flux.h" />
+    <ClInclude Include="INC\Numerical_Flux_Function.h" />
+    <ClInclude Include="INC\Semi_Discrete_Equation.h" />
     <ClInclude Include="INC\Text.h" />
     <ClInclude Include="INC\Inital_Condition.h" />
+    <ClInclude Include="INC\Time_Integral_Method.h" />
+    <ClInclude Include="INC\Solve_Condition.h" />
     <ClInclude Include="RSC\Setting.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SRC\Cells.cpp" />
     <ClCompile Include="SRC\Geometry.cpp" />
     <ClCompile Include="SRC\Governing_Equation.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
