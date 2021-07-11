@@ -1,7 +1,7 @@
 #include "../INC/Text.h"
 
 Text::Text(std::ifstream& file, const size_t num_read_line) {
-	this->read(file, num_read_line);
+	this->convert(file, num_read_line);
 }
 
 void Text::add_write(const std::string& file_path) const {
@@ -28,7 +28,7 @@ Text& Text::read_line_by_line(const std::string& file_path) {
 	return *this;
 }
 
-void Text::read(std::ifstream& file_stream, const size_t num_read_line) {
+void Text::convert(std::ifstream& file_stream, const size_t num_read_line) {
 	dynamic_require(file_stream.is_open(), "Fail to open file");
 
 	size_t index = 0;

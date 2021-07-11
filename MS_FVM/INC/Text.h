@@ -19,7 +19,7 @@ public:
 
 	void add_write(const std::string& write_file_path) const;
 	Text& read_line_by_line(const std::string& read_file_path);
-	void read(std::ifstream& file, const size_t num_read_line);
+	void convert(std::ifstream& file, const size_t num_read_line);
 	Text& remove_empty_line(void);
 	void write(const std::string& write_file_path) const;
 };

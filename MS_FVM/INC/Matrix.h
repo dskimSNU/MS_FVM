@@ -1,22 +1,17 @@
 #pragma once
 #include "EuclideanVector.h"
 
-static constexpr size_t blas_mv_criteria = 50;
-
-template <size_t num_value>
-using use_blas_mv = std::enable_if_t< blas_mv_criteria <= num_value, bool>;
-
-template <size_t num_value>
-using use_normal_mv = std::enable_if_t< num_value < blas_mv_criteria, bool>;
-
+namespace ms {
+	inline constexpr size_t blas_mv_criteria = 50;
+}
 
 template<size_t num_row, size_t num_column>
 class Matrix
 {
 public:
 	Matrix(void) = default;
-	template <typename... Args, ms::is_same<sizeof...(Args), num_row* num_column> = true, ms::are_arithmetics<Args...> = true>
-	Matrix(Args... args) : values_{ static_cast<double>(args)... } {};
+	template <typename... Args>
+	Matrix(Args... args);
 
 	Matrix operator+(const Matrix & A) const;
 	Matrix operator*(const double scalar) const;
@@ -40,10 +35,18 @@ std::ostream& operator<<(std::ostream& os, const Matrix<num_row, num_column>& m)
 
 
 //template definition part
+template<size_t num_row, size_t num_column>
+template <typename... Args>
+Matrix<num_row, num_column>::Matrix(Args... args) : values_{ static_cast<double>(args)... } {
+	static_require(sizeof...(Args) <= num_row * num_column, "Number of arguments can't not exeed row * column");
+	static_require(ms::are_arithmetics<Args...>, "every arguments should be arithmetics");
+};
+
+
 
 template<size_t num_row, size_t num_column>
 Matrix<num_row, num_column> Matrix<num_row, num_column>::operator+(const Matrix& A) const {
-	Matrix result;
+	Matrix result = *this;
 	for (size_t i = 0; i < num_row * num_column; ++i)
 		result.values_[i] += A.values_[i];
 	return result;
@@ -51,7 +54,7 @@ Matrix<num_row, num_column> Matrix<num_row, num_column>::operator+(const Matrix&
 
 template<size_t num_row, size_t num_column>
 Matrix<num_row, num_column> Matrix<num_row, num_column>::operator*(const double scalar) const {
-	Matrix result;
+	Matrix result = *this;
 	for (size_t i = 0; i < num_row * num_column; ++i)
 		result.values_[i] *= scalar;
 	return result;
@@ -65,7 +68,7 @@ bool Matrix<num_row, num_column>::operator==(const Matrix& A) const {
 template<size_t num_row, size_t num_column>
 EuclideanVector<num_row> Matrix<num_row, num_column>::operator*(const EuclideanVector<num_column>& x) const {
 	std::array<double, num_row> result = { 0 };
-	if constexpr (num_row * num_column < blas_mv_criteria) {
+	if constexpr (num_row * num_column < ms::blas_mv_criteria) {
 		for (size_t i = 0; i < num_row; ++i)
 			for (size_t j = 0; j < num_column; ++j)
 				result[i] += this->values_[i * num_column + j] * x[j];

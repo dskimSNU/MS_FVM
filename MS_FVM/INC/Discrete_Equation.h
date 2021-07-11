@@ -3,13 +3,17 @@
 #include "Time_Integral_Method.h"
 #include "Solve_Condition.h"
 
+template <typename T>
 class Discrete_Equation
 {
+    static_require(ms::is_Time_Intg_Method<T>, "Wrong time integral method");
+
+    using Time_Integ_Method = T;
+
 public:
-    template<typename Time_Integ_Method, typename End_Cond, typename Post_Cond, typename SDE>
+ 
+    template<typename End_Cond, typename Post_Cond, typename SDE>
     static void solve(const SDE& semi_discrete_eq, std::vector<typename SDE::Solution>& solutions) {
-        static_require(ms::is_Semi_Discrete_Eq<SDE>, "Wrong semi discrete equation");
-        static_require(ms::is_Time_Intg_Method<Time_Integ_Method>, "Wrong time integral method");
         static_require(ms::is_End_Condtion<End_Cond>, "Wrong end condition");
         static_require(ms::is_Post_Condtion<Post_Cond>, "Wrong post condition");
 

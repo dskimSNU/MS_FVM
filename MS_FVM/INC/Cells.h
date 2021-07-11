@@ -1,9 +1,14 @@
 #pragma once
-#include "Grid_Information_Builder.h"
+#include "Grid_Data_to_Info.h"
 #include "Governing_Equation.h"
+#include "Spatial_Discrete_Method.h"
+
+template <typename SDM, typename G>
+class Cells;
+
 
 template <typename G>
-class Cells
+class Cells<FVM,G>
 {    
     static_require(ms::is_Gov_Eq<G>, "Wrong governing equation");
     
@@ -12,34 +17,31 @@ class Cells
     using Residual = EuclideanVector<Gov_Eq::num_equation_>;
 
 public:
-    Cells(Cell_Grid_Information&& cell_grid_information);
-
+    Cells(Grid_Data_to_Info<Gov_Eq::dimension_>::Cell_Info&& cell_grid_information);
     double calculate_time_step(const std::vector<Solution>& solutions) const;
     void scale_RHS(std::vector<Residual>& RHS) const;
 
 private:
-    const size_t num_cell_ = 0;
+    size_t num_cell_ = 0;
     const std::vector<double> volumes_;
-    const std::vector<std::array<double, Gov_Eq::physical_domain_dimension_>> coordinate_projected_volumes_;
+    const std::vector<std::array<double, Gov_Eq::dimension_>> coordinate_projected_volumes_;
     std::vector<double> residual_scale_factors_;
 };
 
 
 //template definition
 template <typename G>
-Cells<G>::Cells(Cell_Grid_Information&& cell_grid_information)
-    : volumes_(std::move(cell_grid_information.volumes)),
-    coordinate_projected_volumes_(std::move(cell_grid_information.coordinate_projected_volumes)),
-    num_cell_(this->volumes_.size()) {
-
-    this->residual_scale_factors_.resize(num_cell_);
+Cells<FVM, G>::Cells(Grid_Data_to_Info<Gov_Eq::dimension_>::Cell_Info&& cell_info)
+    : volumes_(std::move(cell_info.volumes)),
+    coordinate_projected_volumes_(std::move(cell_info.coordinate_projected_volumes)) {
+    this->num_cell_ = this->volumes_.size();
+    this->residual_scale_factors_.resize(this->num_cell_);
     for (size_t i = 0; i < this->num_cell_; ++i)
         this->residual_scale_factors_[i] = -1.0 / this->volumes_[i];
 };
 
-
 template <typename G>
-double Cells<G>::calculate_time_step(const std::vector<Solution>& solutions) const {
+double Cells<FVM,G>::calculate_time_step(const std::vector<Solution>& solutions) const {
     const auto projected_maximum_lambdas = Gov_Eq::coordinate_projected_maximum_lambdas(solutions);
 
     std::vector<double> local_time_step(this->num_cell_);
@@ -56,9 +58,8 @@ double Cells<G>::calculate_time_step(const std::vector<Solution>& solutions) con
     return *std::min_element(local_time_step.begin(), local_time_step.end());
 }
 
-
 template <typename G>
-void Cells<G>::scale_RHS(std::vector<Residual>& RHS) const {
+void Cells<FVM,G>::scale_RHS(std::vector<Residual>& RHS) const {
     for (size_t i = 0; i < this->num_cell_; ++i)
         RHS[i] *= this->residual_scale_factors_[i];
 }

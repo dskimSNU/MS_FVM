@@ -27,13 +27,13 @@
     <ClInclude Include="INC\Text.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Grid_Reader.h">
+    <ClInclude Include="INC\Grid_File_to_Data.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="RSC\Setting.h">
       <Filter>리소스 파일</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Grid_Information_Builder.h">
+    <ClInclude Include="INC\Grid_Data_to_Info.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="INC\Geometry.h">
@@ -63,6 +63,12 @@
     <ClInclude Include="INC\Solve_Condition.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="INC\Spatial_Discrete_Method.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Grid_File_Type.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SRC\Governing_Equation.cpp">
@@ -74,16 +80,10 @@
     <ClCompile Include="SRC\Text.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Grid_Reader.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SRC\Geometry.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SRC\Grid_Information_Builder.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="SRC\Initial_Condition.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SRC\Grid_File_Type.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

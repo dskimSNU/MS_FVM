@@ -1,6 +1,6 @@
 #include "../INC/Inital_Condition.h"
 
-std::vector<Sine_Wave_2D::Solution> Sine_Wave_2D::calculate_solutions(const std::vector<Physical_Domain_Vector>& cell_centers) {
+std::vector<Sine_Wave_2D::Solution> Sine_Wave_2D::calculate_solutions(const std::vector<Space_Vector>& cell_centers) {
 	const auto num_cell = cell_centers.size();
 	
 	std::vector<Solution> solutions_(num_cell);
