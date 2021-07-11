@@ -1,8 +1,10 @@
 #pragma once
 #include <algorithm>
 #include <fstream>	//file stream
+#include <filesystem>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <sstream>
 #include <vector>
 
@@ -16,12 +18,16 @@ public:
 	Text(std::initializer_list<std::string> list) : std::vector<std::string>( list ) {};
 	Text(std::ifstream& file, const size_t num_read_line);
 
+	Text& operator<<(const std::string& str);
 
 	void add_write(const std::string& write_file_path) const;
 	Text& read_line_by_line(const std::string& read_file_path);
 	void convert(std::ifstream& file, const size_t num_read_line);
 	Text& remove_empty_line(void);
 	void write(const std::string& write_file_path) const;
+
+private:
+	void make_path(std::string_view file_path) const;
 };
 
 std::ostream& operator<<(std::ostream& ostream, const Text& text);

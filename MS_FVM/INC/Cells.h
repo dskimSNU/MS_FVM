@@ -37,7 +37,8 @@ Cells<FVM, G>::Cells(Grid_Data_to_Info<Gov_Eq::dimension_>::Cell_Info&& cell_inf
     this->num_cell_ = this->volumes_.size();
     this->residual_scale_factors_.resize(this->num_cell_);
     for (size_t i = 0; i < this->num_cell_; ++i)
-        this->residual_scale_factors_[i] = -1.0 / this->volumes_[i];
+        this->residual_scale_factors_[i] = 1.0 / this->volumes_[i];
+        //this->residual_scale_factors_[i] = -1.0 / this->volumes_[i];//debug
 };
 
 template <typename G>

@@ -43,8 +43,7 @@ public:
             //const auto diffusion_term = 0.5 * inner_face_maximum_lambda * (solution_o - solution_n);
             //const auto inner_face_numerical_flux = central_flux + diffusion_term;
 
-            const auto inner_face_numerical_flux = 0.5 * ((physical_flux_o + physical_flux_n) * normal + inner_face_maximum_lambda * (solution_o - solution_n));
-            inner_face_numerical_fluxes[i] = inner_face_numerical_flux;
+            inner_face_numerical_fluxes[i] = 0.5 * ((physical_flux_o + physical_flux_n) * normal + inner_face_maximum_lambda * (solution_o - solution_n));
         }
         return inner_face_numerical_fluxes;
     };

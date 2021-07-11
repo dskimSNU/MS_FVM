@@ -2,6 +2,24 @@
 #include "gtest/gtest.h"
 #include "../MS_FVM/INC/Geometry.h"
 
+GTEST_TEST(Geometry, set) {
+	const Figure fig = Figure::quadrilateral;
+	const size_t fig_order = 1;
+
+	const EuclideanVector n1 = { 1,1 };
+	const EuclideanVector n2 = { 1,2 };
+	const EuclideanVector n3 = { 2,2 };
+	const EuclideanVector n4 = { 2,1 };
+	std::vector<EuclideanVector<2>> nodes = { n1,n2,n3,n4 };
+	std::vector<size_t> indexes = { 1,2,3,4 };
+
+	Geometry geometry(fig, fig_order, std::move(nodes), std::move(indexes));
+
+	std::set<Geometry<2>> s;
+	s.insert(geometry);
+	s.insert(geometry);
+}
+
 GTEST_TEST(Geometry, volume_1){
 	const Figure fig = Figure::quadrilateral;
 	const size_t fig_order = 1;

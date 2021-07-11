@@ -6,13 +6,7 @@
 class Governing_Equation {};
 
 
-namespace ms {
-    template <typename T>
-    inline constexpr bool is_Gov_Eq = std::is_base_of_v<Governing_Equation, T>;
-}
-
-
-class Scalar_Conservation_Law_2D : public Governing_Equation 
+class Scalar_Conservation_Law_2D : public Governing_Equation
 {
 public:
     static constexpr size_t num_equation_ = 1;
@@ -21,6 +15,14 @@ public:
     using Solution = EuclideanVector<num_equation_>;
     using Physical_Flux = Matrix<num_equation_, dimension_>;
 };
+
+
+namespace ms {
+    template <typename T>
+    inline constexpr bool is_Gov_Eq = std::is_base_of_v<Governing_Equation, T>;
+    template <typename T>
+    inline constexpr bool is_Scalar_Eq = std::is_base_of_v<Scalar_Conservation_Law_2D, T>;
+}
 
 
 class Linear_Advection_2D : public Scalar_Conservation_Law_2D

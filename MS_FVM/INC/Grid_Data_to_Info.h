@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Grid_File_to_Data.h"
+#include "Post.h"
 
 #include <set>
 #include <unordered_map>
@@ -88,7 +89,7 @@ Grid_Data_to_Info<dim>::Grid_Info Grid_Data_to_Info<dim>::convert(Grid_Data<dim>
 		auto& [index, figure, figure_order, type, node_indexes] = cell_datas[i];
 
 		auto nodes = extract_by_index(node_datas, node_indexes);
-		Geometry geometry(figure, figure_order, std::move(nodes), std::move(node_indexes));
+		Geometry<dim> geometry(figure, figure_order, std::move(nodes), std::move(node_indexes));
 
 		//
 		cell_grid_info.centers[i] = geometry.center_node();
@@ -111,6 +112,23 @@ Grid_Data_to_Info<dim>::Grid_Info Grid_Data_to_Info<dim>::convert(Grid_Data<dim>
 		cell_index_to_container_index.emplace(index, i);
 		cell_geometries.push_back(std::move(geometry));
 	}
+
+	
+	// post grid
+	Post::grid(cell_geometries);
+	//std::vector<Space_Vector> global_post_nodes;
+	//std::vector<std::vector<size_t>> global_connectivities;
+	//for (const auto& geometry : cell_geometries) {
+	//	auto connectivities = geometry.local_connectivities();
+	//	auto post_nodes = geometry.vertex_nodes();	//post order를 geometry에게 어떻게 전달해줄 것인가?
+	//	const auto num_post_node = post_nodes.size();
+
+	//	Post::convert_to_global_connectivities(connectivities, num_post_node);
+
+	//	global_post_nodes.insert(global_post_nodes.end(), std::make_move_iterator(post_nodes.begin()), std::make_move_iterator(post_nodes.end()));
+	//	global_connectivities.insert(global_connectivities.end(), std::make_move_iterator(connectivities.begin()), std::make_move_iterator(connectivities.end()));
+	//}
+	//Post::write_grid_file(global_post_nodes, global_connectivities);
 
 
 	// build boundary_grid_info

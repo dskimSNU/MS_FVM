@@ -53,3 +53,16 @@ GTEST_TEST(ms, is_there_icase_2) {
 	const auto ref = true;
 	EXPECT_EQ(result, ref);
 }
+
+GTEST_TEST(Text, write) {
+	Text txt;
+	txt << "a \n\nb \n\nc ";
+	txt.write("test.txt");
+
+	Text txt2;
+	txt2.read_line_by_line("test.txt");
+	const auto result = txt2.size();
+
+	const auto ref = 5;
+	EXPECT_EQ(result, ref);
+}

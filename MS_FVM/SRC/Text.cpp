@@ -4,7 +4,13 @@ Text::Text(std::ifstream& file, const size_t num_read_line) {
 	this->convert(file, num_read_line);
 }
 
+Text& Text::operator<<(const std::string& str) {
+	this->push_back(str);
+	return *this;
+}
+
 void Text::add_write(const std::string& file_path) const {
+	this->make_path(file_path);
 	std::ofstream output_file(file_path, std::ios::app);
 	dynamic_require(output_file.is_open(), "Fail to open file" + file_path);
 
@@ -16,7 +22,7 @@ void Text::add_write(const std::string& file_path) const {
 	output_file.close();
 }
 
-Text& Text::read_line_by_line(const std::string& file_path) {
+Text& Text::read_line_by_line(const std::string& file_path) {	
 	std::ifstream file_stream(file_path);
 	dynamic_require(file_stream.is_open(), "Fail to open file" + file_path);
 
@@ -48,6 +54,7 @@ Text& Text::remove_empty_line(void) {
 }
 
 void Text::write(const std::string& file_path) const {
+	this->make_path(file_path);
 	std::ofstream output_file(file_path);
 	dynamic_require(output_file.is_open(), "Fail to open file" + file_path);
 
@@ -57,6 +64,20 @@ void Text::write(const std::string& file_path) const {
 	output_file << this->back();
 
 	output_file.close();
+}
+
+void Text::make_path(std::string_view file_path) const {
+	const auto file_name_size = file_path.size() - file_path.find_last_of("/") - 1;
+	file_path.remove_suffix(file_name_size);
+	
+	if (file_path.empty())
+		return;
+
+	std::filesystem::path p(file_path);
+	if (std::filesystem::exists(p))
+		return;
+	else
+		std::filesystem::create_directories(p);	
 }
 
 namespace ms {
@@ -101,7 +122,8 @@ namespace ms {
 
 	std::string upper_case(const std::string& str) {
 		auto result = str;
-		std::transform(result.begin(), result.end(), result.begin(), std::toupper);
+		std::transform(result.begin(), result.end(), result.begin(), toupper);
+		//std::transform(result.begin(), result.end(), result.begin(), std::toupper); //filesystem이랑 있으면 충돌
 		return result;
 	}
 

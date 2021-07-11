@@ -1,6 +1,6 @@
 #pragma once
 #include "Matrix.h"
-
+#include <set>
 
 enum class Figure
 {
@@ -35,8 +35,10 @@ public:
 	double volume(void) const;
 	std::array<double, space_dimension> coordinate_projected_volume(void) const;
 	std::vector<Geometry> face_geometries(void) const;
+	std::vector<Space_Vector> vertex_nodes(void) const;
 	std::vector<size_t> vertex_node_indexes(void) const;
 	bool is_periodic_pair(const Geometry& other, const size_t axis_tag) const;
+	std::vector<std::vector<size_t>> local_connectivities(void) const;
 
 	//private: for test
 	std::vector<std::vector<Space_Vector>> calculate_faces_nodes(void) const;
@@ -65,7 +67,7 @@ public:
 	std::vector<ReferenceGeometry> calculate_faces_reference_geometry(void) const;
 	Space_Vector calculate_normal(const std::vector<Space_Vector>& nodes) const;
 	double calculate_volume(const std::vector<Space_Vector>& nodes) const;
-	size_t space_dimension(void) const;
+	std::vector<std::vector<size_t>> local_connectivities(void) const;
 
 private:
 	Figure figure_;
@@ -269,26 +271,33 @@ double Geometry<space_dimension>::ReferenceGeometry::calculate_volume(const std:
 }
 
 template <size_t space_dimension>
-size_t Geometry<space_dimension>::ReferenceGeometry::space_dimension(void) const {
+std::vector<std::vector<size_t>> Geometry<space_dimension>::ReferenceGeometry::local_connectivities(void) const {
 	switch (this->figure_) {
-	case Figure::line:			return 1;
-	case Figure::triangle:
-	case Figure::quadrilateral:	return 2;
-	case Figure::tetrahedral:
-	case Figure::hexahedral:
-	case Figure::prism:
-	case Figure::pyramid:		return 3;
+	case Figure::triangle: {
+		//  2
+		//  弛 \ 
+		//  弛  \
+		//  0式式式1
+		return { { 0,1,2 } };
+	}
+	case Figure::quadrilateral: {
+		//  3式式式式式2
+		//  弛     弛
+		//  弛     弛 
+		//  0式式式式式1
+
+		return { {0,1,2},{0,2,3} };
+	}
 	default:
-		throw std::runtime_error("wrong element figure type");
-		break;
+		throw std::runtime_error("wrong element figure");
+		return {};
 	}
 }
-
 
 //Geomety template definition part
 template <size_t space_dimension>
 std::array<double, space_dimension> Geometry<space_dimension>::coordinate_projected_volume(void) const {
-	if (this->reference_geometry_.space_dimension() == 2) {
+	if constexpr (space_dimension == 2) {
 		double x_projected_volume = 0.0;
 		double y_projected_volume = 0.0;
 
@@ -340,6 +349,18 @@ std::vector<Geometry<space_dimension>> Geometry<space_dimension>::face_geometrie
 }
 
 template<size_t space_dimension>
+std::vector<EuclideanVector<space_dimension>> Geometry<space_dimension>::vertex_nodes(void) const {
+	const auto vertex_node_index_orders = this->reference_geometry_.vertex_node_index_orders();
+	const auto num_vertex_node = vertex_node_index_orders.size();
+
+	std::vector<Space_Vector> vertex_nodes(num_vertex_node);
+	for (size_t i = 0; i < num_vertex_node; ++i)
+		vertex_nodes[i] = this->nodes_[vertex_node_index_orders[i]];
+
+	return vertex_nodes;
+}
+
+template<size_t space_dimension>
 std::vector<size_t> Geometry<space_dimension>::vertex_node_indexes(void) const {
 	const auto vertex_node_index_orders = this->reference_geometry_.vertex_node_index_orders();
 	const auto num_vertex_node = vertex_node_index_orders.size();
@@ -385,6 +406,11 @@ bool Geometry<space_dimension>::is_periodic_pair(const Geometry& other, const si
 	return true;
 }
 
+template <size_t space_dimension>
+std::vector<std::vector<size_t>> Geometry<space_dimension>::local_connectivities(void) const {
+	return this->reference_geometry_.local_connectivities();
+}
+
 template<size_t space_dimension>
 bool Geometry<space_dimension>::is_perioidc_pair_node(const Space_Vector& node, const size_t axis_tag) const {
 	for (const auto& my_node : this->nodes_) {
@@ -414,7 +440,9 @@ bool Geometry<space_dimension>::operator==(const Geometry& other) const {
 
 template<size_t space_dimension>
 bool Geometry<space_dimension>::operator<(const Geometry& other) const {
-	return this->nodes_ < other.nodes_;
+	std::set<size_t> s1(this->node_indexes_.begin(), this->node_indexes_.end());
+	std::set<size_t> s2(other.node_indexes_.begin(), other.node_indexes_.end());
+	return s1 > s2;
 }
 
 template<size_t space_dimension>

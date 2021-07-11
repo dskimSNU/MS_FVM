@@ -17,19 +17,19 @@ public:
         static_require(ms::is_End_Condtion<End_Cond>, "Wrong end condition");
         static_require(ms::is_Post_Condtion<Post_Cond>, "Wrong post condition");
 
-        // post initial solution
+        Post::solution(solutions, 0.0, "initial_solution");
         while (true) {
             auto time_step = semi_discrete_eq.calculate_time_step(solutions);
 
             if (End_Cond::check(time_step)) {
                 Time_Integ_Method::update_solutions(semi_discrete_eq, solutions, time_step);
-                //post last solution
+                Post::solution(solutions, 0.0, "final_solution");
                 break;
             }
 
             if (Post_Cond::check(time_step)) {
                 Time_Integ_Method::update_solutions(semi_discrete_eq, solutions, time_step);
-                //post
+                Post::solution(solutions, time_step);
             }
             else
                 Time_Integ_Method::update_solutions(semi_discrete_eq, solutions, time_step);
