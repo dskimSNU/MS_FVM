@@ -1,15 +1,23 @@
-#include "../RSC/Setting.h"
 #include "../INC/Inital_Condition.h"
 #include "../INC/Discrete_Equation.h"
-#include "../INC/Post.h"
+#include "../INC/Setting.h"
+
+using Grid_File_Reader_			= Grid_File_Reader<GRID_FILE_TYPE, PHYSICAL_DOMAIN_DIMENSION>;
+using Grid_Data_Processor_		= Grid_Data_Processor<PHYSICAL_DOMAIN_DIMENSION>;
+using Grid_Info_Extractor_		= Grid_Info_Extractor<SPATIAL_DISCRETE_METHOD, PHYSICAL_DOMAIN_DIMENSION>;
+using Semi_Discrete_Equation_	= Semi_Discrete_Equation<SPATIAL_DISCRETE_METHOD, TIME_STEP_METHOD, GOVERNING_EQUATION, NUMERICAL_FLUX>;
+using Discrete_Equation_		= Discrete_Equation<TIME_INTGRAL_METHOD>;
 
 int main(void) {
-	Post::intialize<GOVERNING_EQUATION, PHYSICAL_DOMAIN_DIMENSION>(POST_FILE_NAME);
+	//InitialCondtion<INITIAL_CONDITION_NAME,GOV_EQ>
+	Post::intialize<GOVERNING_EQUATION, INITIAL_CONDITION>(GRID_FILE_NAME);
 
-	auto grid_data = Grid_File_To_Data<GRID_FILE_TYPE, PHYSICAL_DOMAIN_DIMENSION>::convert(GRID_FILE_PATH);
-	auto grid_info = Grid_Data_to_Info<PHYSICAL_DOMAIN_DIMENSION>::convert(std::move(grid_data));
-	auto initial_solutions = INITIAL_CONDITION::calculate_solutions(grid_info.cell_grid_information.centers);
+	auto grid_raw_data			= Grid_File_Reader_::read(GRID_FILE_NAME);
+	auto processed_grid_data	= Grid_Data_Processor_::process(std::move(grid_raw_data));
+	auto grid_info				= Grid_Info_Extractor_::extract(std::move(processed_grid_data));
+	const Semi_Discrete_Equation_ semi_discrete_eq(std::move(grid_info));
 
-	Semi_Discrete_Equation<SPATIAL_DISCRETE_METHOD, GOVERNING_EQUATION, NUMERICAL_FLUX> semi_discrete_Eq(std::move(grid_info));
-	Discrete_Equation<TIME_INTGRAL_METHOD>::solve<END_CONDITION, POST_CONDITION>(semi_discrete_Eq, initial_solutions);
+	auto solutions				= INITIAL_CONDITION::calculate_solutions(grid_info.cell_informations.centers);
+	Discrete_Equation_::solve<SOLVE_END_CONDITION, SOLVE_POST_CONDITION>(semi_discrete_eq, solutions);
+	semi_discrete_eq.estimate_error<INITIAL_CONDITION>(solutions, END_CONDITION_CONSTANT);
 }

@@ -1,11 +1,7 @@
-﻿  Governing_Equation.cpp
-  Grid_File_Type.cpp
-  Initial_Condition.cpp
-  main.cpp
-  Post.cpp
+﻿  main.cpp
   코드를 생성하고 있습니다.
-  84 of 2462 functions ( 3.4%) were compiled, the rest were copied from previous compilation.
-    23 functions were new in current compilation
-    60 functions had inline decision re-evaluated but remain unchanged
+  1 of 2594 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
   코드를 생성했습니다.
   MS_FVM.vcxproj -> C:\Users\KimMinSeok\source\repos\MS_FVM\x64\Release\MS_FVM.exe

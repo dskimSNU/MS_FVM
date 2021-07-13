@@ -15,7 +15,7 @@ enum class Figure
 template <size_t space_dimension>
 class Geometry
 {
-	class ReferenceGeometry;
+	class ReferenceGeometry;	//여기에 있으니까 Test가 힘듦! 꺼내는게 나을까 ?
 
 	using Space_Vector = EuclideanVector<space_dimension>;
 		

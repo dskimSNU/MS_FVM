@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="설정 파일">
+      <UniqueIdentifier>{27081cfb-0c40-4338-99fc-b8549ed1c999}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="INC\EuclideanVector.h">
@@ -27,13 +30,10 @@
     <ClInclude Include="INC\Text.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Grid_File_to_Data.h">
+    <ClInclude Include="INC\Grid_File_Reader.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="RSC\Setting.h">
-      <Filter>리소스 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="INC\Grid_Data_to_Info.h">
+    <ClInclude Include="INC\Grid_Info_Extractor.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="INC\Geometry.h">
@@ -72,6 +72,18 @@
     <ClInclude Include="INC\Post.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="INC\Profiler.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\TIme_Step_Method.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Setting.h">
+      <Filter>설정 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Grid_Data_Processor.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SRC\Governing_Equation.cpp">
@@ -90,6 +102,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SRC\Post.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SRC\Profiler.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

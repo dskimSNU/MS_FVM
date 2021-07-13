@@ -40,6 +40,7 @@ public:
 	//static constexpr size_t dimension(void);
 	const double* data(void) const;
 	double inner_product(const EuclideanVector& y) const;
+	double L1_norm(void) const;
 	double norm(void) const;	
 	std::string to_string(void) const;
 
@@ -176,6 +177,14 @@ double EuclideanVector<dim>::inner_product(const EuclideanVector& y) const {
 	for (size_t i = 0; i < dim; ++i)
 		result += this->small_buffer_[i] * y.small_buffer_[i];
 	return result;
+}
+
+template <size_t dim>
+double EuclideanVector<dim>::L1_norm(void) const {
+	double L1_norm = 0.0;
+	for (size_t i = 0; i < dim; ++i)
+		L1_norm += std::abs(this->small_buffer_[i]);
+	return L1_norm;
 }
 
 template <size_t dim>

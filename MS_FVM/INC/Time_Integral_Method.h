@@ -1,14 +1,14 @@
 #pragma once
 #include <vector>
 
-class Time_Integral_Method {};
+class TIM {};
 
 namespace ms {
     template<typename T>
-    inline constexpr bool is_Time_Intg_Method = std::is_base_of_v<Time_Integral_Method, T>;
+    inline constexpr bool is_time_integral_method = std::is_base_of_v<TIM, T>;
 }
 
-class SSPRK33 : public Time_Integral_Method {
+class SSPRK33 : public TIM {
 public:
     template <typename Semi_Discrete_Eq, typename Solution>
     static void update_solutions(const Semi_Discrete_Eq& semi_discrete_equation, std::vector<Solution>& solutions, const double time_step) {

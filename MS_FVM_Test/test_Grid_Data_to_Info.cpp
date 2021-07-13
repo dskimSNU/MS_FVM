@@ -4,9 +4,9 @@
 #include "../MS_FVM/INC/Grid_Data_to_Info.h"
 
 
-GTEST_TEST(Grid_Data_to_Info, cell_center) {
-	auto grid_data = Grid_File_To_Data<Gmsh,2>::convert("RSC/Grid/Quad_10.msh");
-	const auto grid_info = Grid_Data_to_Info<2>::convert(std::move(grid_data));
+GTEST_TEST(Grid_Info_Extractor, cell_center) {
+	auto grid_data = Grid_File_Reader<Gmsh,2>::read("RSC/Grid/Quad_10.msh");
+	const auto grid_info = Grid_Info_Extractor<2>::read(std::move(grid_data));
 
 	const auto& cell_centers = grid_info.cell_grid_information.centers;
 
@@ -25,9 +25,9 @@ GTEST_TEST(Grid_Data_to_Info, cell_center) {
 	}
 }
 
-GTEST_TEST(Grid_Data_to_Info, volume) {
-	auto grid_data = Grid_File_To_Data<Gmsh, 2>::convert("RSC/Grid/Quad_10.msh");
-	const auto grid_info = Grid_Data_to_Info<2>::convert(std::move(grid_data));
+GTEST_TEST(Grid_Info_Extractor, volume) {
+	auto grid_data = Grid_File_Reader<Gmsh, 2>::read("RSC/Grid/Quad_10.msh");
+	const auto grid_info = Grid_Info_Extractor<2>::read(std::move(grid_data));
 
 	const auto& cell_volumes = grid_info.cell_grid_information.volumes;
 	
@@ -37,9 +37,9 @@ GTEST_TEST(Grid_Data_to_Info, volume) {
 		//EXPECT_DOUBLE_EQ(volume, ref);	//suffer by round off error
 }
 
-GTEST_TEST(Grid_Data_to_Info, coordinate_projected_volumes) {
-	auto grid_data = Grid_File_To_Data<Gmsh, 2>::convert("RSC/Grid/Quad_10.msh");
-	const auto grid_info = Grid_Data_to_Info<2>::convert(std::move(grid_data));
+GTEST_TEST(Grid_Info_Extractor, coordinate_projected_volumes) {
+	auto grid_data = Grid_File_Reader<Gmsh, 2>::read("RSC/Grid/Quad_10.msh");
+	const auto grid_info = Grid_Info_Extractor<2>::read(std::move(grid_data));
 
 	const auto& coordinate_projected_volumes = grid_info.cell_grid_information.coordinate_projected_volumes;
 

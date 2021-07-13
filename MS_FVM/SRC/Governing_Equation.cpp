@@ -1,13 +1,21 @@
 #include "../INC/Governing_Equation.h"
 
+Linear_Advection_2D::Physical_Flux Linear_Advection_2D::physical_flux(const Solution& solution) {
+	const auto [x_advection_speed, y_advection_speed] = Linear_Advection_2D::advection_speeds_;
+	const auto sol = solution[0];
+
+	return { x_advection_speed * sol , y_advection_speed * sol };
+}
+
 std::vector<Linear_Advection_2D::Physical_Flux> Linear_Advection_2D::physical_fluxes(const std::vector<Solution>& solutions) {
 	//static size_t num_solution = solutions.size();
 	const size_t num_solution = solutions.size();
 
+	const auto [x_advection_speed, y_advection_speed] = Linear_Advection_2D::advection_speeds_;
 	std::vector<Physical_Flux> physical_fluxes(num_solution);
 	for (size_t i = 0; i < num_solution; ++i) {
-		const auto solution = solutions[i][0];
-		physical_fluxes[i] = { advection_speeds_[0] * solution, advection_speeds_[1] * solution };
+		const auto sol = solutions[i][0];
+		physical_fluxes[i] = { x_advection_speed * sol , y_advection_speed * sol };
 	}
 
 	return physical_fluxes;
@@ -28,12 +36,22 @@ double Linear_Advection_2D::inner_face_maximum_lambda(const Solution& solution_o
 	return std::abs(nomal_vector.inner_product(advection_speeds_));
 }
 
+
+Burgers_2D::Physical_Flux Burgers_2D::physical_flux(const Solution& solution) {
+	const auto sol = solution[0];
+
+	const auto temp_val = 0.5 * sol * sol;
+	return { temp_val * temp_val };
+}
+
 std::vector<Burgers_2D::Physical_Flux> Burgers_2D::physical_fluxes(const std::vector<Solution>& solutions) {
 	static size_t num_solution = solutions.size();
 
+
 	std::vector<Physical_Flux> physical_fluxes(num_solution);
 	for (size_t i = 0; i < num_solution; ++i) {
-		const auto temp_val = 0.5 * solutions[i][0] * solutions[i][0];
+		const auto sol = solutions[i][0];
+		const auto temp_val = 0.5 * sol * sol;
 		physical_fluxes[i] = { temp_val, temp_val };
 	}
 

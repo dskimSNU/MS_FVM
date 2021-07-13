@@ -11,7 +11,7 @@ enum class Post_File_Type {
 class Post
 {
 public:
-	template <typename Governing_Equation, size_t dim>
+	template <typename Gov_Eq, typename Initial_Cond>
 	static void intialize(const std::string& name);
 
 	template <size_t dim>
@@ -24,11 +24,10 @@ private:
 	static Text header_text(const Post_File_Type file_type, const double time_step = 0.0);
 
 private:
-	static inline std::string name_;
+	static inline std::string path_;
 	static inline std::string grid_variables_;
 	static inline std::string solution_variables_;
 	static inline std::string zone_type_;
-
 	static inline std::vector<size_t> num_post_points_;
 
 	static inline size_t num_element_ = 0;
@@ -37,12 +36,12 @@ private:
 
 
 //template definition part
-template <typename Governing_Equation, size_t dim>
-void Post::intialize(const std::string& name) {
-	name_ = name;
+template <typename Governing_Equation, typename Initial_Condition>
+void Post::intialize(const std::string& grid_file_name) {
+	path_ = "Result/Post/" + Governing_Equation::name() + "/" + Initial_Condition::name() + "/" + grid_file_name + "/";
 
 	if constexpr (ms::is_Scalar_Eq<Governing_Equation>) {
-		if constexpr (dim == 2) {
+		if constexpr (Governing_Equation::dimension() == 2) {
 			grid_variables_ = "Variables = X Y";
 			solution_variables_ = "Variables = q";
 			zone_type_ = "ZoneType = FETriangle";
@@ -93,25 +92,27 @@ void Post::grid(const std::vector<Geometry<dim>>& cell_geometries) {
 
 	auto grid_post_header_text = Post::header_text(Post_File_Type::Grid);
 
-	const auto grid_file_path = "RSC/Post/" + name_ + "/" + name_ + "_grid.plt";
+	const auto grid_file_path = path_ + "grid.plt";
 	grid_post_header_text.write(grid_file_path);
 	grid_post_data_text.add_write(grid_file_path);
 }
 
 template <size_t dim>
-void Post::solution(const std::vector<EuclideanVector<dim>>& solutions, const double time_step, const std::string& comment) {
+void Post::solution(const std::vector<EuclideanVector<dim>>& solutions, const double current_time, const std::string& comment) {
 	size_t str_per_line = 1;
 	static size_t count = 1;
 	
-	auto solution_post_header_text = Post::header_text(Post_File_Type::Solution, time_step);
+	auto solution_post_header_text = Post::header_text(Post_File_Type::Solution, current_time);
 
 	Text solution_post_data_text(dim);
-	for (const auto& solution : solutions){
-		for (size_t i = 0; i < Post::num_post_points_[i]; ++i) {
-			for (size_t j = 0; j < dim; ++j, ++str_per_line) {
-				solution_post_data_text[j] += ms::double_to_string(solution[j]) + " ";
+	const auto num_solution = solutions.size();
+	for (size_t i = 0; i < num_solution; ++i) {
+		auto& solution = solutions[i];
+		for (size_t j = 0; j < Post::num_post_points_[i]; ++j) {
+			for (size_t k = 0; k < dim; ++k, ++str_per_line) {
+				solution_post_data_text[k] += ms::double_to_string(solution[k]) + " ";
 				if (str_per_line == 10) {
-					solution_post_data_text[j] += "\n";
+					solution_post_data_text[k] += "\n";
 					str_per_line = 1;
 				}
 			}
@@ -120,10 +121,10 @@ void Post::solution(const std::vector<EuclideanVector<dim>>& solutions, const do
 	}
 
 	std::string solution_file_path;
-	if (comment.empty()) 
-		solution_file_path = "RSC/Post/" + name_ + "/" + name_ + "_solution_" + std::to_string(count++) + ".plt";
+	if (comment.empty())
+		solution_file_path = path_ + "solution_" + std::to_string(count++) + ".plt";
 	else
-		solution_file_path = "RSC/Post/" + name_ + "/" + name_ + "_" + comment +"_" + std::to_string(count++) + ".plt";
+		solution_file_path = path_ + "solution_" + std::to_string(count++) + "_" + comment + ".plt";
 
 	solution_post_header_text.write(solution_file_path);
 	solution_post_data_text.add_write(solution_file_path);
