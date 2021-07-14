@@ -9,13 +9,13 @@ GTEST_TEST(Grid_File_To_Data_Gmsh, read_about){
 	std::ifstream grid_file_stream(grid_file_path);
 	dynamic_require(grid_file_stream.is_open(), "fail to open grid file!");
 	
-	const auto node_text = Grid_File_Reader<Gmsh, 2>::read_about(grid_file_stream, "Nodes");
+	const auto node_text = Grid_File_Convertor<Gmsh, 2>::read_about(grid_file_stream, "Nodes");
 	//std::cout << node_text;
 
-	const auto element_text = Grid_File_Reader<Gmsh, 2>::read_about(grid_file_stream, "Elements");
+	const auto element_text = Grid_File_Convertor<Gmsh, 2>::read_about(grid_file_stream, "Elements");
 	//std::cout << element_text;
 
-	const auto physical_name_text = Grid_File_Reader<Gmsh, 2>::read_about(grid_file_stream, "PhysicalNames");
+	const auto physical_name_text = Grid_File_Convertor<Gmsh, 2>::read_about(grid_file_stream, "PhysicalNames");
 	//std::cout << physical_name_text;	
 }
 
@@ -24,8 +24,8 @@ GTEST_TEST(Grid_File_To_Data_Gmsh, make_node_data) {
 	std::ifstream grid_file_stream(grid_file_path);
 	dynamic_require(grid_file_stream.is_open(), "fail to open grid file!");
 
-	const auto node_text = Grid_File_Reader<Gmsh, 2>::read_about(grid_file_stream, "Nodes");
-	const auto node_data_set = Grid_File_Reader<Gmsh, 2>::make_node_grid_data(node_text);
+	const auto node_text = Grid_File_Convertor<Gmsh, 2>::read_about(grid_file_stream, "Nodes");
+	const auto node_data_set = Grid_File_Convertor<Gmsh, 2>::make_node_grid_data(node_text);
 
 	for (size_t i = 0; i < node_data_set.size(); ++i) {
 		const auto result = node_data_set[i].to_string() + " ";
@@ -38,7 +38,7 @@ GTEST_TEST(Grid_File_To_Data_Gmsh, physical_name) {
 	std::ifstream grid_file_stream(grid_file_path);
 	dynamic_require(grid_file_stream.is_open(), "fail to open grid file!");
 
-	const auto physical_name_text = Grid_File_Reader<Gmsh, 2>::read_about(grid_file_stream, "PhysicalNames");
+	const auto physical_name_text = Grid_File_Convertor<Gmsh, 2>::read_about(grid_file_stream, "PhysicalNames");
 	std::map<size_t, ElementType> result;
 	for (const auto& physical_name_sentence : physical_name_text) {
 		const char delimiter = ' ';
@@ -67,9 +67,9 @@ GTEST_TEST(Grid_File_To_Data_Gmsh, cell_data) {
 	std::ifstream grid_file_stream(grid_file_path);
 	dynamic_require(grid_file_stream.is_open(), "fail to open grid file!");
 
-	const auto element_text = Grid_File_Reader<Gmsh, 2>::read_about(grid_file_stream, "Elements");
-	const auto physical_name_text = Grid_File_Reader<Gmsh, 2>::read_about(grid_file_stream, "PhysicalNames");
-	const auto element_data_set = Grid_File_Reader<Gmsh, 2>::make_element_data(element_text, physical_name_text);
+	const auto element_text = Grid_File_Convertor<Gmsh, 2>::read_about(grid_file_stream, "Elements");
+	const auto physical_name_text = Grid_File_Convertor<Gmsh, 2>::read_about(grid_file_stream, "PhysicalNames");
+	const auto element_data_set = Grid_File_Convertor<Gmsh, 2>::make_element_data(element_text, physical_name_text);
 
 	const auto& cell_data_set = element_data_set[0];
 	const auto& cell_sample_result = cell_data_set.front();
@@ -83,9 +83,9 @@ GTEST_TEST(Grid_File_To_Data_Gmsh, boudnary_data) {
 	std::ifstream grid_file_stream(grid_file_path);
 	dynamic_require(grid_file_stream.is_open(), "fail to open grid file!");
 
-	const auto element_text = Grid_File_Reader<Gmsh, 2>::read_about(grid_file_stream, "Elements");
-	const auto physical_name_text = Grid_File_Reader<Gmsh, 2>::read_about(grid_file_stream, "PhysicalNames");
-	const auto element_data_set = Grid_File_Reader<Gmsh, 2>::make_element_data(element_text, physical_name_text);
+	const auto element_text = Grid_File_Convertor<Gmsh, 2>::read_about(grid_file_stream, "Elements");
+	const auto physical_name_text = Grid_File_Convertor<Gmsh, 2>::read_about(grid_file_stream, "PhysicalNames");
+	const auto element_data_set = Grid_File_Convertor<Gmsh, 2>::make_element_data(element_text, physical_name_text);
 
 	const auto& boundary_data_set = element_data_set[1];
 	const auto result = boundary_data_set.size();
@@ -99,9 +99,9 @@ GTEST_TEST(Grid_File_To_Data_Gmsh, periodic_data) {
 	std::ifstream grid_file_stream(grid_file_path);
 	dynamic_require(grid_file_stream.is_open(), "fail to open grid file!");
 
-	const auto element_text = Grid_File_Reader<Gmsh, 2>::read_about(grid_file_stream, "Elements");
-	const auto physical_name_text = Grid_File_Reader<Gmsh, 2>::read_about(grid_file_stream, "PhysicalNames");
-	const auto element_data_set = Grid_File_Reader<Gmsh, 2>::make_element_data(element_text, physical_name_text);
+	const auto element_text = Grid_File_Convertor<Gmsh, 2>::read_about(grid_file_stream, "Elements");
+	const auto physical_name_text = Grid_File_Convertor<Gmsh, 2>::read_about(grid_file_stream, "PhysicalNames");
+	const auto element_data_set = Grid_File_Convertor<Gmsh, 2>::make_element_data(element_text, physical_name_text);
 
 	const auto& periodic_boundary_data_set = element_data_set[2];	
 	const auto& periodic_boundary_sample_result = periodic_boundary_data_set.front();

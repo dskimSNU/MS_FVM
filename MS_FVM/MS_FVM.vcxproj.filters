@@ -30,7 +30,7 @@
     <ClInclude Include="INC\Text.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Grid_File_Reader.h">
+    <ClInclude Include="INC\Grid_File_Convertor.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="INC\Grid_Info_Extractor.h">
@@ -82,6 +82,9 @@
       <Filter>설정 파일</Filter>
     </ClInclude>
     <ClInclude Include="INC\Grid_Data_Processor.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Reconstruction_Method.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

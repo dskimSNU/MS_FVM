@@ -1,7 +1,18 @@
 ﻿  main.cpp
-  코드를 생성하고 있습니다.
-  1 of 2594 functions (<0.1%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
-  코드를 생성했습니다.
-  MS_FVM.vcxproj -> C:\Users\KimMinSeok\source\repos\MS_FVM\x64\Release\MS_FVM.exe
+C:\Users\KimMinSeok\source\repos\MS_FVM\MS_FVM\INC\Semi_Discrete_Equation.h(22,1): error C2752: 'Cells<Governing_Equation,Spatial_Discrete_Method,Reconstruction_Method>': 두 개 이상의 부분 특수화가 템플릿 인수 목록과 일치합니다.
+          with
+          [
+              Governing_Equation=Linear_Advection_2D,
+              Spatial_Discrete_Method=FVM,
+              Reconstruction_Method=Constant_Reconstruction
+          ]
+C:\Users\KimMinSeok\source\repos\MS_FVM\MS_FVM\INC\Cells.h(54,1): message : 'Cells<Linear_Advection_2D,FVM,Reconstruction_Method>'일 수 있습니다.
+C:\Users\KimMinSeok\source\repos\MS_FVM\MS_FVM\INC\Cells.h(68,1): message : 또는       'Cells<Governing_Equation,FVM,Constant_Reconstruction>'
+C:\Users\KimMinSeok\source\repos\MS_FVM\MS_FVM\SRC\main.cpp(20): message : 컴파일되는 클래스 템플릿 인스턴스화 'Semi_Discrete_Equation<Linear_Advection_2D,FVM,Constant_Reconstruction,LLF<Linear_Advection_2D>>'에 대한 참조를 확인하세요.
+C:\Users\KimMinSeok\source\repos\MS_FVM\MS_FVM\INC\Semi_Discrete_Equation.h(22,12): error C2079: 'Semi_Discrete_Equation<Linear_Advection_2D,FVM,Constant_Reconstruction,LLF<Linear_Advection_2D>>::cells_'은(는) 정의되지 않은 class 'Cells<Governing_Equation,Spatial_Discrete_Method,Reconstruction_Method>'을(를) 사용합니다.
+          with
+          [
+              Governing_Equation=Linear_Advection_2D,
+              Spatial_Discrete_Method=FVM,
+              Reconstruction_Method=Constant_Reconstruction
+          ]

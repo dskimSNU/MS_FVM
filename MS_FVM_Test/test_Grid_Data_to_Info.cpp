@@ -5,8 +5,8 @@
 
 
 GTEST_TEST(Grid_Info_Extractor, cell_center) {
-	auto grid_data = Grid_File_Reader<Gmsh,2>::read("RSC/Grid/Quad_10.msh");
-	const auto grid_info = Grid_Info_Extractor<2>::read(std::move(grid_data));
+	auto grid_data = Grid_File_Convertor<Gmsh,2>::convert("RSC/Grid/Quad_10.msh");
+	const auto grid_info = Grid_Info_Extractor<2>::convert(std::move(grid_data));
 
 	const auto& cell_centers = grid_info.cell_grid_information.centers;
 
@@ -26,8 +26,8 @@ GTEST_TEST(Grid_Info_Extractor, cell_center) {
 }
 
 GTEST_TEST(Grid_Info_Extractor, volume) {
-	auto grid_data = Grid_File_Reader<Gmsh, 2>::read("RSC/Grid/Quad_10.msh");
-	const auto grid_info = Grid_Info_Extractor<2>::read(std::move(grid_data));
+	auto grid_data = Grid_File_Convertor<Gmsh, 2>::convert("RSC/Grid/Quad_10.msh");
+	const auto grid_info = Grid_Info_Extractor<2>::convert(std::move(grid_data));
 
 	const auto& cell_volumes = grid_info.cell_grid_information.volumes;
 	
@@ -38,8 +38,8 @@ GTEST_TEST(Grid_Info_Extractor, volume) {
 }
 
 GTEST_TEST(Grid_Info_Extractor, coordinate_projected_volumes) {
-	auto grid_data = Grid_File_Reader<Gmsh, 2>::read("RSC/Grid/Quad_10.msh");
-	const auto grid_info = Grid_Info_Extractor<2>::read(std::move(grid_data));
+	auto grid_data = Grid_File_Convertor<Gmsh, 2>::convert("RSC/Grid/Quad_10.msh");
+	const auto grid_info = Grid_Info_Extractor<2>::convert(std::move(grid_data));
 
 	const auto& coordinate_projected_volumes = grid_info.cell_grid_information.coordinate_projected_volumes;
 

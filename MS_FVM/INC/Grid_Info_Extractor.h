@@ -2,14 +2,15 @@
 
 #include "Grid_Data_Processor.h"
 #include "Spatial_Discrete_Method.h"
+#include "Reconstruction_Method.h"
 
 
-template <typename SDM, size_t dim>
+template <typename Spatial_Discrete_Method, typename Reconstruction_Method, size_t dim>
 class Grid_Info_Extractor;
 
 
 template <size_t dim>
-class Grid_Info_Extractor<FVM, dim> 
+class Grid_Info_Extractor<FVM, Constant_Reconstruction, dim>
 {
 	using Space_Vector = EuclideanVector<dim>;
 public:
@@ -48,7 +49,7 @@ private:
 
 //template definition part
 template <size_t dim>
-Grid_Info_Extractor<FVM, dim>::Grid_Infos Grid_Info_Extractor<FVM, dim>::extract(Processed_Grid_Data<dim>&& processed_grid_data) {
+Grid_Info_Extractor<FVM, Constant_Reconstruction, dim>::Grid_Infos Grid_Info_Extractor<FVM, Constant_Reconstruction, dim>::extract(Processed_Grid_Data<dim>&& processed_grid_data) {
 	// build cell infos
 	const auto& cell_geometries = processed_grid_data.cell_geometries;
 	const auto num_cell = cell_geometries.size();

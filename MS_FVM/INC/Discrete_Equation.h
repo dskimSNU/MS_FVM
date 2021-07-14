@@ -12,7 +12,7 @@ class Discrete_Equation
     using Time_Integral_Method = TIM;
 
 public: 
-    template<typename Solve_End_Condition, typename Solve_Post_Condition, typename SDE, typename Solution>
+    template<typename Time_Step_Method, typename Solve_End_Condition, typename Solve_Post_Condition, typename SDE, typename Solution>
     static void solve(const SDE& semi_discrete_eq, std::vector<Solution>& solutions) {
         static_require(ms::is_solve_end_condtion<Solve_End_Condition>, "Wrong solve end condition");
         static_require(ms::is_solve_post_condtion<Solve_Post_Condition>, "Wrong solve post condition");
@@ -27,7 +27,7 @@ public:
         SET_TIME_POINT;
         while (true) {
             SET_TIME_POINT;
-            auto time_step = semi_discrete_eq.calculate_time_step(solutions);
+            auto time_step = semi_discrete_eq.calculate_time_step<Time_Step_Method>(solutions);
              
             if (Solve_End_Condition::check(current_time, time_step)) {
                 Solve_End_Condition::adjust(current_time, time_step);

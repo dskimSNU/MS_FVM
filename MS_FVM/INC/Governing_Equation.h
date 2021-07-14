@@ -18,8 +18,8 @@ public:
     static constexpr size_t dimension(void) { return dimension_; };
     static constexpr size_t num_equation(void) { return num_equation_; };
 
-    using Space_Vector = EuclideanVector<dimension_>;
-    using Solution = EuclideanVector<num_equation_>;
+    using Space_Vector  = EuclideanVector<dimension_>;
+    using Solution      = EuclideanVector<num_equation_>;
     using Physical_Flux = Matrix<num_equation_, dimension_>;
 };
 
