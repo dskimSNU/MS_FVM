@@ -14,11 +14,11 @@ public:
 	template <typename Gov_Eq, typename Initial_Cond>
 	static void intialize(const std::string& name);
 
-	template <size_t dim>
-	static void grid(const std::vector<Geometry<dim>>& cell_geometries);
+	template <size_t space_dimension>
+	static void grid(const std::vector<Geometry<space_dimension>>& cell_geometries);
 
-	template <size_t dim>
-	static void solution(const std::vector<EuclideanVector<dim>>& solutions, const double time_step, const std::string& comment = "");
+	template <size_t space_dimension>
+	static void solution(const std::vector<EuclideanVector<space_dimension>>& solutions, const double time_step, const std::string& comment = "");
 
 private:
 	static Text header_text(const Post_File_Type file_type, const double time_step = 0.0);
@@ -51,8 +51,8 @@ void Post::intialize(const std::string& grid_file_name) {
 		throw std::runtime_error("wrong post initialize");
 }
 
-template <size_t dim>
-void Post::grid(const std::vector<Geometry<dim>>& cell_geometries) {	
+template <size_t space_dimension>
+void Post::grid(const std::vector<Geometry<space_dimension>>& cell_geometries) {
 	size_t str_per_line = 1;
 	
 	const size_t num_cell = cell_geometries.size();
@@ -60,14 +60,14 @@ void Post::grid(const std::vector<Geometry<dim>>& cell_geometries) {
 
 	static size_t connectivity_start_index = 1;
 		
-	Text grid_post_data_text(dim);
+	Text grid_post_data_text(space_dimension);
 	for (size_t i = 0; i < num_cell; ++i) {
 		const auto& geometry = cell_geometries[i];
 
 		auto post_nodes = geometry.vertex_nodes();
 		Post::num_post_points_[i] = post_nodes.size();
 		for (const auto node :post_nodes)
-			for (size_t i = 0; i < dim; ++i, ++str_per_line) {
+			for (size_t i = 0; i < space_dimension; ++i, ++str_per_line) {
 				grid_post_data_text[i] += ms::double_to_string(node[i]) + " ";
 				if (str_per_line == 10) {
 					grid_post_data_text[i] += "\n";
@@ -97,19 +97,19 @@ void Post::grid(const std::vector<Geometry<dim>>& cell_geometries) {
 	grid_post_data_text.add_write(grid_file_path);
 }
 
-template <size_t dim>
-void Post::solution(const std::vector<EuclideanVector<dim>>& solutions, const double current_time, const std::string& comment) {
+template <size_t space_dimension>
+void Post::solution(const std::vector<EuclideanVector<space_dimension>>& solutions, const double current_time, const std::string& comment) {
 	size_t str_per_line = 1;
 	static size_t count = 1;
 	
 	auto solution_post_header_text = Post::header_text(Post_File_Type::Solution, current_time);
 
-	Text solution_post_data_text(dim);
+	Text solution_post_data_text(space_dimension);
 	const auto num_solution = solutions.size();
 	for (size_t i = 0; i < num_solution; ++i) {
 		auto& solution = solutions[i];
 		for (size_t j = 0; j < Post::num_post_points_[i]; ++j) {
-			for (size_t k = 0; k < dim; ++k, ++str_per_line) {
+			for (size_t k = 0; k < space_dimension; ++k, ++str_per_line) {
 				solution_post_data_text[k] += ms::double_to_string(solution[k]) + " ";
 				if (str_per_line == 10) {
 					solution_post_data_text[k] += "\n";

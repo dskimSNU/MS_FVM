@@ -1,5 +1,7 @@
 #pragma once
 #include "EuclideanVector.h"
+#include <mkl.h>
+
 
 namespace ms {
 	inline constexpr size_t blas_mv_criteria = 50;
@@ -10,6 +12,7 @@ class Matrix
 {
 public:
 	Matrix(void) = default;
+	Matrix(const Matrix<0, 0>& dynamic_matrix);
 	template <typename... Args>
 	Matrix(Args... args);
 
@@ -22,13 +25,51 @@ public:
 	std::string to_string(void) const;
 
 private:
-	std::array<double, num_row* num_column> values_ = { 0 };
+	std::array<double, num_row * num_column> values_ = { 0 };
 };
 
+
+using Dynamic_Matrix_ = Matrix<0, 0>;
+
+
+template<>
+class Matrix<0, 0>
+{
+	template<size_t num_row, size_t num_column>
+	friend class Matrix;
+private:
+	CBLAS_TRANSPOSE transpose_type_ = CBLAS_TRANSPOSE::CblasNoTrans;
+	size_t num_row_ = 0;
+	size_t num_column_ = 0;
+	std::vector<double> value_;
+
+public:
+	Matrix(const size_t num_row, const size_t num_column);
+	Matrix(const size_t num_row, const size_t num_column, std::vector<double>&& value)
+		: num_row_(num_row), num_column_(num_column), value_(std::move(value)) {};
+
+	Dynamic_Matrix_ operator*(const Dynamic_Matrix_& other) const;
+
+	double& at(const size_t row, const size_t column);
+	double at(const size_t row, const size_t column) const;
+	Dynamic_Matrix_& be_transpose(void);
+	Dynamic_Matrix_& be_inverse(void);
+	Dynamic_Matrix_ transpose(void) const;
+	Dynamic_Matrix_ inverse(void) const;
+	std::pair<size_t, size_t> size(void) const;
+
+private:
+	bool is_square_matrix(void) const;
+	bool is_transposed(void) const;
+	bool is_in_range(const size_t irow, const size_t jcolumn) const;
+	std::vector<double> multiply_value(const Dynamic_Matrix_& other) const;
+	size_t leading_dimension(void) const;
+	std::vector<int> PLU_decomposition(void);
+};
+
+
 template<size_t num_row, size_t num_column>
-Matrix<num_row, num_column> operator*(const double scalar, const Matrix<num_row, num_column>& A) {
-	return A * scalar;
-}
+Matrix<num_row, num_column> operator*(const double scalar, const Matrix<num_row, num_column>& A);
 
 template<size_t num_row, size_t num_column>
 std::ostream& operator<<(std::ostream& os, const Matrix<num_row, num_column>& m);
@@ -36,13 +77,17 @@ std::ostream& operator<<(std::ostream& os, const Matrix<num_row, num_column>& m)
 
 //template definition part
 template<size_t num_row, size_t num_column>
+Matrix<num_row,num_column>::Matrix(const Matrix<0, 0>& dynamic_matrix) {
+	dynamic_require(num_row == dynamic_matrix.num_row_ && num_column == dynamic_matrix.num_column_, "both matrix should be same size");
+	std::copy(dynamic_matrix.value_.begin(), dynamic_matrix.value_.end(), this->values_.begin());
+}
+
+template<size_t num_row, size_t num_column>
 template <typename... Args>
 Matrix<num_row, num_column>::Matrix(Args... args) : values_{ static_cast<double>(args)... } {
-	static_require(sizeof...(Args) <= num_row * num_column, "Number of arguments can't not exeed row * column");
+	static_require(sizeof...(Args) <= num_row * num_column, "Number of arguments should be less then (num row * num column)");
 	static_require(ms::are_arithmetics<Args...>, "every arguments should be arithmetics");
 };
-
-
 
 template<size_t num_row, size_t num_column>
 Matrix<num_row, num_column> Matrix<num_row, num_column>::operator+(const Matrix& A) const {
@@ -97,6 +142,10 @@ std::ostream& operator<<(std::ostream& os, const Matrix<num_row, num_column>& m)
 	return os << m.to_string();
 }
 
+template<size_t num_row, size_t num_column>
+Matrix<num_row, num_column> operator*(const double scalar, const Matrix<num_row, num_column>& A) {
+	return A * scalar;
+}
 
 //#include "MathVector.h"
 //
@@ -117,7 +166,7 @@ std::ostream& operator<<(std::ostream& os, const Matrix<num_row, num_column>& m)
 //	MathVector operator*(const MathVector& x) const;
 //	bool operator==(const RowMajorMatrix& other) const;
 //
-//	double& at(const size_t row, const size_t column);
+	//double& at(const size_t row, const size_t column);
 //	double at(const size_t row, const size_t column) const;
 //	RowMajorMatrix& be_inverse(void);
 //	RowMajorMatrix& be_transpose(void);

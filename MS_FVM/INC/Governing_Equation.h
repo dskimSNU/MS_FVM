@@ -24,14 +24,6 @@ public:
 };
 
 
-namespace ms {
-    template <typename T>
-    inline constexpr bool is_governing_equation = std::is_base_of_v<Gov_Eq, T>;
-    template <typename T>
-    inline constexpr bool is_Scalar_Eq = std::is_base_of_v<SCL_2D, T>;
-}
-
-
 class Linear_Advection_2D : public SCL_2D
 {
 private:
@@ -62,3 +54,13 @@ public:
     static double inner_face_maximum_lambda(const Solution& solution_o, const Solution& solution_n, const Space_Vector& nomal_vector);
     static std::string name(void) { return "Burgers_2D"; };    
 };
+
+
+namespace ms {
+    template <typename T>
+    inline constexpr bool is_governing_equation = std::is_base_of_v<Gov_Eq, T>;
+    template <typename T>
+    inline constexpr bool is_Scalar_Eq = std::is_base_of_v<SCL_2D, T>;
+    template <typename T>
+    inline constexpr bool is_not_linear_advection = !std::is_same_v<Linear_Advection_2D, T>;
+}

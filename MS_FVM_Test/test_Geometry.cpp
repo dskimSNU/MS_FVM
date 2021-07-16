@@ -355,3 +355,21 @@ GTEST_TEST(Geometry, faces_geometry_1) {
 	const std::vector<Geometry<2>> ref = { f1_geometry,f2_geometry,f3_geometry };
 	EXPECT_EQ(result, ref);
 }
+
+GTEST_TEST(Geometry, vertex_node_indexes_1) {
+	const Figure fig = Figure::quadrilateral;
+	const size_t fig_order = 1;
+
+	const EuclideanVector n1 = { 1,1 };
+	const EuclideanVector n2 = { 2,1 };
+	const EuclideanVector n3 = { 4,2 };
+	const EuclideanVector n4 = { 1,2 };
+	std::vector<EuclideanVector<2>> nodes = { n1,n2,n3,n4 };
+	std::vector<size_t> indexes = { 1,2,3,4 };
+
+	Geometry geometry(fig, fig_order, std::move(nodes), std::move(indexes));
+	const auto result = geometry.vertex_node_indexes();
+
+	std::vector<size_t> ref = { 1,2,3,4 };
+	EXPECT_EQ(result, ref);
+}
