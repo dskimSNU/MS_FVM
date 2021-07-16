@@ -135,7 +135,7 @@ Inner_Faces_FVM_MLP<space_dimension>::Inner_Faces_FVM_MLP(const Processed_Grid_D
     //periodic boundary
     const auto num_periodic_boundary_pair = processed_grid_data.periodic_boundary_owner_side_geometries.size();
     for (size_t i = 0; i < num_periodic_boundary_pair; ++i) {
-        const auto& [cell_container_index_o, cell_container_index_n] = processed_grid_data.periodic_boundary_owner_neighbor_container_indexes[i];
+        const auto& [cell_container_index_o, cell_container_index_n] = processed_grid_data.periodic_boundary_cell_index_pairs[i];
 
         const auto& cell_geometry_o = cell_geometries[cell_container_index_o];
         const auto& cell_geometry_n = cell_geometries[cell_container_index_n];
@@ -154,7 +154,7 @@ Inner_Faces_FVM_MLP<space_dimension>::Inner_Faces_FVM_MLP(const Processed_Grid_D
     //inner face
     const auto num_inner_face = processed_grid_data.inner_face_geometries.size();
     for (size_t i = 0; i < num_inner_face; ++i) {
-        const auto& [cell_container_index_o, cell_container_index_n] = processed_grid_data.inner_face_owner_neighbor_container_indexes[i];
+        const auto& [cell_container_index_o, cell_container_index_n] = processed_grid_data.inner_face_container_indexes_oc_nc[i];
 
         const auto& cell_geometry_o = cell_geometries[cell_container_index_o];
         const auto& cell_geometry_n = cell_geometries[cell_container_index_n];

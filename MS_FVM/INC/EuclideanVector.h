@@ -42,7 +42,7 @@ public:
 	const double* data(void) const;
 	double inner_product(const EuclideanVector& y) const;
 	double L1_norm(void) const;
-	double norm(void) const;	
+	double norm(void) const;
 	std::string to_string(void) const;
 
 private:

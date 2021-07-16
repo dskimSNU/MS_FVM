@@ -36,7 +36,7 @@
     <ClInclude Include="INC\Grid_Info_Extractor.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Geometry.h">
+    <ClInclude Include="INC\Element.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="INC\Discrete_Equation.h">
@@ -117,6 +117,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SRC\Gradient_Method.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Element.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

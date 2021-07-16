@@ -1,7 +1,6 @@
 #pragma once
 #include "Grid_File_Convertor.h"
 #include "Post.h"
-#include "Profiler.h"
 
 #include <set>
 #include <unordered_map>
@@ -11,50 +10,126 @@
 template <size_t space_dimension>
 struct Processed_Grid_Data
 {
-	std::vector<Geometry<space_dimension>> cell_geometries;
-	std::unordered_map<size_t, std::set<size_t>> vertex_node_index_to_cell_container_indexes;
+	using Element_ = Element<space_dimension>;
 
-	std::vector<ElementType> boundary_types;
-	std::vector<Geometry<space_dimension>> boundary_geometries; // area, normal
+	std::unordered_map<size_t, std::set<size_t>> vnode_index_to_share_cell_indexes; // vnode				:= node at vertex, 
+																					// share_cell_indexes	:= cell indexes which shares vnode
+
+	std::vector<Element_> cell_elements;
+	
+	std::vector<Element_> boundary_elements;
 	std::vector<size_t> boudnary_owner_container_indexes;
 
-	std::vector<Geometry<space_dimension>> periodic_boundary_owner_side_geometries; //area, normal
-	std::vector<Geometry<space_dimension>> periodic_boundary_neighbor_side_geometries;
-	std::vector<std::pair<size_t, size_t>> periodic_boundary_owner_neighbor_container_indexes;
+	std::vector<Element_> periodic_elements;
+	std::vector<std::pair<Element_, Element_>> periodic_boundary_geometry_pairs;	// {owner cell side geometry,	neighbor cell side geometry}
+	std::vector<std::pair<size_t, size_t>> periodic_boundary_cell_index_pairs;		// {owner cell index,			neighbor cell index}
 
-	std::vector<Geometry<space_dimension>> inner_face_geometries; //area, normal  
-	std::vector<std::pair<size_t, size_t>> inner_face_owner_neighbor_container_indexes;
+	std::vector<Element_> inner_face_elements;
+	std::vector<std::pair<size_t, size_t>> inner_face_cell_index_pairs;				// {owner cell index,			neighbor cell index}
 };
 
 
 template<size_t space_dimension>
 class Grid_Data_Processor
 {
-	using Space_Vector = EuclideanVector<space_dimension>;
+private:
+	using Space_Vector_		= EuclideanVector<space_dimension>;
+	using Element_			= Element<space_dimension>;
+
 public:
 	static Processed_Grid_Data<space_dimension> process(Grid_Raw_Data<space_dimension>&& grid_data);
 
 private:
-	static void process_cell_data(Processed_Grid_Data<space_dimension>& process_grid_data, Grid_Raw_Data<space_dimension>&& grid_data);
 	static void process_boudnary_data(Processed_Grid_Data<space_dimension>& process_grid_data, Grid_Raw_Data<space_dimension>&& grid_data);
 	static void process_periodic_boundary_data(Processed_Grid_Data<space_dimension>& process_grid_data, Grid_Raw_Data<space_dimension>&& grid_data);
 	static void process_inner_face_data(Processed_Grid_Data<space_dimension>& process_grid_data);
 
 
-	static std::vector<Space_Vector> extract_by_index(const std::vector<Space_Vector>& nodes, const std::vector<size_t>& indexes);
-	static std::vector<size_t> find_cell_container_indexes_have_these_nodes(const std::unordered_map<size_t, std::set<size_t>>& vertex_node_index_to_cell_container_indexes, const std::vector<size_t>& face_node_indexes);
+	static std::vector<size_t> find_cell_indexes_have_these_vnodes(const std::unordered_map<size_t, std::set<size_t>>& vertex_node_index_to_cell_container_indexes, const std::vector<size_t>& face_node_indexes);
 	static std::unordered_map<size_t, size_t> match_periodic_boudnary_index(const std::unordered_map<size_t, Geometry<space_dimension>>& data_index_to_geometry, const ElementType element_type);
+
+	static std::vector<std::pair<size_t, size_t>> match_periodic_boundaries(const std::vector<Element_>& periodic_boundary_elements);
 };
 
 
 //template definition part
 template <size_t space_dimension>
 Processed_Grid_Data<space_dimension> Grid_Data_Processor<space_dimension>::process(Grid_Raw_Data<space_dimension>&& grid_data) {
-	std::cout << std::left;
-	std::cout << "============================================================\n";
-	std::cout << "\t Process grid data\n";
-	std::cout << "============================================================\n";
-	SET_TIME_POINT;
+	auto& [cell_elements, boundary_elements, periodic_boundary_elements] = grid_data;
+
+	std::unordered_map<size_t, std::set<size_t>> vnode_index_to_share_cell_indexes;
+
+	const auto num_cell = cell_elements.size();
+	for (size_t i = 0; i < num_cell; ++i ) {
+		const auto vnode_indexes = cell_elements[i].vertex_node_indexes();
+		for (const auto& vnode_index : vnode_indexes) {
+			if (vnode_index_to_share_cell_indexes.find(vnode_index) == vnode_index_to_share_cell_indexes.end())
+				vnode_index_to_share_cell_indexes.emplace(vnode_index, std::set<size_t>());
+
+			vnode_index_to_share_cell_indexes.at(vnode_index).insert(i);
+		}
+	}
+
+	const auto num_boundary = boundary_elements.size();
+	std::vector<size_t> boudnary_owner_cell_indexes(num_boundary);
+	for (size_t i = 0; i < num_boundary; ++i) {
+		const auto vnode_indexes = boundary_elements[i].vertex_node_indexes();
+		const auto cell_indexes = find_cell_indexes_have_these_vnodes(vnode_index_to_share_cell_indexes, vnode_indexes);
+		dynamic_require(cell_indexes.size() == 1, "boundary should have unique owner cell");
+		boudnary_owner_cell_indexes[i] = cell_indexes.front();
+	}
+
+	const auto num_periodic_boundary = periodic_boundary_elements.size();
+	const auto num_periodic_pair = static_cast<size_t>(num_periodic_boundary * 0.5);
+
+	auto matched_index = match_periodic_boundaries(periodic_boundary_elements);
+	//i : one of periodic face, j : matched periodic face of i
+	for (const auto& [index_i, index_j] : matched_index) {
+		const auto& element_i = periodic_boundary_elements[index_i];
+		const auto& element_j = periodic_boundary_elements[index_j];
+
+		const auto cell_indexes_have_i = find_cell_indexes_have_these_vnodes(vnode_index_to_share_cell_indexes, element_i.vertex_node_indexes());
+		const auto cell_indexes_have_j = find_cell_indexes_have_these_vnodes(vnode_index_to_share_cell_indexes, element_j.vertex_node_indexes());
+		dynamic_require(cell_indexes_have_i.size() == 1, "periodic boundary should have unique owner cell");
+		dynamic_require(cell_indexes_have_j.size() == 1, "periodic boundary should have unique neighbor cell");
+
+		const auto cell_index_o = cell_indexes_have_i.front();
+		const auto cell_index_n = cell_indexes_have_j.front();
+
+		const auto& cell_o = cell_elements[cell_index_o];
+		const auto center_o = cell_o.geometry_.center_node();
+		const auto normal = element_i.geometry_.normal_vector(center_o);
+	}
+
+	// update vertex_node_index_to_cell_container_indexes
+	for (size_t i = 0; i < num_periodic_pair; ++i) {
+		const auto [cell_container_index_o, cell_container_index_n] = cell_container_index_o_n[i];
+		const auto& owner_side_geometry = owner_side_geometries[i];
+		const auto& neighbor_side_geometry = neighbor_side_geometries[i];
+
+		const auto owner_side_vertex_node_indexes = owner_side_geometry.vertex_node_indexes();
+		const auto neighbor_side_vertex_node_indexes = neighbor_side_geometry.vertex_node_indexes();
+
+		for (const auto owner_side_vertex_node_index : owner_side_vertex_node_indexes) {
+			auto& cell_container_indexes = vertex_node_index_to_cell_container_indexes.at(owner_side_vertex_node_index);
+			cell_container_indexes.insert(cell_container_index_n);
+		}
+		for (const auto neighbor_side_vertex_node_index : neighbor_side_vertex_node_indexes) {
+			auto& cell_container_indexes = vertex_node_index_to_cell_container_indexes.at(neighbor_side_vertex_node_index);
+			cell_container_indexes.insert(cell_container_index_o);
+		}
+	}
+
+	for (size_t i = 0; i < num_periodic_pair; ++i) {
+		const auto [cell_container_index_o, cell_container_index_n] = cell_container_index_o_n[i];
+		const auto& owner_side_geometry = owner_side_geometries[i];
+		const auto& neighbor_side_geometry = neighbor_side_geometries[i];
+
+
+	}
+
+
+	std::cout << "process " << std::setw(5) << num_periodic_boundary << " periodic boundaries \t" << "ellapsed " << std::setw(10) << GET_TIME_DURATION << "s\n";
 
 	Processed_Grid_Data<space_dimension> processed_grid_data;
 	process_cell_data(processed_grid_data, std::move(grid_data));
@@ -72,78 +147,7 @@ Processed_Grid_Data<space_dimension> Grid_Data_Processor<space_dimension>::proce
 }
 
 
-template <size_t space_dimension>
-void Grid_Data_Processor<space_dimension>::process_cell_data(Processed_Grid_Data<space_dimension>& processed_grid_data, Grid_Raw_Data<space_dimension>&& grid_data) {
-	SET_TIME_POINT;
-	auto& [node_datas, cell_datas, boundary_datas, periodic_boundary_datas] = grid_data;
 
-	auto& cell_geometries = processed_grid_data.cell_geometries;
-	auto& vertex_node_index_to_cell_container_indexes = processed_grid_data.vertex_node_index_to_cell_container_indexes;
-
-	const auto num_node = node_datas.size();
-	const auto num_cell = cell_datas.size();
-	cell_geometries.reserve(num_cell);
-	vertex_node_index_to_cell_container_indexes.reserve(num_node);
-
-	for (size_t i = 0; i < num_cell; ++i) {
-		auto& [index, figure, figure_order, type, node_indexes] = cell_datas[i];
-
-		auto nodes = extract_by_index(node_datas, node_indexes);
-		Geometry<space_dimension> geometry(figure, figure_order, std::move(nodes), std::move(node_indexes));
-
-		const auto vertex_node_indexes = geometry.vertex_node_indexes();
-		for (const auto& vertex_node_index : vertex_node_indexes) {
-			if (vertex_node_index_to_cell_container_indexes.find(vertex_node_index) == vertex_node_index_to_cell_container_indexes.end())
-				vertex_node_index_to_cell_container_indexes.emplace(vertex_node_index, std::set<size_t>());
-
-			vertex_node_index_to_cell_container_indexes.at(vertex_node_index).insert(i);
-		}
-
-		cell_geometries.push_back(std::move(geometry));
-	}
-	std::cout << "process " << std::setw(5) << num_cell << " cells \t\t\t" << "ellapsed " << std::setw(10) << GET_TIME_DURATION << "s\n";
-}
-
-
-template <size_t space_dimension>
-void Grid_Data_Processor<space_dimension>::process_boudnary_data(Processed_Grid_Data<space_dimension>& processed_grid_data, Grid_Raw_Data<space_dimension>&& grid_data) {
-	SET_TIME_POINT;
-	auto& [node_datas, cell_datas, boundary_datas, periodic_boundary_datas] = grid_data;
-
-	if (boundary_datas.empty())
-		return;
-
-	//processed cell data
-	auto& vertex_node_index_to_cell_container_indexes = processed_grid_data.vertex_node_index_to_cell_container_indexes;
-
-	//to be processed boundary data
-	const auto num_boundary = boundary_datas.size();
-
-	auto& types = processed_grid_data.boundary_types;
-	auto& owner_container_indexes = processed_grid_data.boudnary_owner_container_indexes;
-	auto& geometries = processed_grid_data.boundary_geometries;
-
-	types.resize(num_boundary);
-	owner_container_indexes.resize(num_boundary);
-	geometries.reserve(num_boundary);
-
-	for (size_t i = 0; i < num_boundary; ++i) {
-		auto& [index, figure, figure_order, type, node_indexes] = boundary_datas[i];
-
-		auto nodes = extract_by_index(node_datas, node_indexes);
-		Geometry geometry(figure, figure_order, std::move(nodes), std::move(node_indexes));
-
-		//find owner cell container index
-		const auto cell_container_indexes = find_cell_container_indexes_have_these_nodes(vertex_node_index_to_cell_container_indexes, node_indexes);
-		dynamic_require(cell_container_indexes.size() == 1, "boundary should have unique owner cell");
-		const auto owner_cell_container_index = cell_container_indexes.front();
-
-		types[i] = type;
-		owner_container_indexes[i] = owner_cell_container_index;
-		geometries.push_back(std::move(geometry));
-	}
-	std::cout << "process " << std::setw(5) << num_boundary << " boundaries \t\t" << "ellapsed " << std::setw(10) << GET_TIME_DURATION << "s\n";
-}
 
 
 template <size_t space_dimension>
@@ -155,7 +159,7 @@ void Grid_Data_Processor<space_dimension>::process_periodic_boundary_data(Proces
 		return;
 
 	//processed cell data
-	auto& vertex_node_index_to_cell_container_indexes = processed_grid_data.vertex_node_index_to_cell_container_indexes;
+	auto& vertex_node_index_to_cell_container_indexes = processed_grid_data.vnode_index_to_share_cell_indexes;
 
 	//to be processed periodic boundary data
 	const auto num_periodic_boundary = periodic_boundary_datas.size();
@@ -163,7 +167,7 @@ void Grid_Data_Processor<space_dimension>::process_periodic_boundary_data(Proces
 
 	auto& owner_side_geometries = processed_grid_data.periodic_boundary_owner_side_geometries;
 	auto& neighbor_side_geometries = processed_grid_data.periodic_boundary_neighbor_side_geometries;
-	auto& cell_container_index_o_n = processed_grid_data.periodic_boundary_owner_neighbor_container_indexes;
+	auto& cell_container_index_o_n = processed_grid_data.periodic_boundary_cell_index_pairs;
 
 	owner_side_geometries.reserve(num_periodic_boundary);
 	neighbor_side_geometries.reserve(num_periodic_boundary);
@@ -202,8 +206,8 @@ void Grid_Data_Processor<space_dimension>::process_periodic_boundary_data(Proces
 
 		//find owner/neighbor cell container indexes
 		//we will designate i as owner cell side face		
-		const auto container_indexes_set_have_i = find_cell_container_indexes_have_these_nodes(vertex_node_index_to_cell_container_indexes, owner_side_geometry.vertex_node_indexes());
-		const auto container_indexes_set_have_j = find_cell_container_indexes_have_these_nodes(vertex_node_index_to_cell_container_indexes, neighbor_side_geometry.vertex_node_indexes());
+		const auto container_indexes_set_have_i = find_cell_indexes_have_these_vnodes(vertex_node_index_to_cell_container_indexes, owner_side_geometry.vertex_node_indexes());
+		const auto container_indexes_set_have_j = find_cell_indexes_have_these_vnodes(vertex_node_index_to_cell_container_indexes, neighbor_side_geometry.vertex_node_indexes());
 		dynamic_require(container_indexes_set_have_i.size() == 1, "periodic boundary should have unique owner cell");
 		dynamic_require(container_indexes_set_have_j.size() == 1, "periodic boundary should have unique neighbor cell");
 
@@ -252,7 +256,7 @@ void Grid_Data_Processor<space_dimension>::process_inner_face_data(Processed_Gri
 	SET_TIME_POINT;
 	//processed cell data
 	const auto& cell_geometries = processed_grid_data.cell_geometries;
-	const auto& vertex_node_index_to_cell_container_indexes = processed_grid_data.vertex_node_index_to_cell_container_indexes;
+	const auto& vertex_node_index_to_cell_container_indexes = processed_grid_data.vnode_index_to_share_cell_indexes;
 
 	//processed bdry data
 	const auto& boundary_geometries = processed_grid_data.boundary_geometries;
@@ -286,13 +290,13 @@ void Grid_Data_Processor<space_dimension>::process_inner_face_data(Processed_Gri
 	const auto num_inner_face = face_geometries.size();
 
 	auto& inner_face_geometries = processed_grid_data.inner_face_geometries;
-	auto& owner_neighbor_container_indexes = processed_grid_data.inner_face_owner_neighbor_container_indexes;
+	auto& owner_neighbor_container_indexes = processed_grid_data.inner_face_container_indexes_oc_nc;
 
 	inner_face_geometries.reserve(num_inner_face);
 	owner_neighbor_container_indexes.reserve(num_inner_face);
 
 	for (auto& face_geometry : face_geometries) {
-		const auto cell_container_indexes = find_cell_container_indexes_have_these_nodes(vertex_node_index_to_cell_container_indexes, face_geometry.vertex_node_indexes());
+		const auto cell_container_indexes = find_cell_indexes_have_these_vnodes(vertex_node_index_to_cell_container_indexes, face_geometry.vertex_node_indexes());
 		dynamic_require(cell_container_indexes.size() == 2, "inner face should have owner neighbor cell");
 
 		const auto container_index_o = cell_container_indexes[0];
@@ -305,7 +309,7 @@ void Grid_Data_Processor<space_dimension>::process_inner_face_data(Processed_Gri
 }
 
 template<size_t space_dimension>
-std::vector<size_t> Grid_Data_Processor<space_dimension>::find_cell_container_indexes_have_these_nodes(const std::unordered_map<size_t, std::set<size_t>>& vertex_node_index_to_cell_container_indexes, const std::vector<size_t>& face_node_indexes) {
+std::vector<size_t> Grid_Data_Processor<space_dimension>::find_cell_indexes_have_these_vnodes(const std::unordered_map<size_t, std::set<size_t>>& vertex_node_index_to_cell_container_indexes, const std::vector<size_t>& face_node_indexes) {
 	const auto start_node_index = face_node_indexes[0];
 	const auto end_node_index = face_node_indexes[1];
 
@@ -318,14 +322,29 @@ std::vector<size_t> Grid_Data_Processor<space_dimension>::find_cell_container_in
 	return cell_continaer_indexes_have_these_nodes;
 }
 
-template <size_t space_dimension>
-std::vector<EuclideanVector<space_dimension>> Grid_Data_Processor<space_dimension>::extract_by_index(const std::vector<Space_Vector>& nodes, const std::vector<size_t>& indexes) {
-	const auto num_extracted_node = indexes.size();
-	std::vector<Space_Vector> extracted_nodes(num_extracted_node);
-	for (size_t i = 0; i < num_extracted_node; ++i)
-		extracted_nodes[i] = nodes[indexes[i] - 1]; // index start with 1
+template<size_t space_dimension>
+std::vector<std::pair<size_t, size_t>> Grid_Data_Processor<space_dimension>::match_periodic_boundaries(const std::vector<Element_>& periodic_boundary_elements) {
+	const auto num_periodic_element = periodic_boundary_elements.size();
+	const auto num_pair = static_cast<size_t>(0.5 * num_periodic_element);
 
-	return extracted_nodes;
+	std::unordered_set<size_t> matched_index;
+	matched_index.reserve(num_periodic_element);
+
+	std::vector<std::pair<size_t, size_t>> matched_pair_indexes;
+	matched_pair_indexes.reserve(num_pair);
+
+	for (size_t i = 0; i < num_periodic_element; ++i) {
+		if (matched_index.find(i) != matched_index.end())
+			continue;
+
+		for (size_t j = i; j < num_periodic_element; ++j) {
+			if (periodic_boundary_elements[i].is_periodic_pair(periodic_boundary_elements[j])) {
+				matched_pair_indexes.push_back(std::make_pair(i, j));
+				matched_index.insert(i);
+				matched_index.insert(j);
+			}
+		}
+	}		
 }
 
 
@@ -363,7 +382,7 @@ std::unordered_map<size_t, size_t> Grid_Data_Processor<space_dimension>::match_p
 		for (auto j_iter = std::next(i_iter, 1); j_iter != end_iter; ++j_iter) {
 			const auto& [j_index, j_geometry] = *j_iter;
 
-			if (i_geometry.is_periodic_pair(j_geometry, axis_tag)) {
+			if (i_geometry.is_axis_parallel(j_geometry, axis_tag)) {
 				index_to_matched_index.emplace(i_index, j_index);
 				matched_index.emplace(i_index);
 				matched_index.emplace(j_index);
