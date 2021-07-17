@@ -5,19 +5,23 @@
 #include "Profiler.h"
 
 #include <map>
+#include <unordered_set>
 
 
 template <size_t space_dimension>
-struct Grid_Raw_Data
+struct Grid_Elements
 {
 	std::vector<Element<space_dimension>> cell_elements;
 	std::vector<Element<space_dimension>> boundary_elements;
-	std::vector<Element<space_dimension>> periodic_boundary_elements;
+	std::vector<std::pair<Element<space_dimension>, Element<space_dimension>>> periodic_boundary_element_pairs;
+	std::vector<Element<space_dimension>> inner_face_elements;
 };
 
 
 namespace ms {
 	inline ElementType string_to_element_type(const std::string& str);
+	template <typename T>
+	std::vector<T> extract_by_index(const std::vector<T>& set, const std::vector<size_t>& indexes);
 }
 
 
@@ -33,24 +37,28 @@ class Grid_File_Convertor<Gmsh, space_dimension>
 public:
 	Grid_File_Convertor(void) = delete;
 
-	static Grid_Raw_Data<space_dimension> convert(const std::string& grid_file_name);
+	static Grid_Elements<space_dimension> convert_to_grid_elements(const std::string& grid_file_name);
 
 	//private: for test
 	static Text read_about(std::ifstream& grid_file_stream, const std::string& target);
 	static std::vector<Space_Vector> make_node_datas(const Text& node_text);
-	static std::array<std::vector<Element<space_dimension>>, 3> make_element_datas(const Text& element_text, const Text& physical_name_text, const std::vector<Space_Vector>& node_datas);
+	static Grid_Elements<space_dimension> make_elements(const Text& element_text, const Text& physical_name_text, const std::vector<Space_Vector>& node_datas);
+	static std::vector<Element<space_dimension>> make_inner_face_elements(const std::vector<Element<space_dimension>>& cell_elements, const std::vector<Element<space_dimension>>& boundary_elements, const std::vector<Element<space_dimension>>& periodic_boundary_elements);
+	static std::vector<std::pair<Element<space_dimension>, Element<space_dimension>>> match_periodic_boundaries(std::vector<Element<space_dimension>>& periodic_boundary_elements);
 };
 
 
 //template definition part
 template <size_t space_dimension>
-Grid_Raw_Data<space_dimension> Grid_File_Convertor<Gmsh, space_dimension>::convert(const std::string& grid_file_name) {
+Grid_Elements<space_dimension> Grid_File_Convertor<Gmsh, space_dimension>::convert_to_grid_elements(const std::string& grid_file_name) {
 	std::cout << std::left;
 	std::cout << "============================================================\n";
 	std::cout << "\t Grid construction start!\n";
 	std::cout << "============================================================\n";
 	SET_TIME_POINT;
 
+
+	SET_TIME_POINT;
 	const auto grid_file_path = "RSC/Grid/" + grid_file_name + ".msh";
 
 	std::ifstream grid_file_stream(grid_file_path);
@@ -61,9 +69,9 @@ Grid_Raw_Data<space_dimension> Grid_File_Convertor<Gmsh, space_dimension>::conve
 	
 	const auto element_text			= read_about(grid_file_stream, "Elements");
 	const auto physical_name_text	= read_about(grid_file_stream, "PhysicalNames");
-	const auto element_datas		= make_element_datas(element_text, physical_name_text, node_datas);
+	std::cout << std::setw(35) << "@ Read Grid File" << " ----------- " << std::setw(10) << GET_TIME_DURATION << "s\n\n";
 
-	return { element_datas[0], element_datas[1], element_datas[2] };
+	return make_elements(element_text, physical_name_text, node_datas);
 }
 
 template <size_t space_dimension>
@@ -85,7 +93,7 @@ std::vector<EuclideanVector<space_dimension>> Grid_File_Convertor<Gmsh, space_di
 }
 
 template <size_t space_dimension>
-std::array<std::vector<Element<space_dimension>>, 3> Grid_File_Convertor<Gmsh, space_dimension>::make_element_datas(const Text& element_text, const Text& physical_name_text, const std::vector<Space_Vector>& node_datas) {
+Grid_Elements<space_dimension> Grid_File_Convertor<Gmsh, space_dimension>::make_elements(const Text& element_text, const Text& physical_name_text, const std::vector<Space_Vector>& node_datas) {
 	SET_TIME_POINT;
 
 	std::map<size_t, ElementType> physical_group_index_to_element_type;
@@ -117,7 +125,7 @@ std::array<std::vector<Element<space_dimension>>, 3> Grid_File_Convertor<Gmsh, s
 		//const auto element_group_index	= value_set[4];
 
 		//reference geometry
-		const auto figure = Gmsh::figure_type_index_to_element_figure(figure_type_index);
+		const auto figure		= Gmsh::figure_type_index_to_element_figure(figure_type_index);
 		const auto figure_order = Gmsh::figure_type_index_to_figure_order(figure_type_index);
 		auto reference_geometry = ReferenceGeometry(figure, figure_order);
 
@@ -137,7 +145,6 @@ std::array<std::vector<Element<space_dimension>>, 3> Grid_File_Convertor<Gmsh, s
 		const auto type	= physical_group_index_to_element_type.at(physical_gorup_index);
 		Element element(type, std::move(geometry), std::move(node_indexes));
 		
-
 		switch (type) {
 		case ElementType::cell:
 			cell_elements.emplace_back(std::move(element));
@@ -152,14 +159,93 @@ std::array<std::vector<Element<space_dimension>>, 3> Grid_File_Convertor<Gmsh, s
 		}
 	}
 
-	std::cout << "make elements \t\t\t ellapsed " << std::setw(10) << GET_TIME_DURATION << "s\n";
-	std::cout << "num cell :\t\t\t" << cell_elements.size() << "\n";
-	std::cout << "num boundary : \t\t" << boundary_elements.size() << "\n";
-	std::cout << "num periodic boundary : \t" << periodic_boundary_elements.size() << "\n";
+	const auto inner_face_elements = make_inner_face_elements(cell_elements, boundary_elements, periodic_boundary_elements);
+	const auto periodic_boundary_element_pairs = match_periodic_boundaries(periodic_boundary_elements);
 
-	return { cell_elements, boundary_elements, periodic_boundary_elements };
+
+	std::cout << std::setw(35) << "@ Make Elements" << " ----------- " << std::setw(10) << GET_TIME_DURATION << "s\n";
+	std::cout << "  " << std::setw(8) << cell_elements.size() << " cell \n";
+	std::cout << "  " << std::setw(8) << boundary_elements.size() << " boundary\n";
+	std::cout << "  " << std::setw(8) << periodic_boundary_element_pairs.size() << " periodic boundary pair\n";
+	std::cout << "  " << std::setw(8) << inner_face_elements.size() << " inner face\n\n";
+
+
+	return { cell_elements, boundary_elements, periodic_boundary_element_pairs, inner_face_elements };
 }
 
+template<size_t space_dimension>
+std::vector<Element<space_dimension>> Grid_File_Convertor<Gmsh, space_dimension>::make_inner_face_elements(const std::vector<Element<space_dimension>>& cell_elements, const std::vector<Element<space_dimension>>& boundary_elements, const std::vector<Element<space_dimension>>& periodic_boundary_elements) {
+	//construct inner face elements
+	std::map<std::vector<size_t>, Element<space_dimension>> vnode_indexes_to_inner_face_element;
+	for (const auto& cell_element : cell_elements) {
+		auto inner_face_elements = cell_element.make_inner_face_elements();
+		for (auto& inner_face_element : inner_face_elements) {
+			auto vnode_indexes = inner_face_element.vertex_node_indexes();
+			std::sort(vnode_indexes.begin(), vnode_indexes.end());	//to ignore index order
+			vnode_indexes_to_inner_face_element.emplace(std::move(vnode_indexes), std::move(inner_face_element));
+		}
+	}
+
+	//erase constructed elements
+	for (const auto& boundray_element : boundary_elements) {
+		auto vnode_indexes = boundray_element.vertex_node_indexes();
+		std::sort(vnode_indexes.begin(), vnode_indexes.end());	//to ignore index order
+		const auto result = vnode_indexes_to_inner_face_element.erase(vnode_indexes);
+		dynamic_require(result == 1, "boundary geometry should be one of inner face");
+	}
+	for (const auto& periodic_boundray_element : periodic_boundary_elements) {
+		auto vnode_indexes = periodic_boundray_element.vertex_node_indexes();
+		std::sort(vnode_indexes.begin(), vnode_indexes.end());	//to ignore index order
+		const auto result = vnode_indexes_to_inner_face_element.erase(vnode_indexes);
+		dynamic_require(result == 1, "periodic boundary geometry should be one of inner face");
+	}
+
+	// container change
+	std::vector<Element<space_dimension>> inner_face_elements;
+
+	const auto num_inner_face = vnode_indexes_to_inner_face_element.size();
+	inner_face_elements.reserve(num_inner_face);
+
+	for (auto&& [key, value] : vnode_indexes_to_inner_face_element)
+		inner_face_elements.push_back(std::move(value));
+
+	return inner_face_elements;
+}
+
+template<size_t space_dimension>
+std::vector<std::pair<Element<space_dimension>, Element<space_dimension>>> Grid_File_Convertor<Gmsh, space_dimension>::match_periodic_boundaries(std::vector<Element<space_dimension>>& periodic_boundary_elements) {
+	
+	const auto num_periodic_element = periodic_boundary_elements.size();
+	const auto num_pair = static_cast<size_t>(0.5 * num_periodic_element);
+
+	std::unordered_set<size_t> matched_index;
+	matched_index.reserve(num_periodic_element);
+
+	std::vector<std::pair<Element<space_dimension>, Element<space_dimension>>> matched_periodic_element_pairs;
+	matched_periodic_element_pairs.reserve(num_pair);
+
+	for (size_t i = 0; i < num_periodic_element; ++i) {
+		if (matched_index.find(i) != matched_index.end())
+			continue;
+
+		for (size_t j = i + 1; j < num_periodic_element; ++j) {
+			if (matched_index.find(j) != matched_index.end())
+				continue;
+
+			auto& i_element = periodic_boundary_elements[i];
+			auto& j_element = periodic_boundary_elements[j];
+
+			if (i_element.is_periodic_pair(j_element)) {
+				matched_periodic_element_pairs.push_back(std::make_pair(std::move(i_element), std::move(j_element)));
+				matched_index.insert(i);
+				matched_index.insert(j);
+				break;
+			}
+		}
+	}
+
+	return matched_periodic_element_pairs;
+}
 
 
 

@@ -1,9 +1,14 @@
-//#pragma once
-//#include "gtest/gtest.h"
-//#include "../MS_FVM/INC/Grid_File_to_Data.h"
-//
-//#include <random>
-//
+#pragma once
+#include "gtest/gtest.h"
+#include "../MS_FVM/INC/Grid_File_Convertor.h"
+
+#include <random>
+
+GTEST_TEST(Grid_File_Convertor, read_about) {
+	const auto grid_elements = Grid_File_Convertor<Gmsh, 2>::convert_to_grid_elements("Quad_10");
+ 	std::cout << "check";
+}
+
 //GTEST_TEST(Grid_File_To_Data_Gmsh, read_about){
 //	const std::string grid_file_path = "RSC/Grid/Mix_20.msh";
 //	std::ifstream grid_file_stream(grid_file_path);
@@ -18,7 +23,7 @@
 //	const auto physical_name_text = Grid_File_Convertor<Gmsh, 2>::read_about(grid_file_stream, "PhysicalNames");
 //	//std::cout << physical_name_text;	
 //}
-//
+
 //GTEST_TEST(Grid_File_To_Data_Gmsh, make_node_data) {
 //	const std::string grid_file_path = "RSC/Grid/Mix_20.msh";
 //	std::ifstream grid_file_stream(grid_file_path);

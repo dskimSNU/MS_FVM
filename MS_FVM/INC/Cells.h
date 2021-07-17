@@ -1,5 +1,5 @@
 #pragma once
-#include "Grid_Data_Processor.h"
+#include "Grid_Builder.h"
 #include "Governing_Equation.h"
 #include "Spatial_Discrete_Method.h"
 #include "Reconstruction_Method.h"
@@ -15,7 +15,7 @@ class Cells_FVM_Base
 {
     using SpaceVector = EuclideanVector<space_dimension>;
 public:
-    Cells_FVM_Base(const Processed_Grid_Data<space_dimension>& processed_grid_data);
+    Cells_FVM_Base(const Grid<space_dimension>& grid);
 
     double calculate_time_step(const std::vector<std::array<double, space_dimension>>& coordinate_projected_maximum_lambdas, const double cfl) const;
 
@@ -44,14 +44,14 @@ template <size_t space_dimension>
 class Cells_FVM_MLP_Base : public Cells_FVM_Base<space_dimension>
 {
 public:
-    Cells_FVM_MLP_Base(const Processed_Grid_Data<space_dimension>& processed_grid_data);
+    Cells_FVM_MLP_Base(const Grid<space_dimension>& grid);
 
 protected:
-    std::vector<std::vector<size_t>> vertex_node_indexes_set_;
-    std::vector<std::vector<size_t>> neighbor_cell_container_indexes_set_;
+    std::vector<std::vector<size_t>> vnode_indexes_set_;
+    std::vector<std::vector<size_t>> near_cell_indexes_set_;
     std::vector<Dynamic_Matrix_> center_to_center_matrixes_;
     std::vector<Dynamic_Matrix_> center_to_vertex_matrixes_;
-    std::unordered_map<size_t, std::set<size_t>> vertex_node_index_to_neighbor_cell_container_indexes;
+    std::unordered_map<size_t, std::set<size_t>> vnode_index_to_share_cell_indexes_;
 };
 
 
@@ -80,7 +80,7 @@ template <typename Governing_Equation>
 class Cells<Governing_Equation, FVM, Constant_Reconstruction> : public Cells_FVM_Base<2>
 {
 public:
-    Cells(const Processed_Grid_Data<2>& processed_grid_data): Cells_FVM_Base<2>(processed_grid_data) {};
+    Cells(const Grid<2>& grid): Cells_FVM_Base<2>(grid) {};
 };
 
 
@@ -88,21 +88,23 @@ template <typename Governing_Equation, typename Gradient_Method>
 class Cells<Governing_Equation, FVM, MLP_u1<Gradient_Method>> : public Cells_FVM_MLP_u1<Gradient_Method,2>
 {
 public:
-    Cells(const Processed_Grid_Data<2>& processed_grid_data) : Cells_FVM_MLP_u1<Gradient_Method, 2>(processed_grid_data) {};
+    Cells(const Grid<2>& grid) : Cells_FVM_MLP_u1<Gradient_Method, 2>(grid) {};
 };
 
 
 //template definition
 template <size_t space_dimension>
-Cells_FVM_Base<space_dimension>::Cells_FVM_Base(const Processed_Grid_Data<space_dimension>& processed_grid_data){
-    const auto& cell_geometries = processed_grid_data.cell_geometries;
-    this->num_cell_ = cell_geometries.size();
+Cells_FVM_Base<space_dimension>::Cells_FVM_Base(const Grid<space_dimension>& grid){
+    const auto& cell_elements = grid.elements.cell_elements;
+    this->num_cell_ = cell_elements.size();
 
     this->centers_.reserve(this->num_cell_);
     this->volumes_.reserve(this->num_cell_);
     this->coordinate_projected_volumes_.reserve(this->num_cell_);
     this->residual_scale_factors_.reserve(this->num_cell_);
-    for (const auto& geometry : cell_geometries) {
+    for (const auto& cell_elemnt : cell_elements) {
+        const auto& geometry = cell_elemnt.geometry_;
+
         const auto volume = geometry.volume();
 
         this->centers_.push_back(geometry.center_node());
@@ -168,39 +170,40 @@ void Cells_FVM_Base<dim>::estimate_error(const std::vector<Solution>& computed_s
 
 
 template <size_t space_dimension>
-Cells_FVM_MLP_Base<space_dimension>::Cells_FVM_MLP_Base(const Processed_Grid_Data<space_dimension>& processed_grid_data)
-    :Cells_FVM_Base<space_dimension>(processed_grid_data) {
-    this->vertex_node_indexes_set_.reserve(this->num_cell_);
-    this->neighbor_cell_container_indexes_set_.reserve(this->num_cell_);
-    this->vertex_node_index_to_neighbor_cell_container_indexes.reserve(this->num_cell_);
+Cells_FVM_MLP_Base<space_dimension>::Cells_FVM_MLP_Base(const Grid<space_dimension>& grid) : Cells_FVM_Base<space_dimension>(grid) {
+    this->vnode_indexes_set_.reserve(this->num_cell_);
+    this->near_cell_indexes_set_.reserve(this->num_cell_);
+    this->vnode_index_to_share_cell_indexes_.reserve(this->num_cell_);
     this->center_to_center_matrixes_.reserve(this->num_cell_);
     this->center_to_vertex_matrixes_.reserve(this->num_cell_);
 
     
-    const auto& cell_geometries = processed_grid_data.cell_geometries;
-    const auto& vertex_node_index_to_neighbor_cell_container_indexes = processed_grid_data.vertex_node_index_to_cell_container_indexes;
+    const auto& cell_elements = grid.elements.cell_elements;
+    const auto& vnode_index_to_share_cell_indexes = grid.connectivity.vnode_index_to_share_cell_indexes;
     for (size_t i = 0; i < this->num_cell_; ++i) {
-        const auto& geometry = cell_geometries[i];
-        const auto center_node = geometry.center_node();
+        const auto& element = cell_elements[i];
+        const auto& geometry = cell_elements[i].geometry_;
 
         // cells_vertex_node_indexes
-        auto vertex_node_indexes = geometry.vertex_node_indexes(); 
+        auto vnode_indexes = element.vertex_node_indexes(); 
 
         // cells neighbor cell container indexes
-        std::set<size_t> neighbor_cell_container_indexes_temp;
-        for (const auto vertex_node_index : vertex_node_indexes) {
-            const auto& cell_container_indexes = vertex_node_index_to_neighbor_cell_container_indexes.at(vertex_node_index);
-            neighbor_cell_container_indexes_temp.insert(cell_container_indexes.begin(), cell_container_indexes.end());
+        std::set<size_t> near_cell_indexes_temp;
+        for (const auto vnode_index : vnode_indexes) {
+            const auto& share_cell_indexes = vnode_index_to_share_cell_indexes.at(vnode_index);
+            near_cell_indexes_temp.insert(share_cell_indexes.begin(), share_cell_indexes.end());
         }
-        neighbor_cell_container_indexes_temp.erase(i);
-        std::vector<size_t> neighbor_cell_container_indexes(neighbor_cell_container_indexes_temp.begin(), neighbor_cell_container_indexes_temp.end());
+        near_cell_indexes_temp.erase(i);
+        std::vector<size_t> near_cell_indexes(near_cell_indexes_temp.begin(), near_cell_indexes_temp.end());
 
         //center to center matrix
-        const auto num_neighbor_cell = neighbor_cell_container_indexes.size();
+        const auto num_neighbor_cell = near_cell_indexes.size();
+
+        const auto center_node = geometry.center_node();
 
         Dynamic_Matrix_ center_to_center_matrix(space_dimension, num_neighbor_cell);
         for (size_t i = 0; i < num_neighbor_cell; ++i) {
-            const auto neighbor_geometry = cell_geometries[neighbor_cell_container_indexes[i]];
+            const auto& neighbor_geometry = cell_elements[near_cell_indexes[i]].geometry_;
             const auto neighbor_center = neighbor_geometry.center_node();
             const auto center_to_center = center_node - neighbor_center;
             for (size_t j = 0; j < space_dimension; ++j)
@@ -218,11 +221,11 @@ Cells_FVM_MLP_Base<space_dimension>::Cells_FVM_MLP_Base(const Processed_Grid_Dat
                 center_to_vertex_matrix.at(j, i) = center_to_vertex[j];
         }
         
-        this->vertex_node_indexes_set_.push_back(std::move(vertex_node_indexes));
-        this->neighbor_cell_container_indexes_set_.push_back(std::move(neighbor_cell_container_indexes));
+        this->vnode_indexes_set_.push_back(std::move(vnode_indexes));
+        this->near_cell_indexes_set_.push_back(std::move(near_cell_indexes));
         this->center_to_center_matrixes_.push_back(std::move(center_to_center_matrix));
         this->center_to_vertex_matrixes_.push_back(std::move(center_to_vertex_matrix));
-        this->vertex_node_index_to_neighbor_cell_container_indexes = vertex_node_index_to_neighbor_cell_container_indexes;
+        this->vnode_index_to_share_cell_indexes_ = vnode_index_to_share_cell_indexes;
     }        
 }
 
@@ -234,11 +237,11 @@ std::vector<Matrix<Solution::dimension(), space_dimension>> Cells_FVM_MLP_u1<Gra
     const auto solution_delta_matrixes = this->calculate_solution_delta_matrixes(solutions);    
     auto solution_gradients = Gradient_Method::solution_gradients(this->center_to_center_matrixes_, solution_delta_matrixes);
 
-    const auto vertex_node_index_to_min_max_solution = this->calculate_vertex_node_index_to_min_max_solution(solutions);
+    const auto vnode_index_to_min_max_solution = this->calculate_vertex_node_index_to_min_max_solution(solutions);
 
     constexpr size_t num_equation = Solution::dimension();
     for (size_t i = 0; i < this->num_cell_; ++i) {
-        const auto num_vertex = this->vertex_node_indexes_set_[i].size();
+        const auto num_vertex = this->vnode_indexes_set_[i].size();
         const auto vertex_solution_matrix = this->calculate_vertex_solution_matrix(solutions[i], num_vertex);
 
         auto& gradient = solution_gradients[i];
@@ -248,10 +251,10 @@ std::vector<Matrix<Solution::dimension(), space_dimension>> Cells_FVM_MLP_u1<Gra
         std::array<double, num_equation> limiting_values;
         limiting_values.fill(1);
 
-        const auto& vertex_node_indexes = this->vertex_node_indexes_set_[i];
+        const auto& vnode_indexes = this->vnode_indexes_set_[i];
         for (size_t i = 0; i < num_vertex; ++i) {
-            const auto vertex_node_index = vertex_node_indexes[i];
-            const auto& [min_solution, max_solution] = vertex_node_index_to_min_max_solution.at(vertex_node_index);
+            const auto vnode_index = vnode_indexes[i];
+            const auto& [min_solution, max_solution] = vnode_index_to_min_max_solution.at(vnode_index);
 
             for (size_t e = 0; e < num_equation; ++e) {
                 const auto limiting_value = this->MLP_u1(vertex_solution_matrix.at(e, i), vertex_solution_delta_matrix.at(e, i), min_solution.at(e), max_solution.at(e));
@@ -282,7 +285,7 @@ std::vector<Dynamic_Matrix_> Cells_FVM_MLP_u1<Gradient_Method, dim>::calculate_s
 
     const size_t num_equation = Solution::dimension();
     for (size_t i = 0; i < this->num_cell_; ++i) {
-        const auto neighbor_indexes = this->neighbor_cell_container_indexes_set_.at(i);
+        const auto neighbor_indexes = this->near_cell_indexes_set_.at(i);
         const auto num_neighbor = neighbor_indexes.size();
 
         Dynamic_Matrix_ solution_delta_matrix(num_equation, num_neighbor);
@@ -302,13 +305,13 @@ template <typename Solution>
 std::unordered_map<size_t, std::pair<Solution, Solution>> Cells_FVM_MLP_u1<Gradient_Method, dim>::calculate_vertex_node_index_to_min_max_solution(const std::vector<Solution>& solutions) const {
     constexpr size_t num_equation = Solution::dimension();
     
-    std::unordered_map<size_t, std::pair<Solution, Solution>> vertex_node_index_to_min_max_solution;
-    for (const auto& [vertex_node_index, neighbor_cell_container_indexes] : this->vertex_node_index_to_neighbor_cell_container_indexes) {
+    std::unordered_map<size_t, std::pair<Solution, Solution>> vnode_index_to_min_max_solution;
+    for (const auto& [vnode_index, share_cell_indexes] : this->vnode_index_to_share_cell_indexes_) {
 
         std::array<std::vector<double>, num_equation> equation_wise_solutions;
-        for (const auto& cell_container_index : neighbor_cell_container_indexes) {
+        for (const auto& cell_index : share_cell_indexes) {
             for (size_t i = 0; i < num_equation; ++i)
-                equation_wise_solutions[i].push_back(solutions[cell_container_index][i]);
+                equation_wise_solutions[i].push_back(solutions[cell_index][i]);
         }
 
         std::array<double, num_equation> min_solution;
@@ -320,9 +323,9 @@ std::unordered_map<size_t, std::pair<Solution, Solution>> Cells_FVM_MLP_u1<Gradi
         Solution min_sol = min_solution;
         Solution max_sol = max_solution;
 
-        vertex_node_index_to_min_max_solution.emplace(vertex_node_index, std::make_pair(min_sol, max_sol));
+        vnode_index_to_min_max_solution.emplace(vnode_index, std::make_pair(min_sol, max_sol));
     }
-    return vertex_node_index_to_min_max_solution;
+    return vnode_index_to_min_max_solution;
 }
 
 

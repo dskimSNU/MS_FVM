@@ -75,13 +75,13 @@
     <ClInclude Include="INC\Profiler.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="INC\TIme_Step_Method.h">
+    <ClInclude Include="INC\Time_Step_Method.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="INC\Setting.h">
       <Filter>설정 파일</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Grid_Data_Processor.h">
+    <ClInclude Include="INC\Grid_Builder.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="INC\Reconstruction_Method.h">

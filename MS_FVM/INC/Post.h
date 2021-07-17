@@ -1,6 +1,6 @@
 #pragma once
 #include "Governing_Equation.h"
-#include "Geometry.h"
+#include "Element.h"
 #include "Text.h"
 
 enum class Post_File_Type {
@@ -15,7 +15,7 @@ public:
 	static void intialize(const std::string& name);
 
 	template <size_t space_dimension>
-	static void grid(const std::vector<Geometry<space_dimension>>& cell_geometries);
+	static void grid(const std::vector<Element<space_dimension>>& cell_elements);
 
 	template <size_t space_dimension>
 	static void solution(const std::vector<EuclideanVector<space_dimension>>& solutions, const double time_step, const std::string& comment = "");
@@ -52,17 +52,17 @@ void Post::intialize(const std::string& grid_file_name) {
 }
 
 template <size_t space_dimension>
-void Post::grid(const std::vector<Geometry<space_dimension>>& cell_geometries) {
+void Post::grid(const std::vector<Element<space_dimension>>& cell_elements) {
 	size_t str_per_line = 1;
 	
-	const size_t num_cell = cell_geometries.size();
+	const size_t num_cell = cell_elements.size();
 	Post::num_post_points_.resize(num_cell);
 
 	static size_t connectivity_start_index = 1;
-		
+
 	Text grid_post_data_text(space_dimension);
 	for (size_t i = 0; i < num_cell; ++i) {
-		const auto& geometry = cell_geometries[i];
+		const auto& geometry = cell_elements[i].geometry_;
 
 		auto post_nodes = geometry.vertex_nodes();
 		Post::num_post_points_[i] = post_nodes.size();
@@ -77,7 +77,7 @@ void Post::grid(const std::vector<Geometry<space_dimension>>& cell_geometries) {
 			}
 
 		std::string connectivity_str;
-		auto local_connectivities = geometry.local_connectivities();
+		auto local_connectivities = geometry.reference_geometry_.local_connectivities();
 		for (const auto& local_connectivity : local_connectivities) {
 			for (const auto& index : local_connectivity)
 				connectivity_str += std::to_string(connectivity_start_index + index) + " ";

@@ -43,6 +43,7 @@ public:
 	double inner_product(const EuclideanVector& y) const;
 	double L1_norm(void) const;
 	double norm(void) const;
+	bool is_axis_translation(const EuclideanVector& other, const size_t axis_tag) const;
 	std::string to_string(void) const;
 
 private:
@@ -197,6 +198,19 @@ double EuclideanVector<dim>::L1_norm(void) const {
 template <size_t dim>
 double EuclideanVector<dim>::norm(void) const {
 	return std::sqrt(this->inner_product(*this));
+}
+
+template <size_t dim>
+bool EuclideanVector<dim>::is_axis_translation(const EuclideanVector& other, const size_t axis_tag) const {
+	const auto line_vector = *this - other;
+	for (size_t i = 0; i < dim; ++i) {
+		if (i == axis_tag)
+			continue;
+
+		if (std::abs(line_vector[i]) > 1.0E-10)
+			return false;
+	}
+	return true;
 }
 
 template <size_t dim> 

@@ -1,7 +1,7 @@
 #pragma once
 #include "Cells.h"
 #include "Inner_Faces.h"
-#include "TIme_Step_Method.h"
+#include "Time_Step_Method.h"
 
 template <typename Governing_Equation, typename Spatial_Discrete_Method, typename Reconstruction_Method, typename Numerical_Flux_Function>
 class Semi_Discrete_Equation
@@ -23,8 +23,8 @@ private:
     Inner_Faces_ inner_faces_;
 
 public:
-    Semi_Discrete_Equation(const Processed_Grid_Data<space_dimension_>& processed_grid_data)
-        : cells_(processed_grid_data), inner_faces_(processed_grid_data) {};
+    Semi_Discrete_Equation(const Grid<space_dimension_>& grid)
+        : cells_(grid), inner_faces_(grid) {};
 
     template <typename Time_Step_Method>
     double calculate_time_step(const std::vector<Solution_>& solutions) const {

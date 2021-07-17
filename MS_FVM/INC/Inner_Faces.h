@@ -22,7 +22,7 @@ protected:
     std::vector<double> areas_;
 
 public:
-    Inner_Faces_FVM_Base(const Processed_Grid_Data<space_dimension>& processed_grid_data);
+    Inner_Faces_FVM_Base(const Grid<space_dimension>& grid);
 };
 
 
@@ -37,7 +37,7 @@ protected:
     std::vector<std::pair<Space_Vector, Space_Vector>> cell_to_face_vectors_o_n_;
 
 public:
-    Inner_Faces_FVM_MLP(const Processed_Grid_Data<space_dimension>& processed_grid_data);        
+    Inner_Faces_FVM_MLP(const Grid<space_dimension>& grid);        
 };
 
 
@@ -52,8 +52,8 @@ class Inner_Faces<FVM, Constant_Reconstruction, Numerical_Flux_Function> : publi
     static constexpr size_t space_dimension_ = Numerical_Flux_Function::Governing_Equation::dimension();
 
 public:
-    Inner_Faces(const Processed_Grid_Data<space_dimension_>& processed_grid_data)
-        : Inner_Faces_FVM_Base<space_dimension_>(processed_grid_data) {};
+    Inner_Faces(const Grid<space_dimension_>& grid)
+        : Inner_Faces_FVM_Base<space_dimension_>(grid) {};
 
     void calculate_RHS(std::vector<Residual_>& RHS, const std::vector<Solution_>& solutions) const;
 };
@@ -73,8 +73,8 @@ class Inner_Faces<FVM, MLP_u1<Gradient_Method>, Numerical_Flux_Function> : publi
     using Gradient_ = Matrix<num_equation_, space_dimension_>;
 
 public:
-    Inner_Faces(const Processed_Grid_Data<space_dimension_>& processed_grid_data)
-        : Inner_Faces_FVM_MLP<space_dimension_>(processed_grid_data) {};
+    Inner_Faces(const Grid<space_dimension_>& grid)
+        : Inner_Faces_FVM_MLP<space_dimension_>(grid) {};
 
     void calculate_RHS(std::vector<Residual_>& RHS, const std::vector<Solution_>& solutions, const std::vector<Gradient_>& solution_gradients_) const;
 };
@@ -82,21 +82,21 @@ public:
 
 //template definition part
 template <size_t space_dimension>
-Inner_Faces_FVM_Base<space_dimension>::Inner_Faces_FVM_Base(const Processed_Grid_Data<space_dimension>& processed_grid_data) {
+Inner_Faces_FVM_Base<space_dimension>::Inner_Faces_FVM_Base(const Grid<space_dimension>& grid) {
     // periodic boundary can be seen as inner face
-    const auto num_periodic_boundary_pair = processed_grid_data.periodic_boundary_owner_side_geometries.size();
-    const auto num_inner_face = processed_grid_data.inner_face_geometries.size();
+    const auto num_periodic_boundary_pair = grid.periodic_boundary_owner_side_geometries.size();
+    const auto num_inner_face = grid.inner_face_geometries.size();
     this->num_inner_face_ = num_periodic_boundary_pair + num_inner_face;
 
     this->areas_.reserve(this->num_inner_face_);
     this->normals_.reserve(this->num_inner_face_);
     this->cell_container_indexes_o_n_.reserve(this->num_inner_face_);
 
-    const auto& cell_geometries = processed_grid_data.cell_geometries;
+    const auto& cell_geometries = grid.cell_geometries;
     for (size_t i = 0; i < num_periodic_boundary_pair; ++i) {
-        const auto& [container_index_o, container_index_n] = processed_grid_data.periodic_boundary_owner_neighbor_container_indexes[i];
+        const auto& [container_index_o, container_index_n] = grid.periodic_boundary_owner_neighbor_container_indexes[i];
         const auto& owner_cell_geometry = cell_geometries.at(container_index_o);
-        const auto& owner_side_geometry = processed_grid_data.periodic_boundary_owner_side_geometries[i];
+        const auto& owner_side_geometry = grid.periodic_boundary_owner_side_geometries[i];
 
         this->areas_.push_back(owner_side_geometry.volume());
         this->normals_.push_back(owner_side_geometry.normal_vector(owner_cell_geometry.center_node()));
@@ -104,9 +104,9 @@ Inner_Faces_FVM_Base<space_dimension>::Inner_Faces_FVM_Base(const Processed_Grid
     }
 
     for (size_t i = 0; i < num_inner_face; ++i) {
-        const auto& [container_index_o, container_index_n] = processed_grid_data.inner_face_owner_neighbor_container_indexes[i];
+        const auto& [container_index_o, container_index_n] = grid.inner_face_owner_neighbor_container_indexes[i];
         const auto& owner_cell_geometry = cell_geometries.at(container_index_o);
-        const auto& inner_face_geometry = processed_grid_data.inner_face_geometries[i];
+        const auto& inner_face_geometry = grid.inner_face_geometries[i];
              
         this->areas_.push_back(inner_face_geometry.volume());
         this->normals_.push_back(inner_face_geometry.normal_vector(owner_cell_geometry.center_node()));
@@ -126,20 +126,20 @@ void Inner_Faces<FVM, Constant_Reconstruction, Numerical_Flux_Function>::calcula
 };
 
 template <size_t space_dimension>
-Inner_Faces_FVM_MLP<space_dimension>::Inner_Faces_FVM_MLP(const Processed_Grid_Data<space_dimension>& processed_grid_data)
-    :Inner_Faces_FVM_Base<space_dimension>(processed_grid_data) {
+Inner_Faces_FVM_MLP<space_dimension>::Inner_Faces_FVM_MLP(const Grid<space_dimension>& grid)
+    :Inner_Faces_FVM_Base<space_dimension>(grid) {
     this->cell_to_face_vectors_o_n_.reserve(this->num_inner_face_);
 
-    const auto& cell_geometries = processed_grid_data.cell_geometries;
+    const auto& cell_geometries = grid.cell_geometries;
 
     //periodic boundary
-    const auto num_periodic_boundary_pair = processed_grid_data.periodic_boundary_owner_side_geometries.size();
+    const auto num_periodic_boundary_pair = grid.periodic_boundary_owner_side_geometries.size();
     for (size_t i = 0; i < num_periodic_boundary_pair; ++i) {
-        const auto& [cell_container_index_o, cell_container_index_n] = processed_grid_data.periodic_boundary_cell_index_pairs[i];
+        const auto& [cell_container_index_o, cell_container_index_n] = grid.periodic_boundary_oc_nc_index_pairs[i];
 
         const auto& cell_geometry_o = cell_geometries[cell_container_index_o];
         const auto& cell_geometry_n = cell_geometries[cell_container_index_n];
-        const auto& owner_side_geometry = processed_grid_data.periodic_boundary_owner_side_geometries[i];
+        const auto& owner_side_geometry = grid.periodic_boundary_owner_side_geometries[i];
 
         const auto cell_center_node_o = cell_geometry_o.center_node();
         const auto cell_center_node_n = cell_geometry_n.center_node();
@@ -152,13 +152,13 @@ Inner_Faces_FVM_MLP<space_dimension>::Inner_Faces_FVM_MLP(const Processed_Grid_D
      }
 
     //inner face
-    const auto num_inner_face = processed_grid_data.inner_face_geometries.size();
+    const auto num_inner_face = grid.inner_face_geometries.size();
     for (size_t i = 0; i < num_inner_face; ++i) {
-        const auto& [cell_container_index_o, cell_container_index_n] = processed_grid_data.inner_face_container_indexes_oc_nc[i];
+        const auto& [cell_container_index_o, cell_container_index_n] = grid.inner_face_container_indexes_oc_nc[i];
 
         const auto& cell_geometry_o = cell_geometries[cell_container_index_o];
         const auto& cell_geometry_n = cell_geometries[cell_container_index_n];
-        const auto& inner_face_geometry = processed_grid_data.inner_face_geometries[i];
+        const auto& inner_face_geometry = grid.inner_face_geometries[i];
 
         const auto cell_center_node_o = cell_geometry_o.center_node();
         const auto cell_center_node_n = cell_geometry_n.center_node();
