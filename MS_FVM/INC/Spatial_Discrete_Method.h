@@ -10,7 +10,6 @@ namespace ms {
 }
 
 class FVM : public SDM {};
-class FVM_Limiter : public SDM {};
 class HOM : public SDM {};
 
 // Spatial Discrete Method(SDM)에 변화에 따라 나타나는 Semi_Discrete_Equation(SDE)와 Grid_Info_Extractor(GIE)의 가변성이

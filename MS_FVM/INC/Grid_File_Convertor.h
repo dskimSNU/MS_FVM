@@ -53,7 +53,7 @@ template <size_t space_dimension>
 Grid_Elements<space_dimension> Grid_File_Convertor<Gmsh, space_dimension>::convert_to_grid_elements(const std::string& grid_file_name) {
 	std::cout << std::left;
 	std::cout << "============================================================\n";
-	std::cout << "\t Grid construction start!\n";
+	std::cout << "\t\t Grid construction start!\n";
 	std::cout << "============================================================\n";
 	SET_TIME_POINT;
 

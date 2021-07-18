@@ -9,35 +9,35 @@ class SCL_2D : public Gov_Eq    // 2D Scalar Conservation Law
 {
 protected:
     static constexpr size_t num_equation_ = 1;
-    static constexpr size_t dimension_ = 2;
+    static constexpr size_t space_dimension_ = 2;
 
 private:
     SCL_2D(void) = delete;
 
 public:
-    static constexpr size_t dimension(void) { return dimension_; };
-    static constexpr size_t num_equation(void) { return num_equation_; };
+    using Space_Vector_  = EuclideanVector<space_dimension_>;
+    using Solution_      = EuclideanVector<num_equation_>;
+    using Physical_Flux_ = Matrix<num_equation_, space_dimension_>;
 
-    using Space_Vector  = EuclideanVector<dimension_>;
-    using Solution      = EuclideanVector<num_equation_>;
-    using Physical_Flux = Matrix<num_equation_, dimension_>;
+    static constexpr size_t space_dimension(void) { return space_dimension_; };
+    static constexpr size_t num_equation(void) { return num_equation_; };
 };
 
 
 class Linear_Advection_2D : public SCL_2D
 {
 private:
-    static constexpr std::array<double, dimension_> advection_speeds_ = { 1.0, 0.5 };
+    static constexpr std::array<double, space_dimension_> advection_speeds_ = { 1.0, 0.5 };
 
 private:
     Linear_Advection_2D(void) = delete;
 
 public:
-    static constexpr std::array<double, dimension_> advection_speed(void) { return { 1.0, 0.5 }; };
-    static Physical_Flux physical_flux(const Solution& solution);
-    static std::vector<Physical_Flux> physical_fluxes(const std::vector<Solution>& solutions);
-    static std::vector<std::array<double, dimension_>> coordinate_projected_maximum_lambdas(const std::vector<Solution>& solutions);
-    static double inner_face_maximum_lambda(const Solution& solution_o, const Solution& solution_n, const Space_Vector& nomal_vector);
+    static constexpr std::array<double, space_dimension_> advection_speed(void) { return advection_speeds_; };
+    static Physical_Flux_ physical_flux(const Solution_& solution);
+    static std::vector<Physical_Flux_> physical_fluxes(const std::vector<Solution_>& solutions);
+    static std::vector<std::array<double, space_dimension_>> coordinate_projected_maximum_lambdas(const std::vector<Solution_>& solutions);
+    static double inner_face_maximum_lambda(const Solution_& solution_o, const Solution_& solution_n, const Space_Vector_& nomal_vector);
     static std::string name(void) { return "Linear_Advection_2D"; }; 
 };
 
@@ -48,10 +48,10 @@ private:
     Burgers_2D(void) = delete;
 
 public:
-    static Physical_Flux physical_flux(const Solution& solution);
-    static std::vector<Physical_Flux> physical_fluxes(const std::vector<Solution>& solutions);
-    static std::vector<std::array<double, dimension_>> coordinate_projected_maximum_lambdas(const std::vector<Solution>& solutions);
-    static double inner_face_maximum_lambda(const Solution& solution_o, const Solution& solution_n, const Space_Vector& nomal_vector);
+    static Physical_Flux_ physical_flux(const Solution_& solution);
+    static std::vector<Physical_Flux_> physical_fluxes(const std::vector<Solution_>& solutions);
+    static std::vector<std::array<double, space_dimension_>> coordinate_projected_maximum_lambdas(const std::vector<Solution_>& solutions);
+    static double inner_face_maximum_lambda(const Solution_& solution_o, const Solution_& solution_n, const Space_Vector_& nomal_vector);
     static std::string name(void) { return "Burgers_2D"; };    
 };
 

@@ -1,4 +1,4 @@
-#include "INC/Element.h"
+#include "../INC/Element.h"
 
 bool ReferenceGeometry::operator==(const ReferenceGeometry& other) const {
 	return this->figure_ == other.figure_ && this->figure_order_ == other.figure_order_;

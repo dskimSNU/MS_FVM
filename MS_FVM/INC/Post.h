@@ -41,7 +41,7 @@ void Post::intialize(const std::string& grid_file_name) {
 	path_ = "Result/Post/" + Governing_Equation::name() + "/" + Initial_Condition::name() + "/" + grid_file_name + "/";
 
 	if constexpr (ms::is_Scalar_Eq<Governing_Equation>) {
-		if constexpr (Governing_Equation::dimension() == 2) {
+		if constexpr (Governing_Equation::space_dimension() == 2) {
 			grid_variables_ = "Variables = X Y";
 			solution_variables_ = "Variables = q";
 			zone_type_ = "ZoneType = FETriangle";

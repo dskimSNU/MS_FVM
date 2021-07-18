@@ -3,6 +3,7 @@
 #include "Time_Integral_Method.h"
 #include "Solve_Condition.h"
 #include "Profiler.h"
+#include "Post.h"
 
 template <typename TIM>
 class Discrete_Equation

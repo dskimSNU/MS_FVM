@@ -77,18 +77,24 @@ private:
 
 
 template <typename Governing_Equation>
-class Cells<Governing_Equation, FVM, Constant_Reconstruction> : public Cells_FVM_Base<2>
+class Cells<Governing_Equation, FVM, Constant_Reconstruction> : public Cells_FVM_Base<Governing_Equation::space_dimension()>
 {
+private:
+    static constexpr size_t space_dimension_ = Governing_Equation::space_dimension();
+
 public:
-    Cells(const Grid<2>& grid): Cells_FVM_Base<2>(grid) {};
+    Cells(const Grid<space_dimension_>& grid) : Cells_FVM_Base<space_dimension_>(grid) {};
 };
 
 
 template <typename Governing_Equation, typename Gradient_Method>
-class Cells<Governing_Equation, FVM, MLP_u1<Gradient_Method>> : public Cells_FVM_MLP_u1<Gradient_Method,2>
+class Cells<Governing_Equation, FVM, MLP_u1<Gradient_Method>> : public Cells_FVM_MLP_u1<Gradient_Method, Governing_Equation::space_dimension()>
 {
+private:
+    static constexpr size_t space_dimension_ = Governing_Equation::space_dimension();
+
 public:
-    Cells(const Grid<2>& grid) : Cells_FVM_MLP_u1<Gradient_Method, 2>(grid) {};
+    Cells(const Grid<space_dimension_>& grid) : Cells_FVM_MLP_u1<Gradient_Method, space_dimension_>(grid) {};
 };
 
 

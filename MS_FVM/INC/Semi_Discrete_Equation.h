@@ -1,6 +1,7 @@
 #pragma once
 #include "Cells.h"
 #include "Inner_Faces.h"
+#include "Periodic_boundaries.h"
 #include "Time_Step_Method.h"
 
 template <typename Governing_Equation, typename Spatial_Discrete_Method, typename Reconstruction_Method, typename Numerical_Flux_Function>
@@ -11,20 +12,22 @@ class Semi_Discrete_Equation
     static_require(ms::is_reconsturction_method<Reconstruction_Method>,         "Wrong reconstruction method");
     static_require(ms::is_numeirical_flux_function<Numerical_Flux_Function>,    "Wrong numerical flux function");
 
-    using Cells_        = typename Cells<Governing_Equation, Spatial_Discrete_Method, Reconstruction_Method>;
-    using Inner_Faces_  = typename Inner_Faces<Spatial_Discrete_Method, Reconstruction_Method, Numerical_Flux_Function>;
-    using Solution_     = typename Governing_Equation::Solution;
-    using Residual_     = typename EuclideanVector<Governing_Equation::num_equation()>;
+    using Cells_                = Cells<Governing_Equation, Spatial_Discrete_Method, Reconstruction_Method>;
+    using Periodic_Boundaries_  = Periodic_Boundaries<Governing_Equation, Spatial_Discrete_Method, Reconstruction_Method>;
+    using Inner_Faces_          = Inner_Faces<Governing_Equation, Spatial_Discrete_Method, Reconstruction_Method>;
+    using Solution_             = typename Governing_Equation::Solution_;
+    using Residual_             = EuclideanVector<Governing_Equation::num_equation()>;
     
-    static constexpr size_t space_dimension_ = Governing_Equation::dimension();
+    static constexpr size_t space_dimension_ = Governing_Equation::space_dimension();
 
 private:
     Cells_ cells_;
+    Periodic_Boundaries_ periodic_boundaries_;
     Inner_Faces_ inner_faces_;
 
 public:
-    Semi_Discrete_Equation(const Grid<space_dimension_>& grid)
-        : cells_(grid), inner_faces_(grid) {};
+    Semi_Discrete_Equation(Grid<space_dimension_>&& grid)
+        : cells_(grid), periodic_boundaries_(std::move(grid)), inner_faces_(std::move(grid)) {};
 
     template <typename Time_Step_Method>
     double calculate_time_step(const std::vector<Solution_>& solutions) const {
@@ -42,7 +45,8 @@ public:
         std::vector<Residual_> RHS(num_solution);
 
         if constexpr (std::is_same_v<Reconstruction_Method, Constant_Reconstruction>) {
-            this->inner_faces_.calculate_RHS(RHS, solutions);
+            this->periodic_boundaries_.calculate_RHS<Numerical_Flux_Function>(RHS, solutions);
+            this->inner_faces_.calculate_RHS<Numerical_Flux_Function>(RHS, solutions);
             this->cells_.scale_RHS(RHS);            
         }
         else {
