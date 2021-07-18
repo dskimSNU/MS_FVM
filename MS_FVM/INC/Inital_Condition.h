@@ -3,7 +3,9 @@
 #include "EuclideanVector.h"
 #include "Governing_Equation.h"
 
-class Sine_Wave_2D {
+class IC {}; //Initial Condition
+
+class Sine_Wave_2D : public IC {
     static constexpr size_t num_eqation_ = 1;
     static constexpr size_t dimension_ = 2;
     static constexpr double pi_ = std::numbers::pi;
@@ -24,3 +26,9 @@ private:
 //template specialization
 template <>
 std::vector<Sine_Wave_2D::Solution> Sine_Wave_2D::calculate_exact_solutions<Linear_Advection_2D>(const std::vector<Space_Vector>& cell_centers, const double end_time);
+
+
+namespace ms {
+    template <typename T>
+    inline constexpr bool is_initial_condition = std::is_base_of_v<IC, T>;
+}

@@ -33,9 +33,6 @@
     <ClInclude Include="INC\Grid_File_Convertor.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Grid_Info_Extractor.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="INC\Element.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -91,6 +88,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="INC\Periodic_boundaries.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Log.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

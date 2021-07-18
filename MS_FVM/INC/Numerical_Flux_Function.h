@@ -38,12 +38,12 @@ public:
         return inner_face_numerical_fluxes;
     };
 
-    static Numerical_Flux_ calculate(const Solution_& solution_o, const Solution_& solution_n, const Space_Vector_& normal) {
-        const auto physical_flux_o = Governing_Equation::physical_flux(solution_o);
-        const auto physical_flux_n = Governing_Equation::physical_flux(solution_n);
-        const auto inner_face_maximum_lambda = Governing_Equation::inner_face_maximum_lambda(solution_o, solution_n, normal);
+    static Numerical_Flux_ calculate(const Solution_& oc_side_solution, const Solution_& nc_side_solution, const Space_Vector_& normal) {
+        const auto oc_physical_flux = Governing_Equation::physical_flux(oc_side_solution);
+        const auto nc_physical_flux = Governing_Equation::physical_flux(nc_side_solution);
+        const auto inner_face_maximum_lambda = Governing_Equation::inner_face_maximum_lambda(oc_side_solution, nc_side_solution, normal);
 
-        return 0.5 * ((physical_flux_o + physical_flux_n) * normal + inner_face_maximum_lambda * (solution_o - solution_n));
+        return 0.5 * ((oc_physical_flux + nc_physical_flux) * normal + inner_face_maximum_lambda * (oc_side_solution - nc_side_solution));
     }
 };
 

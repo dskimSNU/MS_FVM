@@ -1,5 +1,8 @@
 #pragma once
+#include "Log.h"
+
 #include <type_traits>
+
 
 class SEC {}; // Solve End Condition
 
@@ -10,12 +13,12 @@ public:
     static bool check(const double current_time, const double time_step) {
         const double expect_time = current_time + time_step;        
         if (target_time <= expect_time) {
-            std::cout << "current time: " << std::to_string(target_time) + "s  (100.00%)";
+            Log::content_ << "current time: " << std::to_string(target_time) + "s  (100.00%)";
             return true;
         }
         else {
-            std::cout << "current time: " << std::to_string(expect_time) + "s  ";
-            std::cout << std::fixed << std::setprecision(3) << "(" << expect_time * 100 / target_time << "%) " << std::defaultfloat << std::setprecision(6);
+            Log::content_ << "current time: " << std::to_string(expect_time) + "s  ";
+            Log::content_ << std::fixed << std::setprecision(3) << "(" << expect_time * 100 / target_time << "%) " << std::defaultfloat << std::setprecision(6);
             return false;
         }
     }

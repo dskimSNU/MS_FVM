@@ -1,5 +1,8 @@
 #pragma once
 #include "Governing_Equation.h"
+#include "Spatial_Discrete_Method.h"
+#include "Reconstruction_Method.h"
+#include "Inital_Condition.h"
 #include "Element.h"
 #include "Text.h"
 
@@ -11,7 +14,7 @@ enum class Post_File_Type {
 class Post
 {
 public:
-	template <typename Gov_Eq, typename Initial_Cond>
+	template <typename Governing_Equation, typename Spatial_Discrete_Method, typename Reconstruction_Method, typename Initial_Condition>
 	static void intialize(const std::string& name);
 
 	template <size_t space_dimension>
@@ -36,9 +39,19 @@ private:
 
 
 //template definition part
-template <typename Governing_Equation, typename Initial_Condition>
+template <typename Governing_Equation, typename Spatial_Discrete_Method, typename Reconstruction_Method, typename Initial_Condition>
 void Post::intialize(const std::string& grid_file_name) {
-	path_ = "Result/Post/" + Governing_Equation::name() + "/" + Initial_Condition::name() + "/" + grid_file_name + "/";
+	static_require(ms::is_governing_equation<Governing_Equation>,			"Wrong governing equation");
+	static_require(ms::is_spatial_discrete_method<Spatial_Discrete_Method>, "Wrong spatial discrete method");
+	static_require(ms::is_reconsturction_method<Reconstruction_Method>,		"Wrong reconstruction method");
+	static_require(ms::is_initial_condition<Initial_Condition>,				"Wrong initial condition");
+
+
+	path_ = "Result/" + Governing_Equation::name() 
+		+ "/" + Spatial_Discrete_Method::name()
+		+ "/" + Reconstruction_Method::name()
+		+ "/" + Initial_Condition::name() 
+		+ "/" + grid_file_name + "/";
 
 	if constexpr (ms::is_Scalar_Eq<Governing_Equation>) {
 		if constexpr (Governing_Equation::space_dimension() == 2) {

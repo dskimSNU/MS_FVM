@@ -19,6 +19,8 @@ public:
 	Text(std::ifstream& file, const size_t num_read_line);
 
 	Text& operator<<(const std::string& str);
+	Text& operator<<(std::string&& str);
+
 
 	void add_write(const std::string& write_file_path) const;
 	Text& read_line_by_line(const std::string& read_file_path);

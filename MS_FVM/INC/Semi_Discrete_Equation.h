@@ -2,7 +2,7 @@
 #include "Cells.h"
 #include "Inner_Faces.h"
 #include "Periodic_boundaries.h"
-#include "Time_Step_Method.h"
+#include "Numerical_Flux_Function.h"
 
 template <typename Governing_Equation, typename Spatial_Discrete_Method, typename Reconstruction_Method, typename Numerical_Flux_Function>
 class Semi_Discrete_Equation
@@ -27,7 +27,14 @@ private:
 
 public:
     Semi_Discrete_Equation(Grid<space_dimension_>&& grid)
-        : cells_(grid), periodic_boundaries_(std::move(grid)), inner_faces_(std::move(grid)) {};
+        : cells_(std::move(grid)), periodic_boundaries_(std::move(grid)), inner_faces_(std::move(grid)) {
+
+        Log::content_ << "============================================================\n";
+        Log::content_ << "\t Total ellapsed time: " << GET_TIME_DURATION << "s\n";
+        Log::content_ << "============================================================\n\n";
+        Log::print();
+    };
+
 
     template <typename Time_Step_Method>
     double calculate_time_step(const std::vector<Solution_>& solutions) const {
@@ -51,7 +58,8 @@ public:
         }
         else {
             const auto solution_gradients = this->cells_.calculate_gradient(solutions);
-            this->inner_faces_.calculate_RHS(RHS, solutions, solution_gradients);
+            this->periodic_boundaries_.calculate_RHS<Numerical_Flux_Function>(RHS, solutions, solution_gradients);
+            this->inner_faces_.calculate_RHS<Numerical_Flux_Function>(RHS, solutions, solution_gradients);
             this->cells_.scale_RHS(RHS);
         }
 

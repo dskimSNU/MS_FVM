@@ -1,0 +1,720 @@
+============================================================
+		 Construct Grid
+============================================================
+
+@ Read Grid File                    ----------- 0.0438185 s
+
+@ Make Elements                     ----------- 0.145688  s
+  10000    cell 
+  0        boundary
+  200      periodic boundary pair
+  19800    inner face
+
+@ Figure out connectivity           ----------- 0.0338029 s
+
+============================================================
+	 Total ellapsed time: 0.251003s
+============================================================
+
+
+============================================================
+	 Construct Semi Discrete Equation
+============================================================
+============================================================
+	 Total ellapsed time: 0.0029332s
+============================================================
+
+
+============================================================
+		 Solving
+============================================================
+current time: 0.006000s  (0.300%) 	 time/iter: 0.160429s
+
+current time: 0.012000s  (0.600%) 	 time/iter: 0.104684s
+
+current time: 0.018000s  (0.900%) 	 time/iter: 0.143149s
+
+current time: 0.024000s  (1.200%) 	 time/iter: 0.159686s
+
+current time: 0.030000s  (1.500%) 	 time/iter: 0.16166s
+
+current time: 0.036000s  (1.800%) 	 time/iter: 0.232446s
+
+current time: 0.042000s  (2.100%) 	 time/iter: 0.169361s
+
+current time: 0.048000s  (2.400%) 	 time/iter: 0.117257s
+
+current time: 0.054000s  (2.700%) 	 time/iter: 0.145524s
+
+current time: 0.060000s  (3.000%) 	 time/iter: 0.117961s
+
+current time: 0.066000s  (3.300%) 	 time/iter: 0.123578s
+
+current time: 0.072000s  (3.600%) 	 time/iter: 0.140325s
+
+current time: 0.078000s  (3.900%) 	 time/iter: 0.174663s
+
+current time: 0.084000s  (4.200%) 	 time/iter: 0.125017s
+
+current time: 0.090000s  (4.500%) 	 time/iter: 0.0921659s
+
+current time: 0.096000s  (4.800%) 	 time/iter: 0.0950851s
+
+current time: 0.102000s  (5.100%) 	 time/iter: 0.157201s
+
+current time: 0.106000s  (5.300%) 	 time/iter: 0.121449s
+
+current time: 0.112000s  (5.600%) 	 time/iter: 0.0992524s
+
+current time: 0.118000s  (5.900%) 	 time/iter: 0.0943631s
+
+current time: 0.124000s  (6.200%) 	 time/iter: 0.0900763s
+
+current time: 0.130000s  (6.500%) 	 time/iter: 0.0905972s
+
+current time: 0.136000s  (6.800%) 	 time/iter: 0.0920362s
+
+current time: 0.142000s  (7.100%) 	 time/iter: 0.0932539s
+
+current time: 0.148000s  (7.400%) 	 time/iter: 0.0909086s
+
+current time: 0.154000s  (7.700%) 	 time/iter: 0.0937549s
+
+current time: 0.160000s  (8.000%) 	 time/iter: 0.0926815s
+
+current time: 0.166000s  (8.300%) 	 time/iter: 0.0882971s
+
+current time: 0.172000s  (8.600%) 	 time/iter: 0.0901179s
+
+current time: 0.178000s  (8.900%) 	 time/iter: 0.0896793s
+
+current time: 0.184000s  (9.200%) 	 time/iter: 0.0984064s
+
+current time: 0.190000s  (9.500%) 	 time/iter: 0.0942175s
+
+current time: 0.196000s  (9.800%) 	 time/iter: 0.1188s
+
+current time: 0.202000s  (10.100%) 	 time/iter: 0.158397s
+
+current time: 0.206000s  (10.300%) 	 time/iter: 0.0895971s
+
+current time: 0.212000s  (10.600%) 	 time/iter: 0.0851389s
+
+current time: 0.218000s  (10.900%) 	 time/iter: 0.08585s
+
+current time: 0.224000s  (11.200%) 	 time/iter: 0.0968857s
+
+current time: 0.230000s  (11.500%) 	 time/iter: 0.08521s
+
+current time: 0.236000s  (11.800%) 	 time/iter: 0.0887387s
+
+current time: 0.242000s  (12.100%) 	 time/iter: 0.0879138s
+
+current time: 0.248000s  (12.400%) 	 time/iter: 0.091804s
+
+current time: 0.254000s  (12.700%) 	 time/iter: 0.0890431s
+
+current time: 0.260000s  (13.000%) 	 time/iter: 0.103465s
+
+current time: 0.266000s  (13.300%) 	 time/iter: 0.0887648s
+
+current time: 0.272000s  (13.600%) 	 time/iter: 0.0893206s
+
+current time: 0.278000s  (13.900%) 	 time/iter: 0.0849798s
+
+current time: 0.284000s  (14.200%) 	 time/iter: 0.0867259s
+
+current time: 0.290000s  (14.500%) 	 time/iter: 0.0893209s
+
+current time: 0.296000s  (14.800%) 	 time/iter: 0.0848651s
+
+current time: 0.302000s  (15.100%) 	 time/iter: 0.139659s
+
+current time: 0.306000s  (15.300%) 	 time/iter: 0.0822996s
+
+current time: 0.312000s  (15.600%) 	 time/iter: 0.0905425s
+
+current time: 0.318000s  (15.900%) 	 time/iter: 0.0878951s
+
+current time: 0.324000s  (16.200%) 	 time/iter: 0.0903375s
+
+current time: 0.330000s  (16.500%) 	 time/iter: 0.0875168s
+
+current time: 0.336000s  (16.800%) 	 time/iter: 0.0972267s
+
+current time: 0.342000s  (17.100%) 	 time/iter: 0.0917235s
+
+current time: 0.348000s  (17.400%) 	 time/iter: 0.0899326s
+
+current time: 0.354000s  (17.700%) 	 time/iter: 0.0927977s
+
+current time: 0.360000s  (18.000%) 	 time/iter: 0.0846454s
+
+current time: 0.366000s  (18.300%) 	 time/iter: 0.0878899s
+
+current time: 0.372000s  (18.600%) 	 time/iter: 0.0840275s
+
+current time: 0.378000s  (18.900%) 	 time/iter: 0.0847617s
+
+current time: 0.384000s  (19.200%) 	 time/iter: 0.0831483s
+
+current time: 0.390000s  (19.500%) 	 time/iter: 0.0844755s
+
+current time: 0.396000s  (19.800%) 	 time/iter: 0.08756s
+
+current time: 0.402000s  (20.100%) 	 time/iter: 0.145136s
+
+current time: 0.406000s  (20.300%) 	 time/iter: 0.0852054s
+
+current time: 0.412000s  (20.600%) 	 time/iter: 0.0922976s
+
+current time: 0.418000s  (20.900%) 	 time/iter: 0.101217s
+
+current time: 0.424000s  (21.200%) 	 time/iter: 0.0903191s
+
+current time: 0.430000s  (21.500%) 	 time/iter: 0.086642s
+
+current time: 0.436000s  (21.800%) 	 time/iter: 0.0863333s
+
+current time: 0.442000s  (22.100%) 	 time/iter: 0.0844334s
+
+current time: 0.448000s  (22.400%) 	 time/iter: 0.0843896s
+
+current time: 0.454000s  (22.700%) 	 time/iter: 0.0836958s
+
+current time: 0.460000s  (23.000%) 	 time/iter: 0.087161s
+
+current time: 0.466000s  (23.300%) 	 time/iter: 0.0848262s
+
+current time: 0.472000s  (23.600%) 	 time/iter: 0.0890999s
+
+current time: 0.478000s  (23.900%) 	 time/iter: 0.0920128s
+
+current time: 0.484000s  (24.200%) 	 time/iter: 0.0876409s
+
+current time: 0.490000s  (24.500%) 	 time/iter: 0.084498s
+
+current time: 0.496000s  (24.800%) 	 time/iter: 0.0848317s
+
+current time: 0.502000s  (25.100%) 	 time/iter: 0.143827s
+
+current time: 0.506000s  (25.300%) 	 time/iter: 0.0993047s
+
+current time: 0.512000s  (25.600%) 	 time/iter: 0.083605s
+
+current time: 0.518000s  (25.900%) 	 time/iter: 0.0877552s
+
+current time: 0.524000s  (26.200%) 	 time/iter: 0.0877111s
+
+current time: 0.530000s  (26.500%) 	 time/iter: 0.0850526s
+
+current time: 0.536000s  (26.800%) 	 time/iter: 0.0881459s
+
+current time: 0.542000s  (27.100%) 	 time/iter: 0.0867408s
+
+current time: 0.548000s  (27.400%) 	 time/iter: 0.0896872s
+
+current time: 0.554000s  (27.700%) 	 time/iter: 0.0840165s
+
+current time: 0.560000s  (28.000%) 	 time/iter: 0.0871239s
+
+current time: 0.566000s  (28.300%) 	 time/iter: 0.0840351s
+
+current time: 0.572000s  (28.600%) 	 time/iter: 0.0858566s
+
+current time: 0.578000s  (28.900%) 	 time/iter: 0.0888722s
+
+current time: 0.584000s  (29.200%) 	 time/iter: 0.0865461s
+
+current time: 0.590000s  (29.500%) 	 time/iter: 0.0999829s
+
+current time: 0.596000s  (29.800%) 	 time/iter: 0.090836s
+
+current time: 0.602000s  (30.100%) 	 time/iter: 0.147726s
+
+current time: 0.606000s  (30.300%) 	 time/iter: 0.087157s
+
+current time: 0.612000s  (30.600%) 	 time/iter: 0.0870448s
+
+current time: 0.618000s  (30.900%) 	 time/iter: 0.0925744s
+
+current time: 0.624000s  (31.200%) 	 time/iter: 0.0859519s
+
+current time: 0.630000s  (31.500%) 	 time/iter: 0.0865708s
+
+current time: 0.636000s  (31.800%) 	 time/iter: 0.0848644s
+
+current time: 0.642000s  (32.100%) 	 time/iter: 0.0856486s
+
+current time: 0.648000s  (32.400%) 	 time/iter: 0.084924s
+
+current time: 0.654000s  (32.700%) 	 time/iter: 0.0872474s
+
+current time: 0.660000s  (33.000%) 	 time/iter: 0.082566s
+
+current time: 0.666000s  (33.300%) 	 time/iter: 0.0997985s
+
+current time: 0.672000s  (33.600%) 	 time/iter: 0.113583s
+
+current time: 0.678000s  (33.900%) 	 time/iter: 0.094443s
+
+current time: 0.684000s  (34.200%) 	 time/iter: 0.0873775s
+
+current time: 0.690000s  (34.500%) 	 time/iter: 0.0957795s
+
+current time: 0.696000s  (34.800%) 	 time/iter: 0.0915928s
+
+current time: 0.702000s  (35.100%) 	 time/iter: 0.138153s
+
+current time: 0.706000s  (35.300%) 	 time/iter: 0.0846799s
+
+current time: 0.712000s  (35.600%) 	 time/iter: 0.0845906s
+
+current time: 0.718000s  (35.900%) 	 time/iter: 0.0850299s
+
+current time: 0.724000s  (36.200%) 	 time/iter: 0.0848381s
+
+current time: 0.730000s  (36.500%) 	 time/iter: 0.086019s
+
+current time: 0.736000s  (36.800%) 	 time/iter: 0.0854879s
+
+current time: 0.742000s  (37.100%) 	 time/iter: 0.098285s
+
+current time: 0.748000s  (37.400%) 	 time/iter: 0.0921007s
+
+current time: 0.754000s  (37.700%) 	 time/iter: 0.0886774s
+
+current time: 0.760000s  (38.000%) 	 time/iter: 0.0863292s
+
+current time: 0.766000s  (38.300%) 	 time/iter: 0.0841136s
+
+current time: 0.772000s  (38.600%) 	 time/iter: 0.0842323s
+
+current time: 0.778000s  (38.900%) 	 time/iter: 0.0824037s
+
+current time: 0.784000s  (39.200%) 	 time/iter: 0.0840709s
+
+current time: 0.790000s  (39.500%) 	 time/iter: 0.0872814s
+
+current time: 0.796000s  (39.800%) 	 time/iter: 0.0840356s
+
+current time: 0.802000s  (40.100%) 	 time/iter: 0.146782s
+
+current time: 0.806000s  (40.300%) 	 time/iter: 0.081329s
+
+current time: 0.812000s  (40.600%) 	 time/iter: 0.0918586s
+
+current time: 0.818000s  (40.900%) 	 time/iter: 0.0889549s
+
+current time: 0.824000s  (41.200%) 	 time/iter: 0.0974111s
+
+current time: 0.830000s  (41.500%) 	 time/iter: 0.0884929s
+
+current time: 0.836000s  (41.800%) 	 time/iter: 0.0879698s
+
+current time: 0.842000s  (42.100%) 	 time/iter: 0.0876114s
+
+current time: 0.848000s  (42.400%) 	 time/iter: 0.0832916s
+
+current time: 0.854000s  (42.700%) 	 time/iter: 0.0862575s
+
+current time: 0.860000s  (43.000%) 	 time/iter: 0.0847598s
+
+current time: 0.866000s  (43.300%) 	 time/iter: 0.0839043s
+
+current time: 0.872000s  (43.600%) 	 time/iter: 0.0935085s
+
+current time: 0.878000s  (43.900%) 	 time/iter: 0.0836002s
+
+current time: 0.884000s  (44.200%) 	 time/iter: 0.0856375s
+
+current time: 0.890000s  (44.500%) 	 time/iter: 0.0840669s
+
+current time: 0.896000s  (44.800%) 	 time/iter: 0.0854872s
+
+current time: 0.902000s  (45.100%) 	 time/iter: 0.138584s
+
+current time: 0.906000s  (45.300%) 	 time/iter: 0.0994368s
+
+current time: 0.912000s  (45.600%) 	 time/iter: 0.086828s
+
+current time: 0.918000s  (45.900%) 	 time/iter: 0.0877644s
+
+current time: 0.924000s  (46.200%) 	 time/iter: 0.0858566s
+
+current time: 0.930000s  (46.500%) 	 time/iter: 0.0824415s
+
+current time: 0.936000s  (46.800%) 	 time/iter: 0.084999s
+
+current time: 0.942000s  (47.100%) 	 time/iter: 0.082469s
+
+current time: 0.948000s  (47.400%) 	 time/iter: 0.0880248s
+
+current time: 0.954000s  (47.700%) 	 time/iter: 0.0825223s
+
+current time: 0.960000s  (48.000%) 	 time/iter: 0.0841653s
+
+current time: 0.966000s  (48.300%) 	 time/iter: 0.0844835s
+
+current time: 0.972000s  (48.600%) 	 time/iter: 0.0825037s
+
+current time: 0.978000s  (48.900%) 	 time/iter: 0.0846406s
+
+current time: 0.984000s  (49.200%) 	 time/iter: 0.0822679s
+
+current time: 0.990000s  (49.500%) 	 time/iter: 0.0931678s
+
+current time: 0.996000s  (49.800%) 	 time/iter: 0.0907046s
+
+current time: 1.002000s  (50.100%) 	 time/iter: 0.144676s
+
+current time: 1.006000s  (50.300%) 	 time/iter: 0.0813133s
+
+current time: 1.012000s  (50.600%) 	 time/iter: 0.0956537s
+
+current time: 1.018000s  (50.900%) 	 time/iter: 0.0895895s
+
+current time: 1.024000s  (51.200%) 	 time/iter: 0.0873098s
+
+current time: 1.030000s  (51.500%) 	 time/iter: 0.0872325s
+
+current time: 1.036000s  (51.800%) 	 time/iter: 0.0832182s
+
+current time: 1.042000s  (52.100%) 	 time/iter: 0.0865001s
+
+current time: 1.048000s  (52.400%) 	 time/iter: 0.0847135s
+
+current time: 1.054000s  (52.700%) 	 time/iter: 0.0869992s
+
+current time: 1.060000s  (53.000%) 	 time/iter: 0.0954024s
+
+current time: 1.066000s  (53.300%) 	 time/iter: 0.09282s
+
+current time: 1.072000s  (53.600%) 	 time/iter: 0.0944312s
+
+current time: 1.078000s  (53.900%) 	 time/iter: 0.0910946s
+
+current time: 1.084000s  (54.200%) 	 time/iter: 0.0914702s
+
+current time: 1.090000s  (54.500%) 	 time/iter: 0.0842522s
+
+current time: 1.096000s  (54.800%) 	 time/iter: 0.0852149s
+
+current time: 1.102000s  (55.100%) 	 time/iter: 0.136062s
+
+current time: 1.106000s  (55.300%) 	 time/iter: 0.0855463s
+
+current time: 1.112000s  (55.600%) 	 time/iter: 0.0832257s
+
+current time: 1.118000s  (55.900%) 	 time/iter: 0.088691s
+
+current time: 1.124000s  (56.200%) 	 time/iter: 0.0871532s
+
+current time: 1.130000s  (56.500%) 	 time/iter: 0.0824413s
+
+current time: 1.136000s  (56.800%) 	 time/iter: 0.087062s
+
+current time: 1.142000s  (57.100%) 	 time/iter: 0.0845564s
+
+current time: 1.148000s  (57.400%) 	 time/iter: 0.0984894s
+
+current time: 1.154000s  (57.700%) 	 time/iter: 0.090125s
+
+current time: 1.160000s  (58.000%) 	 time/iter: 0.0870014s
+
+current time: 1.166000s  (58.300%) 	 time/iter: 0.0861424s
+
+current time: 1.172000s  (58.600%) 	 time/iter: 0.0858851s
+
+current time: 1.178000s  (58.900%) 	 time/iter: 0.0847008s
+
+current time: 1.184000s  (59.200%) 	 time/iter: 0.0860916s
+
+current time: 1.190000s  (59.500%) 	 time/iter: 0.085732s
+
+current time: 1.196000s  (59.800%) 	 time/iter: 0.0843487s
+
+current time: 1.202000s  (60.100%) 	 time/iter: 0.145269s
+
+current time: 1.206000s  (60.300%) 	 time/iter: 0.0852346s
+
+current time: 1.212000s  (60.600%) 	 time/iter: 0.10147s
+
+current time: 1.218000s  (60.900%) 	 time/iter: 0.0849078s
+
+current time: 1.224000s  (61.200%) 	 time/iter: 0.0964399s
+
+current time: 1.230000s  (61.500%) 	 time/iter: 0.0906892s
+
+current time: 1.236000s  (61.800%) 	 time/iter: 0.0843391s
+
+current time: 1.242000s  (62.100%) 	 time/iter: 0.0832386s
+
+current time: 1.248000s  (62.400%) 	 time/iter: 0.0846178s
+
+current time: 1.254000s  (62.700%) 	 time/iter: 0.0850445s
+
+current time: 1.260000s  (63.000%) 	 time/iter: 0.0824729s
+
+current time: 1.266000s  (63.300%) 	 time/iter: 0.087322s
+
+current time: 1.272000s  (63.600%) 	 time/iter: 0.0900722s
+
+current time: 1.278000s  (63.900%) 	 time/iter: 0.0829869s
+
+current time: 1.284000s  (64.200%) 	 time/iter: 0.0867395s
+
+current time: 1.290000s  (64.500%) 	 time/iter: 0.0824751s
+
+current time: 1.296000s  (64.800%) 	 time/iter: 0.0830784s
+
+current time: 1.302000s  (65.100%) 	 time/iter: 0.136722s
+
+current time: 1.306000s  (65.300%) 	 time/iter: 0.0992739s
+
+current time: 1.312000s  (65.600%) 	 time/iter: 0.0873028s
+
+current time: 1.318000s  (65.900%) 	 time/iter: 0.084763s
+
+current time: 1.324000s  (66.200%) 	 time/iter: 0.0819073s
+
+current time: 1.330000s  (66.500%) 	 time/iter: 0.0828399s
+
+current time: 1.336000s  (66.800%) 	 time/iter: 0.0841442s
+
+current time: 1.342000s  (67.100%) 	 time/iter: 0.0846505s
+
+current time: 1.348000s  (67.400%) 	 time/iter: 0.0810292s
+
+current time: 1.354000s  (67.700%) 	 time/iter: 0.0832611s
+
+current time: 1.360000s  (68.000%) 	 time/iter: 0.081675s
+
+current time: 1.366000s  (68.300%) 	 time/iter: 0.0830499s
+
+current time: 1.372000s  (68.600%) 	 time/iter: 0.0831415s
+
+current time: 1.378000s  (68.900%) 	 time/iter: 0.0832537s
+
+current time: 1.384000s  (69.200%) 	 time/iter: 0.0831224s
+
+current time: 1.390000s  (69.500%) 	 time/iter: 0.0870697s
+
+current time: 1.396000s  (69.800%) 	 time/iter: 0.0935738s
+
+current time: 1.402000s  (70.100%) 	 time/iter: 0.147936s
+
+current time: 1.406000s  (70.300%) 	 time/iter: 0.0834156s
+
+current time: 1.412000s  (70.600%) 	 time/iter: 0.0904817s
+
+current time: 1.418000s  (70.900%) 	 time/iter: 0.0847914s
+
+current time: 1.424000s  (71.200%) 	 time/iter: 0.0806814s
+
+current time: 1.430000s  (71.500%) 	 time/iter: 0.0829207s
+
+current time: 1.436000s  (71.800%) 	 time/iter: 0.0842077s
+
+current time: 1.442000s  (72.100%) 	 time/iter: 0.0823802s
+
+current time: 1.448000s  (72.400%) 	 time/iter: 0.0837369s
+
+current time: 1.454000s  (72.700%) 	 time/iter: 0.0815824s
+
+current time: 1.460000s  (73.000%) 	 time/iter: 0.0814359s
+
+current time: 1.466000s  (73.300%) 	 time/iter: 0.0827683s
+
+current time: 1.472000s  (73.600%) 	 time/iter: 0.0996678s
+
+current time: 1.478000s  (73.900%) 	 time/iter: 0.0894351s
+
+current time: 1.484000s  (74.200%) 	 time/iter: 0.0850216s
+
+current time: 1.490000s  (74.500%) 	 time/iter: 0.0861167s
+
+current time: 1.496000s  (74.800%) 	 time/iter: 0.0858295s
+
+current time: 1.502000s  (75.100%) 	 time/iter: 0.139706s
+
+current time: 1.506000s  (75.300%) 	 time/iter: 0.0798568s
+
+current time: 1.512000s  (75.600%) 	 time/iter: 0.0817618s
+
+current time: 1.518000s  (75.900%) 	 time/iter: 0.080162s
+
+current time: 1.524000s  (76.200%) 	 time/iter: 0.0811123s
+
+current time: 1.530000s  (76.500%) 	 time/iter: 0.0838876s
+
+current time: 1.536000s  (76.800%) 	 time/iter: 0.0817581s
+
+current time: 1.542000s  (77.100%) 	 time/iter: 0.0839624s
+
+current time: 1.548000s  (77.400%) 	 time/iter: 0.081422s
+
+current time: 1.554000s  (77.700%) 	 time/iter: 0.0916287s
+
+current time: 1.560000s  (78.000%) 	 time/iter: 0.0886906s
+
+current time: 1.566000s  (78.300%) 	 time/iter: 0.0871161s
+
+current time: 1.572000s  (78.600%) 	 time/iter: 0.0857552s
+
+current time: 1.578000s  (78.900%) 	 time/iter: 0.0822997s
+
+current time: 1.584000s  (79.200%) 	 time/iter: 0.0852716s
+
+current time: 1.590000s  (79.500%) 	 time/iter: 0.0832735s
+
+current time: 1.596000s  (79.800%) 	 time/iter: 0.0826648s
+
+current time: 1.602000s  (80.100%) 	 time/iter: 0.138204s
+
+current time: 1.606000s  (80.300%) 	 time/iter: 0.0835233s
+
+current time: 1.612000s  (80.600%) 	 time/iter: 0.0825763s
+
+current time: 1.618000s  (80.900%) 	 time/iter: 0.092863s
+
+current time: 1.624000s  (81.200%) 	 time/iter: 0.0845833s
+
+current time: 1.630000s  (81.500%) 	 time/iter: 0.0862879s
+
+current time: 1.636000s  (81.800%) 	 time/iter: 0.0951338s
+
+current time: 1.642000s  (82.100%) 	 time/iter: 0.0855198s
+
+current time: 1.648000s  (82.400%) 	 time/iter: 0.0828977s
+
+current time: 1.654000s  (82.700%) 	 time/iter: 0.0853847s
+
+current time: 1.660000s  (83.000%) 	 time/iter: 0.0804601s
+
+current time: 1.666000s  (83.300%) 	 time/iter: 0.0822672s
+
+current time: 1.672000s  (83.600%) 	 time/iter: 0.0837302s
+
+current time: 1.678000s  (83.900%) 	 time/iter: 0.092713s
+
+current time: 1.684000s  (84.200%) 	 time/iter: 0.0859725s
+
+current time: 1.690000s  (84.500%) 	 time/iter: 0.0819369s
+
+current time: 1.696000s  (84.800%) 	 time/iter: 0.084237s
+
+current time: 1.702000s  (85.100%) 	 time/iter: 0.138369s
+
+current time: 1.706000s  (85.300%) 	 time/iter: 0.0829575s
+
+current time: 1.712000s  (85.600%) 	 time/iter: 0.088068s
+
+current time: 1.718000s  (85.900%) 	 time/iter: 0.0979028s
+
+current time: 1.724000s  (86.200%) 	 time/iter: 0.0826761s
+
+current time: 1.730000s  (86.500%) 	 time/iter: 0.0825544s
+
+current time: 1.736000s  (86.800%) 	 time/iter: 0.0865548s
+
+current time: 1.742000s  (87.100%) 	 time/iter: 0.0796644s
+
+current time: 1.748000s  (87.400%) 	 time/iter: 0.0837854s
+
+current time: 1.754000s  (87.700%) 	 time/iter: 0.0802785s
+
+current time: 1.760000s  (88.000%) 	 time/iter: 0.0853219s
+
+current time: 1.766000s  (88.300%) 	 time/iter: 0.0820489s
+
+current time: 1.772000s  (88.600%) 	 time/iter: 0.0808551s
+
+current time: 1.778000s  (88.900%) 	 time/iter: 0.0874127s
+
+current time: 1.784000s  (89.200%) 	 time/iter: 0.0818358s
+
+current time: 1.790000s  (89.500%) 	 time/iter: 0.0823117s
+
+current time: 1.796000s  (89.800%) 	 time/iter: 0.0798894s
+
+current time: 1.802000s  (90.100%) 	 time/iter: 0.138202s
+
+current time: 1.806000s  (90.300%) 	 time/iter: 0.0939964s
+
+current time: 1.812000s  (90.600%) 	 time/iter: 0.0966804s
+
+current time: 1.818000s  (90.900%) 	 time/iter: 0.093972s
+
+current time: 1.824000s  (91.200%) 	 time/iter: 0.0875388s
+
+current time: 1.830000s  (91.500%) 	 time/iter: 0.0821807s
+
+current time: 1.836000s  (91.800%) 	 time/iter: 0.0829449s
+
+current time: 1.842000s  (92.100%) 	 time/iter: 0.0810882s
+
+current time: 1.848000s  (92.400%) 	 time/iter: 0.083518s
+
+current time: 1.854000s  (92.700%) 	 time/iter: 0.0810545s
+
+current time: 1.860000s  (93.000%) 	 time/iter: 0.0846878s
+
+current time: 1.866000s  (93.300%) 	 time/iter: 0.0804153s
+
+current time: 1.872000s  (93.600%) 	 time/iter: 0.0835456s
+
+current time: 1.878000s  (93.900%) 	 time/iter: 0.0870815s
+
+current time: 1.884000s  (94.200%) 	 time/iter: 0.0813883s
+
+current time: 1.890000s  (94.500%) 	 time/iter: 0.0914383s
+
+current time: 1.896000s  (94.800%) 	 time/iter: 0.088825s
+
+current time: 1.902000s  (95.100%) 	 time/iter: 0.153915s
+
+current time: 1.906000s  (95.300%) 	 time/iter: 0.0806747s
+
+current time: 1.912000s  (95.600%) 	 time/iter: 0.0844759s
+
+current time: 1.918000s  (95.900%) 	 time/iter: 0.0810737s
+
+current time: 1.924000s  (96.200%) 	 time/iter: 0.084162s
+
+current time: 1.930000s  (96.500%) 	 time/iter: 0.0825878s
+
+current time: 1.936000s  (96.800%) 	 time/iter: 0.0804257s
+
+current time: 1.942000s  (97.100%) 	 time/iter: 0.0855541s
+
+current time: 1.948000s  (97.400%) 	 time/iter: 0.0814991s
+
+current time: 1.954000s  (97.700%) 	 time/iter: 0.0821554s
+
+current time: 1.960000s  (98.000%) 	 time/iter: 0.0807738s
+
+current time: 1.966000s  (98.300%) 	 time/iter: 0.081932s
+
+current time: 1.972000s  (98.600%) 	 time/iter: 0.0942823s
+
+current time: 1.978000s  (98.900%) 	 time/iter: 0.0867933s
+
+current time: 1.984000s  (99.200%) 	 time/iter: 0.0891621s
+
+current time: 1.990000s  (99.500%) 	 time/iter: 0.0843148s
+
+current time: 1.996000s  (99.800%) 	 time/iter: 0.0810293s
+
+current time: 2.000000s  (100.00%)	 time/iter: 0.0817173s
+============================================================
+	 Total ellapsed time: 31.9817   s
+============================================================
+
+
+============================================================
+		 Error Anlysis
+============================================================
+L1 error 		L2 error 
+0.07725473098129297	0.006914295935218646
+

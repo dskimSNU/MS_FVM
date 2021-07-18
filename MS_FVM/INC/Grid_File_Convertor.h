@@ -1,12 +1,12 @@
 #pragma once
 #include "Grid_File_Type.h"
-#include "Text.h"
 #include "Element.h"
 #include "Profiler.h"
+#include "Log.h"
 
 #include <map>
 #include <unordered_set>
-
+#include <sstream>
 
 template <size_t space_dimension>
 struct Grid_Elements
@@ -51,25 +51,27 @@ public:
 //template definition part
 template <size_t space_dimension>
 Grid_Elements<space_dimension> Grid_File_Convertor<Gmsh, space_dimension>::convert_to_grid_elements(const std::string& grid_file_name) {
-	std::cout << std::left;
-	std::cout << "============================================================\n";
-	std::cout << "\t\t Grid construction start!\n";
-	std::cout << "============================================================\n";
 	SET_TIME_POINT;
-
+	Log::content_ << "============================================================\n";
+	Log::content_ << "\t\t Construct Grid\n";
+	Log::content_ << "============================================================\n";	
+	Log::print(); 
+		
 
 	SET_TIME_POINT;
+	
 	const auto grid_file_path = "RSC/Grid/" + grid_file_name + ".msh";
 
 	std::ifstream grid_file_stream(grid_file_path);
-	dynamic_require(grid_file_stream.is_open(), "fail to open grid file!");
+	dynamic_require(grid_file_stream.is_open(), "fail to open " + grid_file_path);
 	
 	const auto node_text			= read_about(grid_file_stream, "Nodes");
 	const auto node_datas			= make_node_datas(node_text);
 	
-	const auto element_text			= read_about(grid_file_stream, "Elements");
+	const auto element_text			= read_about(grid_file_stream, "Elements");	
 	const auto physical_name_text	= read_about(grid_file_stream, "PhysicalNames");
-	std::cout << std::setw(35) << "@ Read Grid File" << " ----------- " << std::setw(10) << GET_TIME_DURATION << "s\n\n";
+
+	Log::content_ << std::left << std::setw(35) << "@ Read Grid File" << " ----------- " << std::setw(10) << GET_TIME_DURATION << "s\n\n";
 
 	return make_elements(element_text, physical_name_text, node_datas);
 }
@@ -162,14 +164,11 @@ Grid_Elements<space_dimension> Grid_File_Convertor<Gmsh, space_dimension>::make_
 	const auto inner_face_elements = make_inner_face_elements(cell_elements, boundary_elements, periodic_boundary_elements);
 	const auto periodic_boundary_element_pairs = match_periodic_boundaries(periodic_boundary_elements);
 
-
-	std::cout << std::setw(35) << "@ Make Elements" << " ----------- " << std::setw(10) << GET_TIME_DURATION << "s\n";
-	std::cout << "  " << std::setw(8) << cell_elements.size() << " cell \n";
-	std::cout << "  " << std::setw(8) << boundary_elements.size() << " boundary\n";
-	std::cout << "  " << std::setw(8) << periodic_boundary_element_pairs.size() << " periodic boundary pair\n";
-	std::cout << "  " << std::setw(8) << inner_face_elements.size() << " inner face\n\n";
-
-
+	Log::content_ << std::left << std::setw(35) << "@ Make Elements" << " ----------- " << std::setw(10) << GET_TIME_DURATION << "s\n";
+	Log::content_ << "  " << std::setw(8) << cell_elements.size() << " cell \n";
+	Log::content_ << "  " << std::setw(8) << boundary_elements.size() << " boundary\n";
+	Log::content_ << "  " << std::setw(8) << periodic_boundary_element_pairs.size() << " periodic boundary pair\n";
+	Log::content_ << "  " << std::setw(8) << inner_face_elements.size() << " inner face\n\n";
 	return { cell_elements, boundary_elements, periodic_boundary_element_pairs, inner_face_elements };
 }
 

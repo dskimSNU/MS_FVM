@@ -1,16 +1,26 @@
 #pragma once
 #include <type_traits>
+#include <string>
 
 #include "Gradient_Method.h"
 
 class RM {};	// Reconstruction Method
 
-class Constant_Reconstruction : public RM {};
+class Constant_Reconstruction : public RM 
+{
+public:
+	static std::string name(void) { return "Constant_Reconstruction"; };
+};
+
 
 class MLP : public RM {};
 
 template <typename Gradient_Method>
-class MLP_u1 : public MLP {};
+class MLP_u1 : public MLP 
+{
+public:
+	static std::string name(void) { return "MLP_u1_" + Gradient_Method::name(); };
+};
 
 namespace ms {
 	template <typename T>

@@ -1,11 +1,11 @@
 #pragma once
 #define PHYSICAL_DOMAIN_DIMENSION		2
 #define GRID_FILE_TYPE					Gmsh
-#define GRID_FILE_NAME					"Quad100"
+#define GRID_FILE_NAME					"Quad60"
 #define GOVERNING_EQUATION_NAME			Linear_Advection
 #define INITIAL_CONDITION_NAME			Sine_Wave
 #define SPATIAL_DISCRETE_METHOD			FVM
-#define RECONSTRUCTION_METHOD			Constant_Reconstruction
+#define RECONSTRUCTION_METHOD			MLP_u1<Least_Square>
 #define NUMERICAL_FLUX_NAME				LLF
 #define TIME_INTEGRAL_METHOD			SSPRK33
 #define TIME_STEP_METHOD_NAME			CFL
@@ -13,7 +13,7 @@
 #define END_CONDITION_NAME				Time
 #define	END_CONDITION_CONSTANT			2.0
 #define POST_CONDITION_NAME				Time
-#define POST_CONDITION_CONSTANT			3.0
+#define POST_CONDITION_CONSTANT			0.1
 
 
 //availiable list

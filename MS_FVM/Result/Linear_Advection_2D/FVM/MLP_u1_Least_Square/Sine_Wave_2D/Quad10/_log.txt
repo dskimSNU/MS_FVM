@@ -1,0 +1,120 @@
+============================================================
+		 Construct Grid
+============================================================
+
+@ Read Grid File                    ----------- 0.0007107 s
+
+@ Make Elements                     ----------- 0.0182351 s
+  100      cell 
+  0        boundary
+  20       periodic boundary pair
+  180      inner face
+
+@ Figure out connectivity           ----------- 0.0001967 s
+
+============================================================
+	 Total ellapsed time: 0.0196445 s
+============================================================
+
+
+============================================================
+	 Construct Semi Discrete Equation
+============================================================
+============================================================
+	 Total ellapsed time:   4.23e-05s
+============================================================
+
+
+============================================================
+		 Solving
+============================================================
+current time: 0.060000s  (3.000%) 	 time/iter: 0.0302588s
+
+current time: 0.120000s  (6.000%) 	 time/iter: 0.0024606s
+
+current time: 0.160000s  (8.000%) 	 time/iter: 0.0008958s
+
+current time: 0.220000s  (11.000%) 	 time/iter: 0.0041865s
+
+current time: 0.260000s  (13.000%) 	 time/iter: 0.0008814s
+
+current time: 0.320000s  (16.000%) 	 time/iter: 0.0027026s
+
+current time: 0.360000s  (18.000%) 	 time/iter: 0.0008262s
+
+current time: 0.420000s  (21.000%) 	 time/iter: 0.0024167s
+
+current time: 0.460000s  (23.000%) 	 time/iter: 0.0008462s
+
+current time: 0.520000s  (26.000%) 	 time/iter: 0.0025137s
+
+current time: 0.560000s  (28.000%) 	 time/iter: 0.0020236s
+
+current time: 0.620000s  (31.000%) 	 time/iter: 0.002469s
+
+current time: 0.660000s  (33.000%) 	 time/iter: 0.0009991s
+
+current time: 0.720000s  (36.000%) 	 time/iter: 0.0025011s
+
+current time: 0.760000s  (38.000%) 	 time/iter: 0.0010933s
+
+current time: 0.820000s  (41.000%) 	 time/iter: 0.0086688s
+
+current time: 0.860000s  (43.000%) 	 time/iter: 0.0008616s
+
+current time: 0.920000s  (46.000%) 	 time/iter: 0.0088623s
+
+current time: 0.960000s  (48.000%) 	 time/iter: 0.0007911s
+
+current time: 1.020000s  (51.000%) 	 time/iter: 0.0080876s
+
+current time: 1.060000s  (53.000%) 	 time/iter: 0.0015762s
+
+current time: 1.120000s  (56.000%) 	 time/iter: 0.0072396s
+
+current time: 1.160000s  (58.000%) 	 time/iter: 0.0022743s
+
+current time: 1.220000s  (61.000%) 	 time/iter: 0.0032492s
+
+current time: 1.260000s  (63.000%) 	 time/iter: 0.0013691s
+
+current time: 1.320000s  (66.000%) 	 time/iter: 0.0038838s
+
+current time: 1.360000s  (68.000%) 	 time/iter: 0.0011547s
+
+current time: 1.420000s  (71.000%) 	 time/iter: 0.0056065s
+
+current time: 1.460000s  (73.000%) 	 time/iter: 0.0012794s
+
+current time: 1.520000s  (76.000%) 	 time/iter: 0.0038976s
+
+current time: 1.560000s  (78.000%) 	 time/iter: 0.0010044s
+
+current time: 1.620000s  (81.000%) 	 time/iter: 0.003083s
+
+current time: 1.660000s  (83.000%) 	 time/iter: 0.0008519s
+
+current time: 1.720000s  (86.000%) 	 time/iter: 0.0068483s
+
+current time: 1.760000s  (88.000%) 	 time/iter: 0.00082s
+
+current time: 1.820000s  (91.000%) 	 time/iter: 0.0076746s
+
+current time: 1.860000s  (93.000%) 	 time/iter: 0.0056925s
+
+current time: 1.920000s  (96.000%) 	 time/iter: 0.0030279s
+
+current time: 1.960000s  (98.000%) 	 time/iter: 0.0009325s
+
+current time: 2.000000s  (100.00%)	 time/iter: 0.0008534s
+============================================================
+	 Total ellapsed time: 0.194246  s
+============================================================
+
+
+============================================================
+		 Error Anlysis
+============================================================
+L1 error 		L2 error 
+0.5801616902888841	0.3765519880340463
+

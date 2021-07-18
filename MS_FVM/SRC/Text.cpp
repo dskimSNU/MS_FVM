@@ -9,6 +9,11 @@ Text& Text::operator<<(const std::string& str) {
 	return *this;
 }
 
+Text& Text::operator<<(std::string&& str) {
+	this->push_back(std::move(str));
+	return *this;
+}
+
 void Text::add_write(const std::string& file_path) const {
 	this->make_path(file_path);
 	std::ofstream output_file(file_path, std::ios::app);

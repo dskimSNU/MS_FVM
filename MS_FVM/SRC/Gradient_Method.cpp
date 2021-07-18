@@ -11,6 +11,7 @@ std::vector<Dynamic_Matrix_> Least_Square::solution_gradients(const std::vector<
 		const auto RcT = Rc.transpose();
 		const auto pseudo_inverse = RcT * (Rc * RcT).be_inverse();
 
+
 		solution_gradients.push_back(dQ * pseudo_inverse);
 	}
 

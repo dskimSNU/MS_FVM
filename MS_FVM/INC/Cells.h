@@ -44,7 +44,8 @@ template <size_t space_dimension>
 class Cells_FVM_MLP_Base : public Cells_FVM_Base<space_dimension>
 {
 public:
-    Cells_FVM_MLP_Base(const Grid<space_dimension>& grid);
+    //Cells_FVM_MLP_Base(const Grid<space_dimension>& grid);
+    Cells_FVM_MLP_Base(Grid<space_dimension>&& grid);
 
 protected:
     std::vector<std::vector<size_t>> vnode_indexes_set_;
@@ -94,7 +95,8 @@ private:
     static constexpr size_t space_dimension_ = Governing_Equation::space_dimension();
 
 public:
-    Cells(const Grid<space_dimension_>& grid) : Cells_FVM_MLP_u1<Gradient_Method, space_dimension_>(grid) {};
+    //Cells(const Grid<space_dimension_>& grid) : Cells_FVM_MLP_u1<Gradient_Method, space_dimension_>(grid) {};
+    Cells(Grid<space_dimension_>&& grid) : Cells_FVM_MLP_u1<Gradient_Method, space_dimension_>(std::move(grid)) {};
 };
 
 
@@ -152,9 +154,9 @@ auto Cells_FVM_Base<dim>::calculate_initial_solutions(void) const {
 template <size_t dim>
 template <typename Initial_Condition, typename Governing_Equation, typename Solution>
 void Cells_FVM_Base<dim>::estimate_error(const std::vector<Solution>& computed_solutions, const double time) const {
-    std::cout << "============================================================\n";
-    std::cout << "\t\t Error Anlysis\n";
-    std::cout << "============================================================\n";
+    Log::content_ << "============================================================\n";
+    Log::content_ << "\t\t Error Anlysis\n";
+    Log::content_ << "============================================================\n";
 
     if constexpr (std::is_same_v<Governing_Equation, Linear_Advection_2D> ) {
         const auto exact_solutions = Initial_Condition::template calculate_exact_solutions<Governing_Equation>(this->centers_, time);
@@ -167,25 +169,27 @@ void Cells_FVM_Base<dim>::estimate_error(const std::vector<Solution>& computed_s
             global_L2_error += solution_diff;
         }
 
-        std::cout << "L1 error \t\tL2 error \n";
-        std::cout << ms::double_to_string(global_L1_error / num_solutions) << "\t" << ms::double_to_string(global_L2_error / num_solutions) << "\n\n";
+        Log::content_ << "L1 error \t\tL2 error \n";
+        Log::content_ << ms::double_to_string(global_L1_error / num_solutions) << "\t" << ms::double_to_string(global_L2_error / num_solutions) << "\n\n";
     }
     else
-        std::cout << Governing_Equation::name() << " does not provide error analysis result.\n\n";
+        Log::content_ << Governing_Equation::name() << " does not provide error analysis result.\n\n";
+
+    Log::print();
 }
 
 
 template <size_t space_dimension>
-Cells_FVM_MLP_Base<space_dimension>::Cells_FVM_MLP_Base(const Grid<space_dimension>& grid) : Cells_FVM_Base<space_dimension>(grid) {
+//Cells_FVM_MLP_Base<space_dimension>::Cells_FVM_MLP_Base(const Grid<space_dimension>& grid) : Cells_FVM_Base<space_dimension>(grid) {
+Cells_FVM_MLP_Base<space_dimension>::Cells_FVM_MLP_Base(Grid<space_dimension>&& grid) : Cells_FVM_Base<space_dimension>(grid) {
+    this->vnode_index_to_share_cell_indexes_ = std::move(grid.connectivity.vnode_index_to_share_cell_indexes);
+
     this->vnode_indexes_set_.reserve(this->num_cell_);
     this->near_cell_indexes_set_.reserve(this->num_cell_);
-    this->vnode_index_to_share_cell_indexes_.reserve(this->num_cell_);
     this->center_to_center_matrixes_.reserve(this->num_cell_);
     this->center_to_vertex_matrixes_.reserve(this->num_cell_);
-
     
     const auto& cell_elements = grid.elements.cell_elements;
-    const auto& vnode_index_to_share_cell_indexes = grid.connectivity.vnode_index_to_share_cell_indexes;
     for (size_t i = 0; i < this->num_cell_; ++i) {
         const auto& element = cell_elements[i];
         const auto& geometry = cell_elements[i].geometry_;
@@ -196,7 +200,7 @@ Cells_FVM_MLP_Base<space_dimension>::Cells_FVM_MLP_Base(const Grid<space_dimensi
         // cells neighbor cell container indexes
         std::set<size_t> near_cell_indexes_temp;
         for (const auto vnode_index : vnode_indexes) {
-            const auto& share_cell_indexes = vnode_index_to_share_cell_indexes.at(vnode_index);
+            const auto& share_cell_indexes = this->vnode_index_to_share_cell_indexes_.at(vnode_index);
             near_cell_indexes_temp.insert(share_cell_indexes.begin(), share_cell_indexes.end());
         }
         near_cell_indexes_temp.erase(i);
@@ -231,7 +235,6 @@ Cells_FVM_MLP_Base<space_dimension>::Cells_FVM_MLP_Base(const Grid<space_dimensi
         this->near_cell_indexes_set_.push_back(std::move(near_cell_indexes));
         this->center_to_center_matrixes_.push_back(std::move(center_to_center_matrix));
         this->center_to_vertex_matrixes_.push_back(std::move(center_to_vertex_matrix));
-        this->vnode_index_to_share_cell_indexes_ = vnode_index_to_share_cell_indexes;
     }        
 }
 
@@ -291,7 +294,7 @@ std::vector<Dynamic_Matrix_> Cells_FVM_MLP_u1<Gradient_Method, dim>::calculate_s
 
     const size_t num_equation = Solution::dimension();
     for (size_t i = 0; i < this->num_cell_; ++i) {
-        const auto neighbor_indexes = this->near_cell_indexes_set_.at(i);
+        const auto& neighbor_indexes = this->near_cell_indexes_set_.at(i);
         const auto num_neighbor = neighbor_indexes.size();
 
         Dynamic_Matrix_ solution_delta_matrix(num_equation, num_neighbor);
@@ -311,10 +314,17 @@ template <typename Solution>
 std::unordered_map<size_t, std::pair<Solution, Solution>> Cells_FVM_MLP_u1<Gradient_Method, dim>::calculate_vertex_node_index_to_min_max_solution(const std::vector<Solution>& solutions) const {
     constexpr size_t num_equation = Solution::dimension();
     
+    const size_t num_vnode = this->vnode_index_to_share_cell_indexes_.size();
     std::unordered_map<size_t, std::pair<Solution, Solution>> vnode_index_to_min_max_solution;
-    for (const auto& [vnode_index, share_cell_indexes] : this->vnode_index_to_share_cell_indexes_) {
+    vnode_index_to_min_max_solution.reserve(num_vnode);
 
+    for (const auto& [vnode_index, share_cell_indexes] : this->vnode_index_to_share_cell_indexes_) {        
+        const size_t num_share_cell = share_cell_indexes.size();
         std::array<std::vector<double>, num_equation> equation_wise_solutions;
+
+        for (size_t i = 0; i < num_equation; ++i)
+            equation_wise_solutions[i].reserve(num_share_cell);
+
         for (const auto& cell_index : share_cell_indexes) {
             for (size_t i = 0; i < num_equation; ++i)
                 equation_wise_solutions[i].push_back(solutions[cell_index][i]);

@@ -1,6 +1,6 @@
 #pragma once
 #include <type_traits>
-
+#include <string>
 
 class SDM {};// spatial discrete meethod
 
@@ -9,7 +9,13 @@ namespace ms {
 	inline constexpr bool is_spatial_discrete_method = std::is_base_of_v<SDM, T>;
 }
 
-class FVM : public SDM {};
+class FVM : public SDM 
+{
+public:
+	static std::string name(void) { return "FVM"; };
+};
+
+
 class HOM : public SDM {};
 
 // Spatial Discrete Method(SDM)에 변화에 따라 나타나는 Semi_Discrete_Equation(SDE)와 Grid_Info_Extractor(GIE)의 가변성이
