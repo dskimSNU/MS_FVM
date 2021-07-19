@@ -1,7 +1,7 @@
 #pragma once
 #define PHYSICAL_DOMAIN_DIMENSION		2
 #define GRID_FILE_TYPE					Gmsh
-#define GRID_FILE_NAME					"Quad60"
+#define GRID_FILE_NAME					"Tri70"
 #define GOVERNING_EQUATION_NAME			Linear_Advection
 #define INITIAL_CONDITION_NAME			Sine_Wave
 #define SPATIAL_DISCRETE_METHOD			FVM
@@ -22,7 +22,7 @@
 //GRID_FILE_TYPE					Gmsh
 //GRID_FILE_NAME					-
 //GOVERNING_EQUATION_NAME			Linear_Advection, Burgers
-//INITIAL_CONDITION_NAME			Sine_Wave
+//INITIAL_CONDITION_NAME			Sine_Wave, Square_Wave
 //SPATIAL_DISCRETE_METHOD			FVM
 //RECONSTRUCTION_METHOD				Constant_Reconstruction, MLP_u1<Least_Square>
 //NUMERICAL_FLUX_NAME				LLF

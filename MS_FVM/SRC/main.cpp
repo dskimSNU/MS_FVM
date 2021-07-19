@@ -10,18 +10,15 @@ using Semi_Discrete_Equation_	= Semi_Discrete_Equation<GOVERNING_EQUATION, SPATI
 using Discrete_Equation_		= Discrete_Equation<TIME_INTEGRAL_METHOD>;
 
 int main(void) {
-	Log::initialize<GOVERNING_EQUATION, SPATIAL_DISCRETE_METHOD, RECONSTRUCTION_METHOD, INITIAL_CONDITION>(GRID_FILE_NAME);
+	const auto path = "E:/Code/Result/MS_FVM/" + GOVERNING_EQUATION::name() + "/" + SPATIAL_DISCRETE_METHOD::name() + "/" + RECONSTRUCTION_METHOD::name() + "/" + INITIAL_CONDITION::name() + "/" + GRID_FILE_NAME + "/";		
+	Log::set_path(path);
+	Post::set_path(path);
 
 	auto grid_elements	= Grid_File_Convertor_::convert_to_grid_elements(GRID_FILE_NAME);
 	auto grid			= Grid_Builder_::build(std::move(grid_elements));
 
-	Post::intialize<GOVERNING_EQUATION, SPATIAL_DISCRETE_METHOD, RECONSTRUCTION_METHOD, INITIAL_CONDITION>(GRID_FILE_NAME);
+	Post::intialize<GOVERNING_EQUATION>();
 	Post::grid(grid.elements.cell_elements);
-
-	SET_TIME_POINT;
-	Log::content_ << "============================================================\n";
-	Log::content_ << "\t Construct Semi Discrete Equation\n";
-	Log::content_ << "============================================================\n";
 
 	const auto semi_discrete_eq = Semi_Discrete_Equation_(std::move(grid));
 	auto solutions				= semi_discrete_eq.calculate_initial_solutions<INITIAL_CONDITION>();

@@ -61,7 +61,7 @@ Text& Text::remove_empty_line(void) {
 void Text::write(const std::string& file_path) const {
 	this->make_path(file_path);
 	std::ofstream output_file(file_path);
-	dynamic_require(output_file.is_open(), "Fail to open file" + file_path);
+	dynamic_require(output_file.is_open(), "Fail to open file" + file_path); 
 
 	const auto num_sentence = this->size();
 	for (auto i = this->begin(); i != this->end() - 1; ++i)

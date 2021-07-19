@@ -52,9 +52,9 @@ public:
 template <size_t space_dimension>
 Grid_Elements<space_dimension> Grid_File_Convertor<Gmsh, space_dimension>::convert_to_grid_elements(const std::string& grid_file_name) {
 	SET_TIME_POINT;
-	Log::content_ << "============================================================\n";
-	Log::content_ << "\t\t Construct Grid\n";
-	Log::content_ << "============================================================\n";	
+	Log::content_ << "================================================================================\n";
+	Log::content_ << "\t\t\t\t PreProcessing \n";
+	Log::content_ << "================================================================================\n";	
 	Log::print(); 
 		
 
@@ -71,7 +71,8 @@ Grid_Elements<space_dimension> Grid_File_Convertor<Gmsh, space_dimension>::conve
 	const auto element_text			= read_about(grid_file_stream, "Elements");	
 	const auto physical_name_text	= read_about(grid_file_stream, "PhysicalNames");
 
-	Log::content_ << std::left << std::setw(35) << "@ Read Grid File" << " ----------- " << std::setw(10) << GET_TIME_DURATION << "s\n\n";
+	Log::content_ << std::left << std::setw(50) << "@ Read Grid File" << " ----------- " << GET_TIME_DURATION << "s\n\n";
+	Log::print();
 
 	return make_elements(element_text, physical_name_text, node_datas);
 }
@@ -164,11 +165,12 @@ Grid_Elements<space_dimension> Grid_File_Convertor<Gmsh, space_dimension>::make_
 	const auto inner_face_elements = make_inner_face_elements(cell_elements, boundary_elements, periodic_boundary_elements);
 	const auto periodic_boundary_element_pairs = match_periodic_boundaries(periodic_boundary_elements);
 
-	Log::content_ << std::left << std::setw(35) << "@ Make Elements" << " ----------- " << std::setw(10) << GET_TIME_DURATION << "s\n";
+	Log::content_ << std::left << std::setw(50) << "@ Make Elements" << " ----------- " << GET_TIME_DURATION << "s\n";
 	Log::content_ << "  " << std::setw(8) << cell_elements.size() << " cell \n";
 	Log::content_ << "  " << std::setw(8) << boundary_elements.size() << " boundary\n";
 	Log::content_ << "  " << std::setw(8) << periodic_boundary_element_pairs.size() << " periodic boundary pair\n";
 	Log::content_ << "  " << std::setw(8) << inner_face_elements.size() << " inner face\n\n";
+	Log::print();
 	return { cell_elements, boundary_elements, periodic_boundary_element_pairs, inner_face_elements };
 }
 

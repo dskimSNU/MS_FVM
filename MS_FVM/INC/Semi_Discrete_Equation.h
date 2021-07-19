@@ -29,9 +29,9 @@ public:
     Semi_Discrete_Equation(Grid<space_dimension_>&& grid)
         : cells_(std::move(grid)), periodic_boundaries_(std::move(grid)), inner_faces_(std::move(grid)) {
 
-        Log::content_ << "============================================================\n";
-        Log::content_ << "\t Total ellapsed time: " << GET_TIME_DURATION << "s\n";
-        Log::content_ << "============================================================\n\n";
+        Log::content_ << "================================================================================\n";
+        Log::content_ << "\t\t\t Total ellapsed time: " << GET_TIME_DURATION << "s\n";
+        Log::content_ << "================================================================================\n\n";
         Log::print();
     };
 

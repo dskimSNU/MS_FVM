@@ -41,7 +41,7 @@ Burgers_2D::Physical_Flux_ Burgers_2D::physical_flux(const Solution_& solution) 
 	const auto sol = solution[0];
 
 	const auto temp_val = 0.5 * sol * sol;
-	return { temp_val * temp_val };
+	return { temp_val, temp_val };
 }
 
 std::vector<Burgers_2D::Physical_Flux_> Burgers_2D::physical_fluxes(const std::vector<Solution_>& solutions) {

@@ -50,10 +50,6 @@ private:
 template <size_t space_dimension>
 Grid<space_dimension> Grid_Builder<space_dimension>::build(Grid_Elements<space_dimension>&& grid_elements) {	
 	auto grid_connectivity = make_grid_connectivity(grid_elements);
-	Log::content_ << "============================================================\n";
-	Log::content_ << "\t Total ellapsed time: " << GET_TIME_DURATION << "s\n";
-	Log::content_ << "============================================================\n\n";
-	Log::print();
 	return Grid<space_dimension>({ std::move(grid_elements),std::move(grid_connectivity) });
 }
 
@@ -183,7 +179,8 @@ Grid_Connectivity<space_dimension> Grid_Builder<space_dimension>::make_grid_conn
 		inner_face_normals[i] = inner_face_normal;
 	}
 
-	Log::content_ << std::left << std::setw(35) << "@ Figure out connectivity" << " ----------- " << std::setw(10) << GET_TIME_DURATION << "s\n\n";
+	Log::content_ << std::left << std::setw(50) << "@ Figure out connectivity" << " ----------- " << GET_TIME_DURATION << "s\n\n";
+	Log::print();
 
 	return {
 		vnode_index_to_share_cell_indexes,

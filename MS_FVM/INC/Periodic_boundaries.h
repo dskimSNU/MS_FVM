@@ -81,6 +81,8 @@ public:
 //template definition part
 template <size_t space_dimension>
 Periodic_Boundaries_FVM_Base<space_dimension>::Periodic_Boundaries_FVM_Base(Grid<space_dimension>&& grid) {
+    SET_TIME_POINT;
+    
     this->num_pbdry_pair_ = grid.elements.periodic_boundary_element_pairs.size();
 
     this->areas_.reserve(this->num_pbdry_pair_);
@@ -90,6 +92,9 @@ Periodic_Boundaries_FVM_Base<space_dimension>::Periodic_Boundaries_FVM_Base(Grid
 
     this->normals_ = std::move(grid.connectivity.periodic_boundary_normals);
     this->oc_nc_index_pairs_ = std::move(grid.connectivity.periodic_boundary_oc_nc_index_pairs);
+
+    Log::content_ << std::left << std::setw(50) << "@ Construct Periodic boundaries FVM Base" << " ----------- " << GET_TIME_DURATION << "s\n\n";
+    Log::print();
 }
 
 template <typename Governing_Equation>
@@ -107,6 +112,8 @@ void Periodic_Boundaries<Governing_Equation, FVM, Constant_Reconstruction>::calc
 
 template <size_t space_dimension>
 Periodic_Boundaries_FVM_MLP_Base<space_dimension>::Periodic_Boundaries_FVM_MLP_Base(Grid<space_dimension>&& grid) :Periodic_Boundaries_FVM_Base<space_dimension>(std::move(grid)) {
+    SET_TIME_POINT;
+    
     this->oc_nc_to_oc_nc_side_face_vector_pairs_.reserve(this->num_pbdry_pair_);
 
     const auto& cell_elements = grid.elements.cell_elements;
@@ -130,6 +137,9 @@ Periodic_Boundaries_FVM_MLP_Base<space_dimension>::Periodic_Boundaries_FVM_MLP_B
 
         this->oc_nc_to_oc_nc_side_face_vector_pairs_.push_back(std::make_pair(oc_to_oc_side_face_vector, nc_to_nc_side_face_vector));
     }
+
+    Log::content_ << std::left << std::setw(50) << "@ Construct Periodic boundaries FVM MLP Base" << " ----------- " << GET_TIME_DURATION << "s\n\n";
+    Log::print();
 };
 
 

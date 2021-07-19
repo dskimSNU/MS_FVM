@@ -21,9 +21,9 @@ public:
         double current_time = 0.0;
         Post::solution(solutions, current_time, "initial");
 
-        Log::content_ << "============================================================\n";
-        Log::content_ << "\t\t Solving\n";
-        Log::content_ << "============================================================\n";
+        Log::content_ << "================================================================================\n";
+        Log::content_ << "\t\t\t\t Solving\n";
+        Log::content_ << "================================================================================\n";
 
         SET_TIME_POINT;
         while (true) {
@@ -33,7 +33,7 @@ public:
             if (Solve_End_Condition::check(current_time, time_step)) {
                 Solve_End_Condition::adjust(current_time, time_step);
                 Time_Integral_Method::update_solutions(semi_discrete_eq, solutions, time_step);
-                Log::content_ << std::left << "\t time/iter: " << std::setw(6) << GET_TIME_DURATION << "s\n";
+                Log::content_ << std::left << "\t time/iter: " << GET_TIME_DURATION << "s\n";
                 Post::solution(solutions, current_time, "final");
                 break;
             }
@@ -48,14 +48,14 @@ public:
                 current_time += time_step;
             }          
 
-            Log::content_ << std::left << "\t time/iter: " << std::setw(6) << GET_TIME_DURATION << "s\n";
+            Log::content_ << std::left << "\t time/iter: " << GET_TIME_DURATION << "s\n";
             Log::print();
                 
         }
 
-        Log::content_ << "============================================================\n";
-        Log::content_ << "\t Total ellapsed time: " << std::setw(10) << GET_TIME_DURATION << "s\n";
-        Log::content_ << "============================================================\n\n";
+        Log::content_ << "================================================================================\n";
+        Log::content_ << "\t\t\t Total ellapsed time: " << GET_TIME_DURATION << "s\n";
+        Log::content_ << "================================================================================\n\n";
         Log::print();
     }
 };

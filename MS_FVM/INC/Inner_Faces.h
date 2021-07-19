@@ -89,6 +89,9 @@ Inner_Faces_FVM_Base<space_dimension>::Inner_Faces_FVM_Base(Grid<space_dimension
 
     this->normals_ = std::move(grid.connectivity.inner_face_normals);
     this->oc_nc_index_pairs_ = std::move(grid.connectivity.inner_face_oc_nc_index_pairs);
+
+    Log::content_ << std::left << std::setw(50) << "@ Construct Inner faces FVM Base" << " ----------- " << GET_TIME_DURATION << "s\n\n";
+    Log::print();
 }
 
 template <typename Governing_Equation>
@@ -105,6 +108,7 @@ void Inner_Faces<Governing_Equation, FVM, Constant_Reconstruction>::calculate_RH
 
 template <size_t space_dimension>
 Inner_Faces_FVM_MLP<space_dimension>::Inner_Faces_FVM_MLP(Grid<space_dimension>&& grid) : Inner_Faces_FVM_Base<space_dimension>(std::move(grid)) {
+    SET_TIME_POINT;
 
     this->oc_nc_to_face_vector_pairs_.reserve(this->num_inner_face_);
 
@@ -126,8 +130,8 @@ Inner_Faces_FVM_MLP<space_dimension>::Inner_Faces_FVM_MLP(Grid<space_dimension>&
         this->oc_nc_to_face_vector_pairs_.push_back(std::make_pair(oc_to_face_vector, nc_to_face_vector));
     }
 
-    //std::cout << std::setw(35) << "@ Construct Inner Faces " << " ----------- " << std::setw(10) << GET_TIME_DURATION << "s\n\n";
-    //Log::content_ << std::setw(35) << "@ Construct Inner Faces " << " ----------- " << std::setw(10) << GET_TIME_DURATION << "s\n\n";    
+    Log::content_ << std::left << std::setw(50) << "@ Construct Inner faces FVM MLP Base" << " ----------- " << GET_TIME_DURATION << "s\n\n";
+    Log::print();
 };
 
 
