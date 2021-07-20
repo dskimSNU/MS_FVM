@@ -37,16 +37,19 @@ class Square_Wave_2D : public IC {
 public:
     static std::vector<Solution> calculate_solutions(const std::vector<Space_Vector>& cell_centers);
     static std::string name(void) { return "Square_Wave_2D"; };
-    //template <typename Governing_Equation>
-    //static std::vector<Solution> calculate_exact_solutions(const std::vector<Space_Vector>& cell_centers, const double end_time);
+    
+    template <typename Governing_Equation>
+    static std::vector<Solution> calculate_exact_solutions(const std::vector<Space_Vector>& cell_centers, const double end_time);
 
 private:
     Square_Wave_2D(void) = delete;
 };
 
 
-//template <>
-//std::vector<Square_Wave_2D::Solution> Square_Wave_2D::calculate_exact_solutions<Linear_Advection_2D>(const std::vector<Space_Vector>& cell_centers, const double end_time);
+
+
+template <>
+std::vector<Square_Wave_2D::Solution> Square_Wave_2D::calculate_exact_solutions<Linear_Advection_2D>(const std::vector<Space_Vector>& cell_centers, const double end_time);
 
 
 namespace ms {

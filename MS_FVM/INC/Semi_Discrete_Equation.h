@@ -58,8 +58,8 @@ public:
         }
         else {
             const auto solution_gradients = this->cells_.calculate_gradient(solutions);
-            this->periodic_boundaries_.calculate_RHS<Numerical_Flux_Function>(RHS, solutions, solution_gradients);
-            this->inner_faces_.calculate_RHS<Numerical_Flux_Function>(RHS, solutions, solution_gradients);
+            this->periodic_boundaries_.calculate_RHS_with_gradient<Numerical_Flux_Function>(RHS, solutions, solution_gradients);
+            this->inner_faces_.calculate_RHS_with_gradient<Numerical_Flux_Function>(RHS, solutions, solution_gradients);
             this->cells_.scale_RHS(RHS);
         }
 

@@ -34,20 +34,31 @@ protected:
 };
 
 
-//지배방정식에 관계없이 
-//FVM이고 MLP계열의 Reconstruction이면 공통으로 사용하는 variable
+//FVM이고 Linear Reconstruction이면 공통으로 사용하는 variable & Method
 template <size_t space_dimension>
-class Cells_FVM_MLP_Base : public Cells_FVM_Base<space_dimension>
+class Cells_FVM_Linear_Base : public Cells_FVM_Base<space_dimension>
+{
+protected:
+    std::vector<std::vector<size_t>> near_cell_indexes_set_;
+    std::vector<Dynamic_Matrix_> least_square_matrixes_;
+
+public:
+    Cells_FVM_Linear_Base(const Grid<space_dimension>& grid);
+
+protected:
+    template <typename Solution>
+    std::vector<Dynamic_Matrix_> calculate_solution_delta_matrixes(const std::vector<Solution>& solutions) const;
+};
+
+
+//FVM이고 MLP Reconstruction이면 공통으로 사용하는 variable & Method
+template <size_t space_dimension>
+class Cells_FVM_MLP_Base : public Cells_FVM_Linear_Base<space_dimension>
 {
 public:
     Cells_FVM_MLP_Base(Grid<space_dimension>&& grid);
 
 protected:
-    //Least square Gradient variable
-    std::vector<std::vector<size_t>> near_cell_indexes_set_;
-    std::vector<Dynamic_Matrix_> least_square_matrixes_;
-
-    //MLP variable
     std::vector<std::vector<size_t>> vnode_indexes_set_;
     std::vector<Dynamic_Matrix_> center_to_vertex_matrixes_;
     std::unordered_map<size_t, std::set<size_t>> vnode_index_to_share_cell_indexes_;
@@ -70,6 +81,22 @@ public:
 
 
 template <typename Governing_Equation, typename Gradient_Method>
+class Cells<Governing_Equation, FVM, Linear_Reconstruction<Gradient_Method>> : public Cells_FVM_Linear_Base<Governing_Equation::space_dimension()>
+{
+private:
+    static constexpr size_t space_dimension_ = Governing_Equation::space_dimension();
+    static constexpr size_t num_equation_ = Governing_Equation::num_equation();
+
+    using Solution_ = typename Governing_Equation::Solution_;
+
+public:
+    Cells(Grid<space_dimension_>&& grid) : Cells_FVM_Linear_Base<space_dimension_>(grid) {};
+
+    auto calculate_gradient(const std::vector<Solution_>& solutions) const;
+};
+
+
+template <typename Governing_Equation, typename Gradient_Method>
 class Cells<Governing_Equation, FVM, MLP_u1<Gradient_Method>> : public Cells_FVM_MLP_Base<Governing_Equation::space_dimension()>
 {
 private:    
@@ -85,9 +112,7 @@ public:
     std::vector<Solution_Gradient_> calculate_gradient(const std::vector<Solution_>& solutions) const;
 
 private:
-    std::vector<Dynamic_Matrix_> calculate_solution_delta_matrixes(const std::vector<Solution_>& solutions) const;
     std::unordered_map<size_t, std::pair<Solution_, Solution_>> calculate_vertex_node_index_to_min_max_solution(const std::vector<Solution_>& solutions) const;
-    Dynamic_Matrix_ calculate_center_solution_matrix(const Solution_& solution, const size_t num_vertex) const;
     double MLP_u1(const double vertex_solution_delta, const double center_solution, const double min_solution, const double max_solution) const;
 };
 
@@ -155,60 +180,7 @@ void Cells_FVM_Base<dim>::estimate_error(const std::vector<Solution>& computed_s
     Log::content_ << "\t\t\t\t Error Anlysis\n";
     Log::content_ << "================================================================================\n";
 
-    if constexpr (std::is_same_v<Governing_Equation, Linear_Advection_2D> && std::is_same_v<Initial_Condition, Sine_Wave_2D> ) {
- /*       const auto exact_solutions = Initial_Condition::template calculate_exact_solutions<Governing_Equation>(this->centers_, time);
-        double sum_error = 0.0;
-        double sum_volume = 0.0;
-        const auto num_solutions = computed_solutions.size();
-        for (size_t i = 0; i < num_solutions; ++i) {
-            const auto solution_diff = (exact_solutions[i] - computed_solutions[i]).L1_norm();
-            sum_error += solution_diff * solution_diff * this->volumes_[i];
-            sum_volume += this->volumes_[i];
-        }
-
-        Log::content_ << "L2 error \n";
-        Log::content_ << ms::double_to_string(std::sqrt(sum_error / sum_volume)) << "\n\n";*/
-
-
-        //// new ms error v1
-        //const auto exact_solutions = Initial_Condition::template calculate_exact_solutions<Governing_Equation>(this->centers_, time);
-        //double global_L1_error = 0.0;
-        //double global_L2_error = 0.0;
-        //double global_Linf_error = 0.0;
-        //const auto num_solutions = computed_solutions.size();
-        //for (size_t i = 0; i < num_solutions; ++i) {
-        //    const auto solution_diff = (exact_solutions[i] - computed_solutions[i]).L1_norm();
-        //    global_L1_error += solution_diff;
-        //    global_L2_error += solution_diff * solution_diff;
-        //    global_Linf_error = max(global_Linf_error, solution_diff);
-        //}
-        //global_L2_error = std::sqrt(global_L2_error);
-
-        ////normalize w.r.t. num cell
-        //global_L1_error = global_L1_error / num_solutions;
-        //global_L2_error = global_L2_error / num_solutions;
-
-        //Log::content_ << "L1 error \t\tL2 error \t\tLinf error \n";
-        //Log::content_ << ms::double_to_string(global_L1_error) << "\t" << ms::double_to_string(global_L2_error) <<"\t" << ms::double_to_string(global_Linf_error) << "\n\n";
-
-        //// new ms error v2
-        //const auto exact_solutions = Initial_Condition::template calculate_exact_solutions<Governing_Equation>(this->centers_, time);
-        //double global_L1_error = 0.0;
-        //double global_L2_error = 0.0;
-        //double global_Linf_error = 0.0;
-        //const auto num_solutions = computed_solutions.size();
-        //for (size_t i = 0; i < num_solutions; ++i) {
-        //    const auto solution_diff = (exact_solutions[i] - computed_solutions[i]).L1_norm();
-        //    global_L1_error += solution_diff;
-        //    global_L2_error += solution_diff * solution_diff;
-        //    global_Linf_error = max(global_Linf_error, solution_diff);
-        //}
-        //global_L2_error = std::sqrt(global_L2_error);
-        //
-        //Log::content_ << "L1 error \t\tL2 error \t\tLinf error \n";
-        //Log::content_ << ms::double_to_string(global_L1_error) << "\t" << ms::double_to_string(global_L2_error) << "\t" << ms::double_to_string(global_Linf_error) << "\n\n";
-    
-        // new ms error v3
+    if constexpr (std::is_same_v<Governing_Equation, Linear_Advection_2D>) {
         const auto exact_solutions = Initial_Condition::template calculate_exact_solutions<Governing_Equation>(this->centers_, time);
         double global_L1_error = 0.0;
         double global_L2_error = 0.0;
@@ -221,7 +193,6 @@ void Cells_FVM_Base<dim>::estimate_error(const std::vector<Solution>& computed_s
             global_Linf_error = max(global_Linf_error, local_error);
         }
 
-        //normalize w.r.t. num cell
         global_L1_error = global_L1_error / num_solutions;
         global_L2_error = global_L2_error / num_solutions;
 
@@ -229,7 +200,6 @@ void Cells_FVM_Base<dim>::estimate_error(const std::vector<Solution>& computed_s
 
         Log::content_ << "L1 error \t\tL2 error \t\tLinf error \n";
         Log::content_ << ms::double_to_string(global_L1_error) << "\t" << ms::double_to_string(global_L2_error) << "\t" << ms::double_to_string(global_Linf_error) << "\n\n";
-
 
     }
     else
@@ -240,28 +210,24 @@ void Cells_FVM_Base<dim>::estimate_error(const std::vector<Solution>& computed_s
 
 
 template <size_t space_dimension>
-Cells_FVM_MLP_Base<space_dimension>::Cells_FVM_MLP_Base(Grid<space_dimension>&& grid) : Cells_FVM_Base<space_dimension>(grid) {
+Cells_FVM_Linear_Base<space_dimension>::Cells_FVM_Linear_Base(const Grid<space_dimension>& grid) : Cells_FVM_Base<space_dimension>(grid) {
     SET_TIME_POINT;
 
-    this->vnode_index_to_share_cell_indexes_ = std::move(grid.connectivity.vnode_index_to_share_cell_indexes);
-
-    this->vnode_indexes_set_.reserve(this->num_cell_);
     this->near_cell_indexes_set_.reserve(this->num_cell_);
     this->least_square_matrixes_.reserve(this->num_cell_);
-    this->center_to_vertex_matrixes_.reserve(this->num_cell_);
-    
+
     const auto& cell_elements = grid.elements.cell_elements;
+    const auto& vnode_index_to_share_cell_indexes = grid.connectivity.vnode_index_to_share_cell_indexes;
+
     for (size_t i = 0; i < this->num_cell_; ++i) {
         const auto& element = cell_elements[i];
         const auto& geometry = cell_elements[i].geometry_;
-
-        // cells_vertex_node_indexes
-        auto vnode_indexes = element.vertex_node_indexes(); 
-
-        // cells neighbor cell container indexes
+        
+        // near cell container indexes
+        auto vnode_indexes = element.vertex_node_indexes();        
         std::set<size_t> near_cell_indexes_temp;
         for (const auto vnode_index : vnode_indexes) {
-            const auto& share_cell_indexes = this->vnode_index_to_share_cell_indexes_.at(vnode_index);
+            const auto& share_cell_indexes = vnode_index_to_share_cell_indexes.at(vnode_index);
             near_cell_indexes_temp.insert(share_cell_indexes.begin(), share_cell_indexes.end());
         }
         near_cell_indexes_temp.erase(i);
@@ -281,30 +247,86 @@ Cells_FVM_MLP_Base<space_dimension>::Cells_FVM_MLP_Base(Grid<space_dimension>&& 
                 center_to_center_matrix.at(j, i) = center_to_center[j];
         }
 
-        auto& Rc = center_to_center_matrix;
+        const auto& Rc = center_to_center_matrix;
         auto RcT = Rc.transpose();
         auto least_square_matrix = RcT * (Rc * RcT).be_inverse();
 
+        this->near_cell_indexes_set_.push_back(std::move(near_cell_indexes));
+        this->least_square_matrixes_.push_back(std::move(least_square_matrix));
+    }
+
+    Log::content_ << std::left << std::setw(50) << "@ Construct Cells FVM Linear Base" << " ----------- " << GET_TIME_DURATION << "s\n\n";
+    Log::print();
+}
+
+
+template <size_t space_dimension>
+template <typename Solution>
+std::vector<Dynamic_Matrix_> Cells_FVM_Linear_Base<space_dimension>::calculate_solution_delta_matrixes(const std::vector<Solution>& solutions) const {
+    constexpr size_t num_equation = Solution::dimension();
+    
+    std::vector<Dynamic_Matrix_> solution_delta_matrixes;
+    solution_delta_matrixes.reserve(this->num_cell_);
+
+    for (size_t i = 0; i < this->num_cell_; ++i) {
+        const auto& near_cell_indexes = this->near_cell_indexes_set_.at(i);
+        const auto num_near_cell = near_cell_indexes.size();
+
+        Dynamic_Matrix_ solution_delta_matrix(num_equation, num_near_cell);
+        for (size_t j = 0; j < num_near_cell; ++j) {
+            const auto solution_delta = solutions[near_cell_indexes[j]] - solutions[i];
+            for (size_t k = 0; k < num_equation; ++k)
+                solution_delta_matrix.at(k, j) = solution_delta[k];
+        }
+        solution_delta_matrixes.push_back(std::move(solution_delta_matrix));
+    }
+
+    return solution_delta_matrixes;
+}
+
+
+template <size_t space_dimension>
+Cells_FVM_MLP_Base<space_dimension>::Cells_FVM_MLP_Base(Grid<space_dimension>&& grid) : Cells_FVM_Linear_Base<space_dimension>(grid) {
+    SET_TIME_POINT;
+
+    //vnode index to share cell indexes
+    this->vnode_index_to_share_cell_indexes_ = std::move(grid.connectivity.vnode_index_to_share_cell_indexes);
+
+    this->vnode_indexes_set_.reserve(this->num_cell_);
+    this->center_to_vertex_matrixes_.reserve(this->num_cell_);
+
+    const auto& cell_elements = grid.elements.cell_elements;
+    for (size_t i = 0; i < this->num_cell_; ++i) {
+        const auto& element = cell_elements[i];
+        const auto& geometry = cell_elements[i].geometry_;
+
+        // vnode indexes set
+        auto vnode_indexes = element.vertex_node_indexes();
+        this->vnode_indexes_set_.push_back(std::move(vnode_indexes));
+
         //center to vertex matrix
+        const auto center_node = geometry.center_node();
         const auto vertex_nodes = geometry.vertex_nodes();
         const auto num_vertex = vertex_nodes.size();
 
         Dynamic_Matrix_ center_to_vertex_matrix(space_dimension, num_vertex);
         for (size_t i = 0; i < num_vertex; ++i) {
-            const auto center_to_vertex = this_center - vertex_nodes[i];
+            const auto center_to_vertex = center_node - vertex_nodes[i];
             for (size_t j = 0; j < space_dimension; ++j)
                 center_to_vertex_matrix.at(j, i) = center_to_vertex[j];
         }
-
-        this->near_cell_indexes_set_.push_back(std::move(near_cell_indexes));
-        this->least_square_matrixes_.push_back(std::move(least_square_matrix));
-
-        this->vnode_indexes_set_.push_back(std::move(vnode_indexes));
         this->center_to_vertex_matrixes_.push_back(std::move(center_to_vertex_matrix));
-    }        
+    }
 
     Log::content_ << std::left << std::setw(50) << "@ Construct Cells FVM MLP Base" << " ----------- " << GET_TIME_DURATION << "s\n\n";
     Log::print();
+}
+
+
+template <typename Governing_Equation, typename Gradient_Method>
+auto Cells<Governing_Equation, FVM, Linear_Reconstruction<Gradient_Method>>::calculate_gradient(const std::vector<Solution_>& solutions) const {
+    const auto solution_delta_matrixes = this->calculate_solution_delta_matrixes(solutions);
+    return Gradient_Method::solution_gradients(solution_delta_matrixes, this->least_square_matrixes_);
 }
 
 
@@ -352,26 +374,6 @@ std::vector<typename Cells<Governing_Equation, FVM, MLP_u1<Gradient_Method>>::So
 
 }
 
-template <typename Governing_Equation, typename Gradient_Method>
-std::vector<Dynamic_Matrix_> Cells<Governing_Equation, FVM, MLP_u1<Gradient_Method>>::calculate_solution_delta_matrixes(const std::vector<Solution_>& solutions) const {
-    std::vector<Dynamic_Matrix_> solution_delta_matrixes;
-    solution_delta_matrixes.reserve(this->num_cell_);
-
-    for (size_t i = 0; i < this->num_cell_; ++i) {
-        const auto& near_cell_indexes = this->near_cell_indexes_set_.at(i);
-        const auto num_near_cell = near_cell_indexes.size();
-
-        Dynamic_Matrix_ solution_delta_matrix(num_equation_, num_near_cell);
-        for (size_t j = 0; j < num_near_cell; ++j) {
-            const auto solution_delta = solutions[near_cell_indexes[j]] - solutions[i];
-            for (size_t k = 0; k < num_equation_; ++k)
-                solution_delta_matrix.at(k, j) = solution_delta[k];
-        }
-        solution_delta_matrixes.push_back(std::move(solution_delta_matrix));
-    }
-
-    return solution_delta_matrixes;
-}
 
 template <typename Governing_Equation, typename Gradient_Method>
 std::unordered_map<size_t, std::pair<typename Governing_Equation::Solution_, typename Governing_Equation::Solution_>> Cells<Governing_Equation, FVM, MLP_u1<Gradient_Method>>::calculate_vertex_node_index_to_min_max_solution(const std::vector<Solution_>& solutions) const {
@@ -405,17 +407,6 @@ std::unordered_map<size_t, std::pair<typename Governing_Equation::Solution_, typ
     }
 
     return vnode_index_to_min_max_solution;
-}
-
-
-template <typename Governing_Equation, typename Gradient_Method>
-Dynamic_Matrix_ Cells<Governing_Equation, FVM, MLP_u1<Gradient_Method>>::calculate_center_solution_matrix(const Solution_& solution, const size_t num_vertex) const {
-    Dynamic_Matrix_ center_solution_matrix(num_equation_, num_vertex);
-    for (size_t i = 0; i < num_equation_; ++i)
-        for (size_t j = 0; j < num_vertex; ++j)
-            center_solution_matrix.at(i, j) = solution[i];
-
-    return center_solution_matrix;
 }
 
 template <typename Governing_Equation, typename Gradient_Method>

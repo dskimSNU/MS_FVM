@@ -1,7 +1,7 @@
 #pragma once
 #define PHYSICAL_DOMAIN_DIMENSION		2
 #define GRID_FILE_TYPE					Gmsh
-#define GRID_FILE_NAME					"Tri70"
+#define GRID_FILE_NAME					"Quad50"
 #define GOVERNING_EQUATION_NAME			Linear_Advection
 #define INITIAL_CONDITION_NAME			Sine_Wave
 #define SPATIAL_DISCRETE_METHOD			FVM
@@ -16,7 +16,8 @@
 #define POST_CONDITION_CONSTANT			0.1
 
 
-//availiable list
+
+//Availiable List
 
 //PHYSICAL_DOMAIN_DIMENSION			2
 //GRID_FILE_TYPE					Gmsh

@@ -13,6 +13,14 @@ public:
 };
 
 
+template <typename Gradient_Method>
+class Linear_Reconstruction : public RM
+{
+public:
+	static std::string name(void) { return "Linear_Reconstruction_" + Gradient_Method::name(); };
+};
+
+
 class MLP : public RM {};
 
 template <typename Gradient_Method>
