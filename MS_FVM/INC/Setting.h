@@ -1,11 +1,11 @@
 #pragma once
 #define PHYSICAL_DOMAIN_DIMENSION		2
 #define GRID_FILE_TYPE					Gmsh
-#define GRID_FILE_NAME					"Quad50"
+#define GRID_FILE_NAME					"Mix100"
 #define GOVERNING_EQUATION_NAME			Linear_Advection
 #define INITIAL_CONDITION_NAME			Sine_Wave
 #define SPATIAL_DISCRETE_METHOD			FVM
-#define RECONSTRUCTION_METHOD			MLP_u1<Least_Square>
+#define RECONSTRUCTION_METHOD			Linear_Reconstruction<Least_Square>
 #define NUMERICAL_FLUX_NAME				LLF
 #define TIME_INTEGRAL_METHOD			SSPRK33
 #define TIME_STEP_METHOD_NAME			CFL
@@ -25,7 +25,8 @@
 //GOVERNING_EQUATION_NAME			Linear_Advection, Burgers
 //INITIAL_CONDITION_NAME			Sine_Wave, Square_Wave
 //SPATIAL_DISCRETE_METHOD			FVM
-//RECONSTRUCTION_METHOD				Constant_Reconstruction, MLP_u1<Least_Square>
+//RECONSTRUCTION_METHOD				Constant_Reconstruction, Linear_Reconstruction<Gradient_Method>, MLP_u1<Gradient_Method>
+//	Gradient_Method					Least_Square
 //NUMERICAL_FLUX_NAME				LLF
 //TIME_INTGRAL_METHOD				SSPRK33
 //TIME_STEP_METHOD_NAME				CFL, ConstDt

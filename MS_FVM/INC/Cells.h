@@ -37,18 +37,21 @@ protected:
 //FVM이고 Linear Reconstruction이면 공통으로 사용하는 variable & Method
 template <size_t space_dimension>
 class Cells_FVM_Linear_Base : public Cells_FVM_Base<space_dimension>
-{
+{    
 protected:
+    // near cell의 가변성은 여기서 controll
     std::vector<std::vector<size_t>> near_cell_indexes_set_;
     std::vector<Dynamic_Matrix_> least_square_matrixes_;
 
 public:
-    Cells_FVM_Linear_Base(const Grid<space_dimension>& grid);
+    Cells_FVM_Linear_Base(const Grid<space_dimension>& grid); 
 
 protected:
     template <typename Solution>
     std::vector<Dynamic_Matrix_> calculate_solution_delta_matrixes(const std::vector<Solution>& solutions) const;
 };
+
+
 
 
 //FVM이고 MLP Reconstruction이면 공통으로 사용하는 variable & Method
@@ -119,7 +122,7 @@ private:
 
 //template definition
 template <size_t space_dimension>
-Cells_FVM_Base<space_dimension>::Cells_FVM_Base(const Grid<space_dimension>& grid){
+Cells_FVM_Base<space_dimension>::Cells_FVM_Base(const Grid<space_dimension>& grid) {
     SET_TIME_POINT;
 
     const auto& cell_elements = grid.elements.cell_elements;
@@ -326,7 +329,16 @@ Cells_FVM_MLP_Base<space_dimension>::Cells_FVM_MLP_Base(Grid<space_dimension>&& 
 template <typename Governing_Equation, typename Gradient_Method>
 auto Cells<Governing_Equation, FVM, Linear_Reconstruction<Gradient_Method>>::calculate_gradient(const std::vector<Solution_>& solutions) const {
     const auto solution_delta_matrixes = this->calculate_solution_delta_matrixes(solutions);
-    return Gradient_Method::solution_gradients(solution_delta_matrixes, this->least_square_matrixes_);
+    auto solution_gradients_temp = Gradient_Method::solution_gradients(solution_delta_matrixes, this->least_square_matrixes_);
+
+    //container change
+    std::vector<Matrix<num_equation_, space_dimension_>> solution_gradients;
+    solution_gradients.reserve(this->num_cell_);
+
+    for (const auto& solution_gradient : solution_gradients_temp)
+        solution_gradients.push_back(solution_gradient);
+
+    return solution_gradients;
 }
 
 
@@ -363,7 +375,7 @@ std::vector<typename Cells<Governing_Equation, FVM, MLP_u1<Gradient_Method>>::So
                 gradient.at(i, j) *= limiting_values.at(i);
     }
 
-
+    //container change
     std::vector<Matrix<num_equation_, space_dimension_>> limited_solution_gradients;
     limited_solution_gradients.reserve(this->num_cell_);
 
