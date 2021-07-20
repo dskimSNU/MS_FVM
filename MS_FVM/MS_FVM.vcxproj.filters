@@ -93,6 +93,9 @@
     <ClInclude Include="INC\Log.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="INC\Cells_FVM.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SRC\Governing_Equation.cpp">

@@ -66,9 +66,3 @@ GTEST_TEST(Text, write) {
 	const auto ref = 5;
 	EXPECT_EQ(result, ref);
 }
-
-GTEST_TEST(Text, constructor) {
-	Text txt("abc");
-
-	std::cout << txt;
-}

@@ -28,16 +28,16 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <UseInteloneMKL>Sequential</UseInteloneMKL>
+    <UseInteloneMKL>No</UseInteloneMKL>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <UseInteloneMKL>Sequential</UseInteloneMKL>
+    <UseInteloneMKL>No</UseInteloneMKL>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <UseInteloneMKL>Sequential</UseInteloneMKL>
+    <UseInteloneMKL>No</UseInteloneMKL>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <UseInteloneMKL>Sequential</UseInteloneMKL>
+    <UseInteloneMKL>No</UseInteloneMKL>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings" />

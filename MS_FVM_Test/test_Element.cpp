@@ -264,7 +264,30 @@ GTEST_TEST(Geometry, is_axis_parallel_1) {
 }
 
 
-GTEST_TEST(Element, faces_vertex_node_indexes_1) {
+GTEST_TEST(Element, vertex_node_indexes_1) {
+	const Figure fig = Figure::quadrilateral;
+	const size_t fig_order = 1;
+	const ReferenceGeometry ref_geometry(fig, fig_order);
+
+	const EuclideanVector n1 = { 1,1 };
+	const EuclideanVector n2 = { 2,1 };
+	const EuclideanVector n3 = { 4,2 };
+	const EuclideanVector n4 = { 1,2 };
+	std::vector<EuclideanVector<2>> nodes = { n1,n2,n3,n4 };
+	Geometry geometry(ref_geometry, std::move(nodes));
+
+	ElementType element_type = ElementType::cell;
+	std::vector<size_t> indexes = { 5,6,7,8 };
+
+	Element element(element_type, std::move(geometry), std::move(indexes));
+	const auto result = element.vertex_node_indexes();
+
+	const std::vector<size_t> ref = { 5,6,7,8 };
+	EXPECT_EQ(ref, result);
+}
+
+
+GTEST_TEST(Element, face_node_indexes_set) {
 	const Figure fig = Figure::quadrilateral;
 	const size_t fig_order = 1;
 	const ReferenceGeometry ref_geometry(fig, fig_order);
@@ -281,12 +304,35 @@ GTEST_TEST(Element, faces_vertex_node_indexes_1) {
 	std::vector<size_t> indexes = { 5,6,7,8 };
 	
 	Element element(element_type, std::move(geometry), std::move(indexes));
-	const auto result = element.faces_node_indexes();
+	const auto result = element.face_node_indexes_set();
 
 	const std::vector<std::vector<size_t>> ref = { {5,6},{6,7},{7,8},{8,5} };
 	EXPECT_EQ(ref, result);
 }
 
+
+GTEST_TEST(Element, face_vertex_node_indexes_set) {
+	const Figure fig = Figure::quadrilateral;
+	const size_t fig_order = 1;
+	const ReferenceGeometry ref_geometry(fig, fig_order);
+
+	const EuclideanVector n1 = { 1,1 };
+	const EuclideanVector n2 = { 2,1 };
+	const EuclideanVector n3 = { 4,2 };
+	const EuclideanVector n4 = { 1,2 };
+	std::vector<EuclideanVector<2>> nodes = { n1,n2,n3,n4 };
+
+	Geometry geometry(ref_geometry, std::move(nodes));
+
+	ElementType element_type = ElementType::cell;
+	std::vector<size_t> indexes = { 5,6,7,8 };
+
+	Element element(element_type, std::move(geometry), std::move(indexes));
+	const auto result = element.face_vertex_node_indexes_set();
+
+	const std::vector<std::vector<size_t>> ref = { {5,6},{6,7},{7,8},{8,5} };
+	EXPECT_EQ(ref, result);
+}
 
 //GTEST_TEST(Geometry, periodic_match_2) {
 //	const Figure fig = Figure::line;

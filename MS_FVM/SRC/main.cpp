@@ -4,8 +4,8 @@
 #include "../INC/Post.h"
 #include "../INC/Log.h"
 
-using Grid_File_Convertor_		= Grid_File_Convertor<GRID_FILE_TYPE, PHYSICAL_DOMAIN_DIMENSION>;
-using Grid_Builder_				= Grid_Builder<PHYSICAL_DOMAIN_DIMENSION>;
+using Grid_File_Convertor_		= Grid_File_Convertor<GRID_FILE_TYPE, DIMENSION>;
+using Grid_Builder_				= Grid_Builder<DIMENSION>;
 using Semi_Discrete_Equation_	= Semi_Discrete_Equation<GOVERNING_EQUATION, SPATIAL_DISCRETE_METHOD, RECONSTRUCTION_METHOD, NUMERICAL_FLUX>;
 using Discrete_Equation_		= Discrete_Equation<TIME_INTEGRAL_METHOD>;
 

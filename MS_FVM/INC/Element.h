@@ -31,8 +31,10 @@ public:
 	bool operator==(const ReferenceGeometry& other) const;
 	bool operator!=(const ReferenceGeometry& other) const;
 
+	size_t num_vertex(void) const;
 	std::vector<size_t> vertex_node_index_orders(void) const;
-	std::vector<std::vector<size_t>> faces_node_index_orders(void) const;
+	std::vector<std::vector<size_t>> face_vertex_node_index_orders_set(void) const;
+	std::vector<std::vector<size_t>> face_node_index_orders_set(void) const;
 	std::vector<ReferenceGeometry> faces_reference_geometry(void) const;
 	std::vector<std::vector<size_t>> local_connectivities(void) const;
 
@@ -96,11 +98,12 @@ public:
 	std::vector<Element> make_inner_face_elements(void) const;
 	bool is_periodic_pair(const Element& other) const;
 	std::vector<std::pair<size_t, size_t>> find_periodic_vnode_index_pairs(const Element& other) const;
+	std::vector<std::vector<size_t>> face_node_indexes_set(void) const;
+	std::vector<std::vector<size_t>> face_vertex_node_indexes_set(void) const;
+
 
 //private:
-	std::vector<std::vector<size_t>> faces_node_indexes(void) const;
 	bool is_periodic_boundary(void) const;
-
 };
 
 
@@ -204,7 +207,7 @@ std::array<double, space_dimension> Geometry<space_dimension>::coordinate_projec
 template<size_t space_dimension>
 std::vector<Geometry<space_dimension>> Geometry<space_dimension>::faces_geometry(void) const {
 	const auto faces_reference_geometry = this->reference_geometry_.faces_reference_geometry();
-	const auto faces_node_index_orders = this->reference_geometry_.faces_node_index_orders();
+	const auto faces_node_index_orders = this->reference_geometry_.face_node_index_orders_set();
 	const auto num_face = faces_node_index_orders.size();
 
 	std::vector<Geometry> faces_geometry;
@@ -240,7 +243,7 @@ std::vector<EuclideanVector<space_dimension>> Geometry<space_dimension>::vertex_
 
 template<size_t space_dimension>
 std::vector<std::vector<typename Geometry<space_dimension>::Space_Vector>> Geometry<space_dimension>::calculate_faces_nodes(void) const {
-	const auto faces_node_index_orders = this->reference_geometry_.faces_node_index_orders();
+	const auto faces_node_index_orders = this->reference_geometry_.face_node_index_orders_set();
 	const auto num_face = faces_node_index_orders.size();
 
 	std::vector<std::vector<Space_Vector>> faces_nodes(num_face);
@@ -312,14 +315,9 @@ double Geometry<space_dimension>::volume(void) const {
 
 template<size_t space_dimension>
 std::vector<size_t> Element<space_dimension>::vertex_node_indexes(void) const {
-	const auto vertex_node_index_orders = this->geometry_.reference_geometry_.vertex_node_index_orders();
-	const auto num_vertex_node = vertex_node_index_orders.size();
+	const auto num_vertex = this->geometry_.reference_geometry_.num_vertex();
 
-	std::vector<size_t> vertex_node_indexes(num_vertex_node);
-	for (size_t i = 0; i < num_vertex_node; ++i)
-		vertex_node_indexes[i] = this->node_indexes_[vertex_node_index_orders[i]];
-
-	return vertex_node_indexes;
+	return { this->node_indexes_.begin(), this->node_indexes_.begin() + num_vertex };
 }
 
 template<size_t space_dimension>
@@ -327,7 +325,7 @@ std::vector<Element<space_dimension>> Element<space_dimension>::make_inner_face_
 	dynamic_require(this->element_type_ == ElementType::cell, "make inner face elements should be called from cell element");
 
 	auto faces_geometry = this->geometry_.faces_geometry();
-	auto faces_node_indexes = this->faces_node_indexes();
+	auto faces_node_indexes = this->face_node_indexes_set();
 
 	const auto num_face = faces_geometry.size();
 	std::vector<Element<space_dimension>> inner_face_elements;
@@ -341,23 +339,44 @@ std::vector<Element<space_dimension>> Element<space_dimension>::make_inner_face_
 
 
 template<size_t space_dimension>
-std::vector<std::vector<size_t>> Element<space_dimension>::faces_node_indexes(void) const {
-	const auto faces_node_index_orders = this->geometry_.reference_geometry_.faces_node_index_orders();
-	const auto num_face = faces_node_index_orders.size();
+std::vector<std::vector<size_t>> Element<space_dimension>::face_node_indexes_set(void) const {
+	const auto face_node_index_orders_set = this->geometry_.reference_geometry_.face_node_index_orders_set();
+	const auto num_face = face_node_index_orders_set.size();
 
-	std::vector<std::vector<size_t>> faces_node_indexes(num_face);
+	std::vector<std::vector<size_t>> face_node_indexes_set(num_face);
 	for (size_t i = 0; i < num_face; ++i) {
-		const auto& face_node_index_orders = faces_node_index_orders[i];
+		const auto& face_node_index_orders = face_node_index_orders_set[i];
 		const auto num_node = face_node_index_orders.size();
 
-		auto& face_node_indexes = faces_node_indexes[i];
+		auto& face_node_indexes = face_node_indexes_set[i];
 		face_node_indexes.resize(num_node);
 
 		for (size_t j = 0; j < num_node; ++j)
 			face_node_indexes[j] = this->node_indexes_[face_node_index_orders[j]];
 	}
 
-	return faces_node_indexes;
+	return face_node_indexes_set;
+}
+
+
+template<size_t space_dimension>
+std::vector<std::vector<size_t>> Element<space_dimension>::face_vertex_node_indexes_set(void) const {
+	const auto face_vnode_index_orders_set = this->geometry_.reference_geometry_.face_vertex_node_index_orders_set();
+	const auto num_face = face_vnode_index_orders_set.size();
+
+	std::vector<std::vector<size_t>> face_vnode_indexes_set(num_face);
+	for (size_t i = 0; i < num_face; ++i) {
+		const auto& face_node_index_orders = face_vnode_index_orders_set[i];
+		const auto num_node = face_node_index_orders.size();
+
+		auto& face_node_indexes = face_vnode_indexes_set[i];
+		face_node_indexes.resize(num_node);
+
+		for (size_t j = 0; j < num_node; ++j)
+			face_node_indexes[j] = this->node_indexes_[face_node_index_orders[j]];
+	}
+
+	return face_vnode_indexes_set;
 }
 
 template<size_t space_dimension>

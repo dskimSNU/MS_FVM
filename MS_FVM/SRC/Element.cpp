@@ -8,6 +8,17 @@ bool ReferenceGeometry::operator != (const ReferenceGeometry& other) const {
 	return !((*this) == other);
 }
 
+size_t ReferenceGeometry::num_vertex(void) const {
+	switch (this->figure_) {
+	case Figure::line:			return 2;
+	case Figure::triangle:		return 3;
+	case Figure::quadrilateral:	return 4;
+	default:
+		throw std::runtime_error("wrong element figure");
+		return NULL;
+	}
+}
+
 std::vector<size_t> ReferenceGeometry::vertex_node_index_orders(void) const {
 	switch (this->figure_) {
 	case Figure::line: {
@@ -33,7 +44,7 @@ std::vector<size_t> ReferenceGeometry::vertex_node_index_orders(void) const {
 	}
 }
 
-std::vector<std::vector<size_t>> ReferenceGeometry::faces_node_index_orders(void) const {
+std::vector<std::vector<size_t>> ReferenceGeometry::face_vertex_node_index_orders_set(void) const {
 	switch (this->figure_) {
 	case Figure::line: {
 		// 0 式式式式 1
@@ -51,16 +62,6 @@ std::vector<std::vector<size_t>> ReferenceGeometry::faces_node_index_orders(void
 		const std::vector<size_t> face1_node_index = { 1,2 };
 		const std::vector<size_t> face2_node_index = { 2,0 };
 		return { face0_node_index,face1_node_index, face2_node_index };
-
-		//if (element_order > 1)
-		//{
-		//	const size_t num_additional_point = element_order - 1;
-		//	
-		//	size_t index = num_face;
-		//	for (size_t iface = 0; iface < num_face; ++iface)
-		//		for (size_t ipoint = 0; ipoint < num_additional_point; ++ipoint)
-		//			face_node_index_order[iface].push_back(index++);
-		//}
 	}
 	case Figure::quadrilateral: {
 		//      2
@@ -73,16 +74,68 @@ std::vector<std::vector<size_t>> ReferenceGeometry::faces_node_index_orders(void
 		std::vector<size_t> face2_node_index = { 2,3 };
 		std::vector<size_t> face3_node_index = { 3,0 };
 		return { face0_node_index,face1_node_index, face2_node_index,face3_node_index };
+	}
+	default:
+		throw std::runtime_error("wrong element figure");
+		return std::vector<std::vector<size_t>>();
+	}
+}
 
-		//if (element_order > 1)
-		//{
-		//	const size_t num_additional_point = element_order - 1;
+std::vector<std::vector<size_t>> ReferenceGeometry::face_node_index_orders_set(void) const {
+	switch (this->figure_) {
+	case Figure::line: {
+		// 0 式式式式 1
+		const std::vector<size_t> face0_node_index = { 0 };
+		const std::vector<size_t> face1_node_index = { 1 };
+		return { face0_node_index,face1_node_index };
+	}
+	case Figure::triangle: {
+		//      2
+		//  2  / \  1
+		//	  /   \
+		//   0式式式式式1
+		//      0
+		constexpr size_t num_face = 3;
+		std::vector<std::vector<size_t>> face_node_index_orders_set(num_face);		
+		face_node_index_orders_set[0] = { 0,1 };
+		face_node_index_orders_set[1] = { 1,2 };
+		face_node_index_orders_set[2] = { 2,0 };
 
-		//	size_t index = num_face;
-		//	for (size_t iface = 0; iface < num_face; ++iface)
-		//		for (size_t ipoint = 0; ipoint<num_additional_point; ++ipoint)
-		//			face_node_index_order[iface].push_back(index++);
-		//}
+		if (this->figure_order_ > 1) {
+			const size_t num_additional_point = this->figure_order_ - 1;		
+			
+			size_t index = num_face;
+			for (size_t iface = 0; iface < num_face; ++iface)
+				for (size_t ipoint = 0; ipoint < num_additional_point; ++ipoint)
+					face_node_index_orders_set[iface].push_back(index++);
+		}
+
+		return face_node_index_orders_set;
+	}
+	case Figure::quadrilateral: {
+		//      2
+		//   3式式式式式2
+		//3  弛     弛   1
+		//   0式式式式式1
+		//      0
+		constexpr size_t num_face = 4;
+		std::vector<std::vector<size_t>> face_node_index_orders_set(num_face);
+		face_node_index_orders_set[0] = { 0,1 };
+		face_node_index_orders_set[1] = { 1,2 };
+		face_node_index_orders_set[2] = { 2,3 };
+		face_node_index_orders_set[3] = { 3,0 };
+
+		if (this->figure_order_ > 1) {
+			const size_t num_additional_point = this->figure_order_ - 1;
+
+			size_t index = num_face;
+			for (size_t iface = 0; iface < num_face; ++iface)
+				for (size_t ipoint = 0; ipoint < num_additional_point; ++ipoint)
+					face_node_index_orders_set[iface].push_back(index++);
+		}
+
+		return face_node_index_orders_set;
+
 	}
 	default:
 		throw std::runtime_error("wrong element figure");

@@ -1,11 +1,13 @@
 #pragma once
-#define PHYSICAL_DOMAIN_DIMENSION		2
+#define DIMENSION						2
 #define GRID_FILE_TYPE					Gmsh
-#define GRID_FILE_NAME					"Mix100"
+#define GRID_FILE_NAME					"Quad60"
 #define GOVERNING_EQUATION_NAME			Linear_Advection
 #define INITIAL_CONDITION_NAME			Sine_Wave
 #define SPATIAL_DISCRETE_METHOD			FVM
-#define RECONSTRUCTION_METHOD			Linear_Reconstruction<Least_Square>
+#define RECONSTRUCTION_ORDER			1
+#define RECONSTRUCTION_TYPE				Linear_Reconstruction			
+#define GRADIENT_METHOD					Vertex_Least_Square				
 #define NUMERICAL_FLUX_NAME				LLF
 #define TIME_INTEGRAL_METHOD			SSPRK33
 #define TIME_STEP_METHOD_NAME			CFL
@@ -25,8 +27,9 @@
 //GOVERNING_EQUATION_NAME			Linear_Advection, Burgers
 //INITIAL_CONDITION_NAME			Sine_Wave, Square_Wave
 //SPATIAL_DISCRETE_METHOD			FVM
-//RECONSTRUCTION_METHOD				Constant_Reconstruction, Linear_Reconstruction<Gradient_Method>, MLP_u1<Gradient_Method>
-//	Gradient_Method					Least_Square
+//RECONSTRUCTION_ORDER				0,1 (For FVM)
+//RECONSTRUCTION_TYPE				Linear_Reconstruction, MLP_u1				# will be ignored when reconstruction order is 0
+//GRADIENT_METHOD					Vertex_Least_Square, Face_Least_Square		# will be ignored when reconstruction order is 0
 //NUMERICAL_FLUX_NAME				LLF
 //TIME_INTGRAL_METHOD				SSPRK33
 //TIME_STEP_METHOD_NAME				CFL, ConstDt
@@ -44,10 +47,11 @@
 #define FORMAT2(x,y) x ## _ ## y 
 #define SET_FORMAT2(x,y) FORMAT2(x,y)
 
+
 //USING MACRO
 //FORMAT1(X,Y) := X_YD
-#define GOVERNING_EQUATION		SET_FORMAT1(GOVERNING_EQUATION_NAME	, PHYSICAL_DOMAIN_DIMENSION)
-#define INITIAL_CONDITION		SET_FORMAT1(INITIAL_CONDITION_NAME	, PHYSICAL_DOMAIN_DIMENSION)
+#define GOVERNING_EQUATION		SET_FORMAT1(GOVERNING_EQUATION_NAME	, DIMENSION)
+#define INITIAL_CONDITION		SET_FORMAT1(INITIAL_CONDITION_NAME	, DIMENSION)
 
 //FORAMT2(X,Y) := X_Y
 #define SOLVE_END_CONDITION		SET_FORMAT2(End_By					, END_CONDITION_NAME)<END_CONDITION_CONSTANT>		
@@ -55,4 +59,9 @@
 
 #define NUMERICAL_FLUX			NUMERICAL_FLUX_NAME<GOVERNING_EQUATION>
 #define TIME_STEP_METHOD		TIME_STEP_METHOD_NAME<TIME_STEP_CONSTANT>
-	
+
+#if	(RECONSTRUCTION_ORDER == 0)
+	#define RECONSTRUCTION_METHOD	Constant_Reconstruction
+#else
+	#define RECONSTRUCTION_METHOD	RECONSTRUCTION_TYPE<GRADIENT_METHOD<DIMENSION>>
+#endif
