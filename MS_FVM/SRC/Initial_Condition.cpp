@@ -64,7 +64,6 @@ std::vector<Square_Wave_2D::Solution> Square_Wave_2D::calculate_exact_solutions<
 		const auto exact_y_start	= 0.25 + y_advection_speed * end_time - static_cast<int>(0.25 + y_advection_speed * end_time);
 		const auto exact_y_end		= 0.75 + y_advection_speed * end_time - static_cast<int>(0.75 + y_advection_speed * end_time);
 
-
 		if (exact_x_start <= x_coord && x_coord <= exact_x_end &&
 			exact_y_start <= y_coord && y_coord <= exact_y_end)
 			exact_solutions_[i] = 1;

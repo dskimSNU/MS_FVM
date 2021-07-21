@@ -1,14 +1,2 @@
-﻿  test_Text.cpp
-C:\Users\KimMinSeok\source\repos\MS_FVM\MS_FVM\INC\Text.h(17,2): error C2664: 'std::vector<std::string,std::allocator<std::string>>::vector(const _Alloc &) noexcept': 인수 1을(를) 'const char [4]'에서 'const _Alloc &'(으)로 변환할 수 없습니다.
-          with
-          [
-              _Alloc=std::allocator<std::string>
-          ]
-C:\Users\KimMinSeok\source\repos\MS_FVM\MS_FVM\INC\Text.h(17,2): message : 원인: 'const char [4]'에서 'const _Alloc'(으)로 변환할 수 없습니다.
-          with
-          [
-              _Alloc=std::allocator<std::string>
-          ]
-C:\Users\KimMinSeok\source\repos\MS_FVM\MS_FVM\INC\Text.h(17,2): message : 소스 형식을 가져올 수 있는 생성자가 없거나 생성자 오버로드 확인이 모호합니다.
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include\vector(452,5): message : 'std::vector<std::string,std::allocator<std::string>>::vector' 선언을 참조하십시오.
-C:\Users\KimMinSeok\source\repos\MS_FVM\MS_FVM_Test\test_Text.cpp(71): message : 컴파일되는 함수 템플릿 인스턴스화 'Text::Text<const char(&)[4]>(const char (&)[4])'에 대한 참조를 확인하세요.
+﻿  test_PostAI.cpp
+  MS_FVM_Test.vcxproj -> C:\Users\KimMinSeok\source\repos\MS_FVM\x64\Debug\MS_FVM_Test.exe

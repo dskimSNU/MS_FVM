@@ -4,10 +4,10 @@
 
 #include <random>
 
-GTEST_TEST(Grid_File_Convertor, read_about) {
-	const auto grid_elements = Grid_File_Convertor<Gmsh, 2>::convert_to_grid_elements("Quad_10");
- 	std::cout << "check";
-}
+//GTEST_TEST(Grid_File_Convertor, read_about) {
+//	const auto grid_elements = Grid_File_Convertor<Gmsh, 2>::convert_to_grid_elements("Quad_10");
+// 	std::cout << "check";
+//}
 
 //GTEST_TEST(Grid_File_To_Data_Gmsh, read_about){
 //	const std::string grid_file_path = "RSC/Grid/Mix_20.msh";
