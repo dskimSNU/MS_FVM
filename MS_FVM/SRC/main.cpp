@@ -10,7 +10,7 @@ using Semi_Discrete_Equation_	= Semi_Discrete_Equation<GOVERNING_EQUATION, SPATI
 using Discrete_Equation_		= Discrete_Equation<TIME_INTEGRAL_METHOD>;
 
 int main(void) {
-	const auto path = "E:/Code/Result/MS_FVM/" + GOVERNING_EQUATION::name() + "/" + SPATIAL_DISCRETE_METHOD::name() + "/" + RECONSTRUCTION_METHOD::name() + "/" + INITIAL_CONDITION::name() + "/" + GRID_FILE_NAME + "/";		
+	const auto path = "E:/Code/Result/MS_FVM/" + GOVERNING_EQUATION::name() + "/" + INITIAL_CONDITION::name() + "/" + SPATIAL_DISCRETE_METHOD::name() + "_" + RECONSTRUCTION_METHOD::name()  + "/" + GRID_FILE_NAME + "/";
 	Log::set_path(path);
 	Post::set_path(path);
 

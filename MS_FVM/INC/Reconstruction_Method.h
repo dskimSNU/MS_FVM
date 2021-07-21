@@ -14,11 +14,25 @@ public:
 };
 
 
+template<size_t num_equation, size_t space_dimension>
+struct Linear_Reconstructed_Solution
+{
+private:
+    using Solution_             = EuclideanVector<num_equation>;
+    using Solution_Gradient_    = Matrix<num_equation, space_dimension>;
+
+public:
+    const std::vector<Solution_>&   solutions;
+    std::vector<Solution_Gradient_> solution_gradients;
+};
+
+
 template <typename Gradient_Method>
 class Linear_Reconstruction : public RM
 {
 private:
-    static constexpr size_t space_dimension_ = Gradient_Method::space_dimension_;
+    static constexpr size_t num_equation_       = Gradient_Method::num_equation_;
+    static constexpr size_t space_dimension_    = Gradient_Method::space_dimension_;
 
 private:
     Gradient_Method gradient_method;
@@ -26,8 +40,8 @@ private:
 public:
     Linear_Reconstruction(const Grid<space_dimension_>& grid) : gradient_method(grid) {};
 
-    template<size_t num_equation> 
-    auto calculate_gradients(const std::vector<EuclideanVector<num_equation>>& solutions) const;
+
+    auto reconstruct_solutions(const std::vector<EuclideanVector<num_equation_>>& solutions) const;
 
     static std::string name(void) { return "Linear_Reconstruction_" + Gradient_Method::name(); };
 };
@@ -35,44 +49,45 @@ public:
 
 
 template <typename Gradient_Method>
-class MLP_Base
+class MLP_Base : public RM
 {
 private:
-    static constexpr size_t space_dimension_ = Gradient_Method::space_dimension_;
+    static constexpr size_t num_equation_       = Gradient_Method::num_equation_;
+    static constexpr size_t space_dimension_    = Gradient_Method::space_dimension_;
 
-private:
-    Gradient_Method gradient_method;
+    using Solution_ = EuclideanVector<num_equation_>;
 
 protected:
+    Gradient_Method gradient_method;
+
 	std::vector<std::vector<size_t>> vnode_indexes_set_;
 	std::vector<Dynamic_Matrix_> center_to_vertex_matrixes_;
 	std::unordered_map<size_t, std::set<size_t>> vnode_index_to_share_cell_indexes_;
 
-protected:
-	MLP_Base(Grid<space_dimension_>&& grid);
+public:
+    auto reconstruct_solutions(const std::vector<Solution_>& solutions) const;
 
-	template<typename Solution>
-	std::unordered_map<size_t, std::pair<Solution, Solution>> calculate_vertex_node_index_to_min_max_solution(const std::vector<Solution>& solutions) const;
+protected:
+    MLP_Base(Grid<space_dimension_>&& grid);
+
+	auto calculate_vertex_node_index_to_min_max_solution(const std::vector<Solution_>& solutions) const;
+
+    virtual double limit(const double vertex_solution_delta, const double center_solution, const double min_solution, const double max_solution) const abstract;
 };
 
 
 template <typename Gradient_Method>
 class MLP_u1 : public MLP_Base<Gradient_Method>
 {
-private:
     static constexpr size_t space_dimension_ = Gradient_Method::space_dimension_;
 
 public:
-    MLP_u1(Grid<space_dimension>&& grid) : MLP_Base<space_dimension>(std::move(grid)) {};
-
-    template<typename Solution>
-    void limit_solution_gradients(const std::vector<Solution>& solutions, std::vector<Dynamic_Matrix_>& solution_gradients) const;
+    MLP_u1(Grid<space_dimension_>&& grid) : MLP_Base<Gradient_Method>(std::move(grid)) {};
 
     static std::string name(void) { return "MLP_u1_" + Gradient_Method::name(); };
 
-
 private:
-    double limit(const double vertex_solution_delta, const double center_solution, const double min_solution, const double max_solution) const;
+    double limit(const double vertex_solution_delta, const double center_solution, const double min_solution, const double max_solution) const override;
 };
 
 
@@ -80,30 +95,66 @@ private:
 namespace ms {
 	template <typename T>
 	inline constexpr bool is_reconsturction_method = std::is_base_of_v<RM, T>;
-
-	template <typename T>
-	inline constexpr bool is_MLP_method = std::is_base_of_v<MLP, T>;
 }
 
 
 //template definition part
 template <typename Gradient_Method>
-template <size_t num_equation>
-auto Linear_Reconstruction<Gradient_Method>::calculate_gradients(const std::vector<EuclideanVector<num_equation>>& solutions) const {
+auto Linear_Reconstruction<Gradient_Method>::reconstruct_solutions(const std::vector<EuclideanVector<num_equation_>>& solutions) const {
     const auto num_cell = solutions.size();
-
     const auto solution_gradients_temp = gradient_method.calculate_solution_gradients(solutions);
 
     //dynamic matrix to matrix
-    std::vector<Matrix<num_equation, space_dimension_>> solution_gradients;
+    std::vector<Matrix<num_equation_, space_dimension_>> solution_gradients;
     solution_gradients.reserve(num_cell);
 
     for (const auto& solution_gradient : solution_gradients_temp)
         solution_gradients.push_back(solution_gradient);
 
-    return solution_gradients;
+    return Linear_Reconstructed_Solution<num_equation_, space_dimension_>{ solutions, solution_gradients };
 }
 
+
+template <typename Gradient_Method>
+auto MLP_Base<Gradient_Method>::reconstruct_solutions(const std::vector<Solution_>& solutions) const {
+    auto solution_gradients = this->gradient_method.calculate_solution_gradients(solutions);
+    const auto vnode_index_to_min_max_solution = this->calculate_vertex_node_index_to_min_max_solution(solutions);
+
+    const auto num_cell = solutions.size();
+    for (size_t i = 0; i < num_cell; ++i) {
+        auto& gradient = solution_gradients[i];
+        const auto vertex_solution_delta_matrix = gradient * this->center_to_vertex_matrixes_[i];
+
+        std::array<double, num_equation_> limiting_values;
+        limiting_values.fill(1);
+
+        const auto& vnode_indexes = this->vnode_indexes_set_[i];
+        const auto num_vertex = vnode_indexes.size();
+
+        for (size_t j = 0; j < num_vertex; ++j) {
+            const auto vnode_index = vnode_indexes[j];
+            const auto& [min_solution, max_solution] = vnode_index_to_min_max_solution.at(vnode_index);
+
+            for (size_t e = 0; e < num_equation_; ++e) {
+                const auto limiting_value = this->limit(vertex_solution_delta_matrix.at(e, j), solutions[i].at(e), min_solution.at(e), max_solution.at(e));
+                limiting_values[e] = min(limiting_values[e], limiting_value);
+            }
+        }
+
+        for (size_t i = 0; i < num_equation_; ++i)
+            for (size_t j = 0; j < space_dimension_; ++j)
+                gradient.at(i, j) *= limiting_values.at(i);
+    }
+
+    //dynamic matrix to matrix
+    std::vector<Matrix<num_equation_, space_dimension_>> limited_solution_gradient;
+    limited_solution_gradient.reserve(num_cell);
+
+    for (const auto& solution_gradient : solution_gradients)
+        limited_solution_gradient.push_back(solution_gradient);
+
+    return Linear_Reconstructed_Solution<num_equation_, space_dimension_>{ solutions, limited_solution_gradient };
+}
 
 template <typename Gradient_Method>
 MLP_Base<Gradient_Method>::MLP_Base(Grid<space_dimension_>&& grid) : gradient_method(std::move(grid)) {
@@ -143,34 +194,32 @@ MLP_Base<Gradient_Method>::MLP_Base(Grid<space_dimension_>&& grid) : gradient_me
 }
 
 template <typename Gradient_Method>
-template <typename Solution>
-std::unordered_map<size_t, std::pair<Solution, Solution>> MLP_Base<Gradient_Method>::calculate_vertex_node_index_to_min_max_solution(const std::vector<Solution>& solutions) const {
-    constexpr size_t num_equation = Solution::dimension();
+auto MLP_Base<Gradient_Method>::calculate_vertex_node_index_to_min_max_solution(const std::vector<Solution_>& solutions) const {
     const size_t num_vnode = this->vnode_index_to_share_cell_indexes_.size();
 
-    std::unordered_map<size_t, std::pair<Solution, Solution>> vnode_index_to_min_max_solution;
+    std::unordered_map<size_t, std::pair<Solution_, Solution_>> vnode_index_to_min_max_solution;
     vnode_index_to_min_max_solution.reserve(num_vnode);
 
     for (const auto& [vnode_index, share_cell_indexes] : this->vnode_index_to_share_cell_indexes_) {
         const size_t num_share_cell = share_cell_indexes.size();
-        std::array<std::vector<double>, num_equation> equation_wise_solutions;
+        std::array<std::vector<double>, num_equation_> equation_wise_solutions;
 
-        for (size_t i = 0; i < num_equation; ++i)
+        for (size_t i = 0; i < num_equation_; ++i)
             equation_wise_solutions[i].reserve(num_share_cell);
 
         for (const auto cell_index : share_cell_indexes) {
-            for (size_t i = 0; i < num_equation; ++i)
+            for (size_t i = 0; i < num_equation_; ++i)
                 equation_wise_solutions[i].push_back(solutions[cell_index][i]);
         }
 
-        std::array<double, num_equation> min_solution;
-        std::array<double, num_equation> max_solution;
-        for (size_t i = 0; i < num_equation; ++i) {
+        std::array<double, num_equation_> min_solution;
+        std::array<double, num_equation_> max_solution;
+        for (size_t i = 0; i < num_equation_; ++i) {
             min_solution[i] = *std::min_element(equation_wise_solutions[i].begin(), equation_wise_solutions[i].end());
             max_solution[i] = *std::max_element(equation_wise_solutions[i].begin(), equation_wise_solutions[i].end());
         }
-        Solution min_sol = min_solution;
-        Solution max_sol = max_solution;
+        Solution_ min_sol = min_solution;
+        Solution_ max_sol = max_solution;
 
         vnode_index_to_min_max_solution.emplace(vnode_index, std::make_pair(min_sol, max_sol));
     }
@@ -178,39 +227,6 @@ std::unordered_map<size_t, std::pair<Solution, Solution>> MLP_Base<Gradient_Meth
     return vnode_index_to_min_max_solution;
 }
 
-template <typename Gradient_Method>
-template <typename Solution>
-void MLP_u1<Gradient_Method>::limit_solution_gradients(const std::vector<Solution>& solutions, std::vector<Dynamic_Matrix_>& solution_gradients) const {
-    constexpr size_t num_equation = Solution::dimension();
-    const auto num_cell = solutions.size();
-
-    const auto vnode_index_to_min_max_solution = this->calculate_vertex_node_index_to_min_max_solution(solutions);
-
-    for (size_t i = 0; i < num_cell; ++i) {
-        auto& gradient = solution_gradients[i];
-        const auto vertex_solution_delta_matrix = gradient * this->center_to_vertex_matrixes_[i];
-
-        std::array<double, num_equation> limiting_values;
-        limiting_values.fill(1);
-
-        const auto& vnode_indexes = this->vnode_indexes_set_[i];
-        const auto num_vertex = vnode_indexes.size();
-
-        for (size_t j = 0; j < num_vertex; ++j) {
-            const auto vnode_index = vnode_indexes[j];
-            const auto& [min_solution, max_solution] = vnode_index_to_min_max_solution.at(vnode_index);
-
-            for (size_t e = 0; e < num_equation; ++e) {
-                const auto limiting_value = this->limit(vertex_solution_delta_matrix.at(e, j), solutions[i].at(e), min_solution.at(e), max_solution.at(e));
-                limiting_values[e] = min(limiting_values[e], limiting_value);
-            }
-        }
-
-        for (size_t i = 0; i < num_equation; ++i)
-            for (size_t j = 0; j < space_dimension; ++j)
-                gradient.at(i, j) *= limiting_values.at(i);
-    }
-}
 
 template <typename Gradient_Method>
 double MLP_u1<Gradient_Method>::limit(const double vertex_solution_delta, const double center_solution, const double min_solution, const double max_solution) const {

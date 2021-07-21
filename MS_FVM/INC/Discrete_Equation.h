@@ -5,12 +5,10 @@
 #include "Solve_Condition.h"
 #include "Post.h"
 
-template <typename TIM>
+template <typename Time_Integral_Method>
 class Discrete_Equation
 {
-    static_require(ms::is_time_integral_method<TIM>, "Wrong time integral method");
-
-    using Time_Integral_Method = TIM;
+    static_require(ms::is_time_integral_method<Time_Integral_Method>, "Wrong time integral method");
 
 public: 
     template<typename Time_Step_Method, typename Solve_End_Condition, typename Solve_Post_Condition, typename SDE, typename Solution>
@@ -30,17 +28,20 @@ public:
             SET_TIME_POINT;
             auto time_step = semi_discrete_eq.calculate_time_step<Time_Step_Method>(solutions);
              
-            if (Solve_End_Condition::check(current_time, time_step)) {
-                Solve_End_Condition::adjust(current_time, time_step);
+            if (Solve_End_Condition::inspect(current_time, time_step)) {
                 Time_Integral_Method::update_solutions(semi_discrete_eq, solutions, time_step);
-                Log::content_ << std::left << "\t time/iter: " << GET_TIME_DURATION << "s\n";
+                current_time += time_step;
+                Log::content_ << "\t time/update: " << GET_TIME_DURATION << "s\n";
+
+                Log::content_ << "current time: " << std::to_string(current_time) + "s  (100.00%)\n";
                 Post::solution(solutions, current_time, "final");
                 break;
             }
 
-            if (Solve_Post_Condition::check(current_time, time_step)) {
-                Solve_Post_Condition::adjust(current_time, time_step);
+            if (Solve_Post_Condition::inspect(current_time, time_step)) {
                 Time_Integral_Method::update_solutions(semi_discrete_eq, solutions, time_step);
+                current_time += time_step;
+
                 Post::solution(solutions, current_time);
             }
             else {
@@ -48,9 +49,8 @@ public:
                 current_time += time_step;
             }          
 
-            Log::content_ << std::left << "\t time/iter: " << GET_TIME_DURATION << "s\n";
-            Log::print();
-                
+            Log::content_ << "\t time/update: " << GET_TIME_DURATION << "s\n";
+            Log::print();                
         }
 
         Log::content_ << "================================================================================\n";

@@ -1,7 +1,7 @@
 #pragma once
 #include "Cells.h"
 #include "Inner_Faces.h"
-#include "Periodic_boundaries.h"
+#include "Periodic_Boundaries.h"
 #include "Numerical_Flux_Function.h"
 
 template <typename Governing_Equation, typename Spatial_Discrete_Method, typename Reconstruction_Method, typename Numerical_Flux_Function>
@@ -12,22 +12,27 @@ class Semi_Discrete_Equation
     static_require(ms::is_reconsturction_method<Reconstruction_Method>,         "Wrong reconstruction method");
     static_require(ms::is_numeirical_flux_function<Numerical_Flux_Function>,    "Wrong numerical flux function");
 
-    using Cells_                = Cells<Governing_Equation, Spatial_Discrete_Method, Reconstruction_Method>;
-    using Periodic_Boundaries_  = Periodic_Boundaries<Governing_Equation, Spatial_Discrete_Method, Reconstruction_Method>;
-    using Inner_Faces_          = Inner_Faces<Governing_Equation, Spatial_Discrete_Method, Reconstruction_Method>;
-    using Solution_             = typename Governing_Equation::Solution_;
-    using Residual_             = EuclideanVector<Governing_Equation::num_equation()>;
-    
     static constexpr size_t space_dimension_ = Governing_Equation::space_dimension();
+    static constexpr size_t num_equation_ = Governing_Equation::num_equation();
+
+    using Cells_                = Cells<Spatial_Discrete_Method, space_dimension_>;
+    using Periodic_Boundaries_  = Periodic_Boundaries<Spatial_Discrete_Method, Reconstruction_Method, space_dimension_>;
+    using Inner_Faces_          = Inner_Faces<Spatial_Discrete_Method, Reconstruction_Method, space_dimension_>;
+
+    using Solution_             = typename Governing_Equation::Solution_;
+    using Residual_             = EuclideanVector<num_equation_>;
+    
+    
 
 private:
     Cells_ cells_;
     Periodic_Boundaries_ periodic_boundaries_;
     Inner_Faces_ inner_faces_;
+    Reconstruction_Method reconstruction_method_;
 
 public:
     Semi_Discrete_Equation(Grid<space_dimension_>&& grid)
-        : cells_(std::move(grid)), periodic_boundaries_(std::move(grid)), inner_faces_(std::move(grid)) {
+        : cells_(std::move(grid)), periodic_boundaries_(std::move(grid)), inner_faces_(std::move(grid)), reconstruction_method_(std::move(grid)) {
 
         Log::content_ << "================================================================================\n";
         Log::content_ << "\t\t\t Total ellapsed time: " << GET_TIME_DURATION << "s\n";
@@ -56,10 +61,10 @@ public:
             this->inner_faces_.calculate_RHS<Numerical_Flux_Function>(RHS, solutions);
             this->cells_.scale_RHS(RHS);            
         }
-        else {
-            const auto solution_gradients = this->cells_.calculate_gradient(solutions);
-            this->periodic_boundaries_.calculate_RHS_with_gradient<Numerical_Flux_Function>(RHS, solutions, solution_gradients);
-            this->inner_faces_.calculate_RHS_with_gradient<Numerical_Flux_Function>(RHS, solutions, solution_gradients);
+        else{
+            const auto reconstructed_solutions = this->reconstruction_method_.reconstruct_solutions(solutions);
+            this->periodic_boundaries_.calculate_RHS<Numerical_Flux_Function, num_equation_>(RHS, reconstructed_solutions);
+            this->inner_faces_.calculate_RHS<Numerical_Flux_Function, num_equation_>(RHS, reconstructed_solutions);
             this->cells_.scale_RHS(RHS);
         }
 

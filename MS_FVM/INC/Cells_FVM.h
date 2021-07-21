@@ -53,7 +53,7 @@ Cells_FVM<space_dimension>::Cells_FVM(const Grid<space_dimension>& grid) {
         this->residual_scale_factors_.push_back(1.0 / volume);
     }
 
-    Log::content_ << std::left << std::setw(50) << "@ Construct Cells FVM Base" << " ----------- " << GET_TIME_DURATION << "s\n\n";
+    Log::content_ << std::left << std::setw(50) << "@ Cells FVM precalculation" << " ----------- " << GET_TIME_DURATION << "s\n\n";
     Log::print();
 };
 

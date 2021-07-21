@@ -87,13 +87,22 @@
     <ClInclude Include="INC\Gradient_Method.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Periodic_boundaries.h">
+    <ClInclude Include="INC\Periodic_Boundaries.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="INC\Log.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="INC\Cells_FVM.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Inner_Faces_FVM.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Periodic_Boundaries_FVM.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\PostAI.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

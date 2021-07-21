@@ -60,7 +60,5 @@ namespace ms {
     template <typename T>
     inline constexpr bool is_governing_equation = std::is_base_of_v<Gov_Eq, T>;
     template <typename T>
-    inline constexpr bool is_Scalar_Eq = std::is_base_of_v<SCL_2D, T>;
-    template <typename T>
-    inline constexpr bool is_not_linear_advection = !std::is_same_v<Linear_Advection_2D, T>;
+    inline constexpr bool is_scalar_conservation_law = std::is_base_of_v<SCL_2D, T>;
 }

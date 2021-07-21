@@ -1,8 +1,5 @@
 #pragma once
 #include "Governing_Equation.h"
-#include "Spatial_Discrete_Method.h"
-#include "Reconstruction_Method.h"
-#include "Inital_Condition.h"
 #include "Element.h"
 #include "Text.h"
 
@@ -24,8 +21,8 @@ public:
 	template <size_t space_dimension>
 	static void grid(const std::vector<Element<space_dimension>>& cell_elements);
 
-	template <size_t space_dimension>
-	static void solution(const std::vector<EuclideanVector<space_dimension>>& solutions, const double time_step, const std::string& comment = "");
+	template <size_t num_equation>
+	static void solution(const std::vector<EuclideanVector<num_equation>>& solutions, const double time_step, const std::string& comment = "");
 
 private:
 	static Text header_text(const Post_File_Type file_type, const double time_step = 0.0);
@@ -47,7 +44,7 @@ template <typename Governing_Equation>
 void Post::intialize(void) {
 	static_require(ms::is_governing_equation<Governing_Equation>,			"Wrong governing equation");
 
-	if constexpr (ms::is_Scalar_Eq<Governing_Equation>) {
+	if constexpr (ms::is_scalar_conservation_law<Governing_Equation>) {
 		if constexpr (Governing_Equation::space_dimension() == 2) {
 			grid_variables_ = "Variables = X Y";
 			solution_variables_ = "Variables = q";
@@ -73,15 +70,15 @@ void Post::grid(const std::vector<Element<space_dimension>>& cell_elements) {
 
 		auto post_nodes = geometry.vertex_nodes();
 		Post::num_post_points_[i] = post_nodes.size();
-		for (const auto node :post_nodes)
+		for (const auto node : post_nodes) {
 			for (size_t i = 0; i < space_dimension; ++i, ++str_per_line) {
 				grid_post_data_text[i] += ms::double_to_string(node[i]) + " ";
 				if (str_per_line == 10) {
 					grid_post_data_text[i] += "\n";
 					str_per_line = 1;
 				}
-
 			}
+		}
 
 		std::string connectivity_str;
 		auto local_connectivities = geometry.reference_geometry_.local_connectivities();
@@ -104,19 +101,19 @@ void Post::grid(const std::vector<Element<space_dimension>>& cell_elements) {
 	grid_post_data_text.add_write(grid_file_path);
 }
 
-template <size_t space_dimension>
-void Post::solution(const std::vector<EuclideanVector<space_dimension>>& solutions, const double current_time, const std::string& comment) {
+template <size_t num_equation>
+void Post::solution(const std::vector<EuclideanVector<num_equation>>& solutions, const double current_time, const std::string& comment) {
 	size_t str_per_line = 1;
 	static size_t count = 1;
 	
 	auto solution_post_header_text = Post::header_text(Post_File_Type::Solution, current_time);
 
-	Text solution_post_data_text(space_dimension);
+	Text solution_post_data_text(num_equation);
 	const auto num_solution = solutions.size();
 	for (size_t i = 0; i < num_solution; ++i) {
 		auto& solution = solutions[i];
 		for (size_t j = 0; j < Post::num_post_points_[i]; ++j) {
-			for (size_t k = 0; k < space_dimension; ++k, ++str_per_line) {
+			for (size_t k = 0; k < num_equation; ++k, ++str_per_line) {
 				solution_post_data_text[k] += ms::double_to_string(solution[k]) + " ";
 				if (str_per_line == 10) {
 					solution_post_data_text[k] += "\n";
