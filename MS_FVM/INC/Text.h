@@ -45,6 +45,7 @@ namespace ms {
 	std::string upper_case(const std::string& str);
 	size_t find_icase(const std::string& str, const std::string& target);
 	bool is_there_icase(const std::string& str, const std::string& target);
+	std::string double_to_str_sp(const double value); //double to string with show point
 }
 
 

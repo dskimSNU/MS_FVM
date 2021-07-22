@@ -5,18 +5,28 @@
 
 class PostAI
 {
-//private:
+//private: //for test
 public:
+	inline static std::string path_;
+	inline static size_t num_data_;
+	inline static std::vector<Text> ai_data_text_set_;
 	inline static std::vector<std::vector<size_t>> vertex_share_cell_indexes_set_;
 
-	inline static std::vector<std::string> node_number_string_set_;
-	inline static std::vector<std::string> edge_number_string_set_;
-	inline static std::vector<std::string> connectivity_string_set_;
-	inline static std::vector<std::string> cell_coords_string_set_;
-
 public:
+	static void set_path(const std::string& path) {
+		path_ = path;
+	}
+
 	template <size_t space_dimension>
 	static void intialize(const Grid<space_dimension>& grid);
+
+	template <size_t num_equation>
+	static void record_solution_datas(const std::vector<EuclideanVector<num_equation>>& solutions, const std::vector<Dynamic_Matrix_>& solution_gradients);
+
+	template <size_t num_equation>
+	static void record_limiting_value(const size_t index, const std::array<double, num_equation>& limiting_value);
+
+	static void post(void);
 
 //private: //for test
 	template <size_t space_dimension>
@@ -24,6 +34,11 @@ public:
 
 	template <size_t space_dimension>
 	static auto calculate_vertex_nodes_coordinate_string_set(const Grid<space_dimension>& grid);
+
+	template <size_t num_equation>
+	static auto convert_to_solution_strings(const std::vector<EuclideanVector<num_equation>>& solutions);
+
+	static auto convert_to_solution_gradient_strings(const std::vector<Dynamic_Matrix_>& solution_gradients);
 };
 
 
@@ -32,24 +47,19 @@ template <size_t space_dimension>
 void PostAI::intialize(const Grid<space_dimension>& grid) {
 	const auto& vnode_index_to_share_cell_indexes = grid.connectivity.vnode_index_to_share_cell_indexes;
 	const auto& cell_elements = grid.elements.cell_elements;
-	const auto num_cell = cell_elements.size();
+	num_data_ = cell_elements.size();
 
-
-	vertex_share_cell_indexes_set_.reserve(num_cell);
-	node_number_string_set_.reserve(num_cell);
-	edge_number_string_set_.reserve(num_cell);
-	connectivity_string_set_.reserve(num_cell);
-	cell_coords_string_set_.reserve(num_cell);
-
+	vertex_share_cell_indexes_set_.reserve(num_data_);
+	ai_data_text_set_.resize(num_data_);
 
 	const auto face_share_cell_indexes_set = calculate_face_share_cell_indexes_set(grid);
 	const auto vnodes_coordinate_string_set = calculate_vertex_nodes_coordinate_string_set(grid);
 
-	for (size_t i = 0; i < num_cell; ++i) {
+	for (size_t i = 0; i < num_data_; ++i) {
 		const auto& cell_element = cell_elements[i];
 		const auto& cell_geometry = cell_element.geometry_;
 
-		//vertex share cell indexes
+			//vertex share cell indexes temp
 		std::set<size_t> vertex_share_cell_indexes_temp;
 
 		const auto vnode_indexes = cell_element.vertex_node_indexes();
@@ -58,52 +68,114 @@ void PostAI::intialize(const Grid<space_dimension>& grid) {
 			vertex_share_cell_indexes_temp.insert(vnode_share_cell_indexes.begin(), vnode_share_cell_indexes.end());
 		}
 
-		// node number string
-		const auto num_node = vertex_share_cell_indexes.size();
-		node_number_string_set_.push_back("@nodeNumber\n" + std::to_string(num_node) + "\n");
+			//chunk edge connectivities //quad3에서는 제대로 작동하지 않는 algorithm
+		std::set<std::set<size_t>> face_share_cell_index_pairs;
 
-		//chunk edge connectivities //quad3에서는 제대로 작동하지 않는 algorithm
-		std::set<std::set<size_t>> chunk_edge_connectivities;
-
-		for (const auto chunk_cell_index : vertex_share_cell_indexes) {
+		for (const auto chunk_cell_index : vertex_share_cell_indexes_temp) {
 			const auto& face_share_cell_indexes = face_share_cell_indexes_set.at(chunk_cell_index);
 
 			std::vector<size_t> face_share_cell_indexes_in_chunk;
-			std::set_intersection(vertex_share_cell_indexes.begin(), vertex_share_cell_indexes.end(), face_share_cell_indexes.begin(), face_share_cell_indexes.end(), std::back_inserter(face_share_cell_indexes_in_chunk));
+			std::set_intersection(vertex_share_cell_indexes_temp.begin(), vertex_share_cell_indexes_temp.end(), face_share_cell_indexes.begin(), face_share_cell_indexes.end(), std::back_inserter(face_share_cell_indexes_in_chunk));
 
 			for (const auto face_share_cell_index_in_chunk : face_share_cell_indexes_in_chunk)
-				chunk_edge_connectivities.insert({ chunk_cell_index, face_share_cell_index_in_chunk });
+				face_share_cell_index_pairs.insert({ chunk_cell_index, face_share_cell_index_in_chunk });
 		}
 
-		//edge number string
-		const auto num_edge = chunk_edge_connectivities.size();
-		edge_number_string_set_.push_back("@edgeNumber\n" + std::to_string(num_edge) + "\n");
-
-		//connectivity string
-		std::string node_connectivity_string = "@connectivity\n";
-		for (const auto& chunk_edge_connectivity : chunk_edge_connectivities) {
-			for (const auto& node_index : chunk_edge_connectivity)
-				node_connectivity_string += std::to_string(node_index) + "\t";
-			node_connectivity_string += "\n";
-		}
-		connectivity_string_set_.push_back(std::move(node_connectivity_string));
-
-		//cell coords string
-		std::string cell_coords_string = "@cellCoords\n";
-		for (const auto vertex_share_cell_index : vertex_share_cell_indexes) 
-			cell_coords_string += vnodes_coordinate_string_set[vertex_share_cell_index];
-
-		cell_coords_string_set_.push_back(std::move(cell_coords_string));
-
-		//last
+		//vertex_share_cell_indexes
 		vertex_share_cell_indexes_temp.erase(i);
 
 		std::vector<size_t> vertex_share_cell_indexes;
 		vertex_share_cell_indexes.push_back(i);
 		vertex_share_cell_indexes.insert(vertex_share_cell_indexes.end(), vertex_share_cell_indexes_temp.begin(), vertex_share_cell_indexes_temp.end());
 
-		vertex_share_cell_indexes_set_.push_back(vertex_share_cell_indexes);
+		// header string
+		ai_data_text_set_[i] << "#########################" + std::to_string(i);
+		
+		// node number string
+		const auto num_node = vertex_share_cell_indexes.size();
+		ai_data_text_set_[i] << "@nodeNumber\n" + std::to_string(num_node);
 
+		// node index order string
+		std::string node_index_order_string = "@nodeIndexOrder\n";
+		for (const auto& node_index : vertex_share_cell_indexes)
+			node_index_order_string += std::to_string(node_index) + "\t";
+		ai_data_text_set_[i] << std::move(node_index_order_string);
+
+		//edge number string
+		const auto num_edge = face_share_cell_index_pairs.size();
+		ai_data_text_set_[i] << "@edgeNumber\n" + std::to_string(num_edge);
+
+		//connectivity string
+		std::string node_connectivity_string = "@connectivity\n";
+		for (const auto& chunk_edge_connectivity : face_share_cell_index_pairs) {
+			for (const auto& node_index : chunk_edge_connectivity)
+				node_connectivity_string += std::to_string(node_index) + "\t";
+			node_connectivity_string += "\n";
+		}
+		node_connectivity_string.pop_back();
+		ai_data_text_set_[i] << std::move(node_connectivity_string);
+
+		//cell coords string
+		std::string cell_coords_string = "@cellCoords\n";
+		for (const auto vertex_share_cell_index : vertex_share_cell_indexes)
+			cell_coords_string += vnodes_coordinate_string_set[vertex_share_cell_index];
+		cell_coords_string.pop_back();
+
+		ai_data_text_set_[i] << std::move(cell_coords_string);
+
+		//vertex_share_cell_indexes
+		vertex_share_cell_indexes_set_.push_back(std::move(vertex_share_cell_indexes));
+	}
+}
+
+
+template <size_t num_equation>
+void PostAI::record_solution_datas(const std::vector<EuclideanVector<num_equation>>& solutions, const std::vector<Dynamic_Matrix_>& solution_gradients) {
+	dynamic_require(num_data_ == solutions.size(),			"number of solution should be same with number of data");
+	dynamic_require(num_data_ == solution_gradients.size(), "number of solution gradient should be same with number of data");
+
+	const auto solution_strings = convert_to_solution_strings(solutions);
+	const auto solution_gradient_strings = convert_to_solution_gradient_strings(solution_gradients);
+
+	std::string cell_average_string;
+	std::string cell_gradient_string;
+	for (size_t i = 0; i < num_data_; ++i) {
+		const auto& vertex_share_cell_indexes = vertex_share_cell_indexes_set_[i];
+
+		cell_average_string = "@cellAverage\n";
+		cell_gradient_string = "@cellGradient\n";
+		for (const auto vertex_share_cell_index : vertex_share_cell_indexes) {
+			cell_average_string += solution_strings[vertex_share_cell_index] + "\n";
+			cell_gradient_string += solution_gradient_strings[vertex_share_cell_index] + "\n";
+		}
+		cell_average_string.pop_back();
+		cell_gradient_string.pop_back();
+
+		ai_data_text_set_[i] << std::move(cell_average_string) << std::move(cell_gradient_string);
+	}
+}
+
+template <size_t num_equation>
+void PostAI::record_limiting_value(const size_t index, const std::array<double, num_equation>& limiting_value) {
+	std::string limiting_value_string = "@limiterFunction\n";
+
+	for (size_t i = 0; i < num_equation; ++i)
+		limiting_value_string += ms::double_to_str_sp(limiting_value[i]) + "\t";
+	limiting_value_string += "\n";
+
+	ai_data_text_set_[index] << std::move(limiting_value_string);
+}
+
+void PostAI::post(void) {
+	static size_t num_post = 1;
+
+	const auto file_name = "AI_Solver_Data_" + std::to_string(num_post++) + ".txt";
+	const auto file_path = path_ + file_name;
+
+	constexpr size_t num_solution_str = 3;
+	for (auto& data_text : ai_data_text_set_) {
+		data_text.add_write(file_path);
+		data_text.erase(data_text.end() - num_solution_str, data_text.end()); //
 	}
 }
 
@@ -180,17 +252,56 @@ auto PostAI::calculate_vertex_nodes_coordinate_string_set(const Grid<space_dimen
 		std::string vnodes_coordinate_string = std::to_string(num_vnode) + "\n";
 
 		for (const auto& vnode : vnodes) {
-			std::ostringstream stream;
-			stream << std::setprecision(16) << std::showpoint;
-
 			for (size_t i = 0; i < space_dimension; ++i)
-				stream << vnode[i] << "\t";
+				vnodes_coordinate_string += ms::double_to_str_sp(vnode[i]) + "\t";
 
-			vnodes_coordinate_string += stream.str() + "\n";
+			vnodes_coordinate_string += "\n";
 		}
 
 		vnodes_coordinate_string_set.push_back(std::move(vnodes_coordinate_string));
 	}
 
 	return vnodes_coordinate_string_set;
+}
+
+
+template <size_t num_equation>
+auto PostAI::convert_to_solution_strings(const std::vector<EuclideanVector<num_equation>>& solutions) {
+	const auto num_solution = solutions.size();
+	
+	std::vector<std::string> solution_strings;
+	solution_strings.reserve(num_solution);
+
+	std::string solution_string;
+	for (size_t i = 0; i < num_solution; ++i) {
+
+		const auto& solution = solutions[i];
+		for (size_t j = 0; j < num_equation; ++j)
+			solution_string += ms::double_to_str_sp(solution[j]) + "\t";
+
+		solution_strings.push_back(std::move(solution_string));
+	}
+
+	return solution_strings;
+}
+
+auto PostAI::convert_to_solution_gradient_strings(const std::vector<Dynamic_Matrix_>& solution_gradients) {
+	const auto num_solution = solution_gradients.size();
+	const auto [num_equation, space_dimension] = solution_gradients.front().size();
+
+	std::vector<std::string> solution_gradient_strings;
+	solution_gradient_strings.reserve(num_solution);
+
+	std::string solution_gradient_string;
+	for (size_t i = 0; i < num_solution; ++i) {
+
+		const auto& solution_gradient = solution_gradients[i];
+		for (size_t j = 0; j < num_equation; ++j)
+			for (size_t k=0; k< space_dimension; ++k)
+				solution_gradient_string += ms::double_to_str_sp(solution_gradient.at(j,k)) + "\t";
+
+		solution_gradient_strings.push_back(std::move(solution_gradient_string));
+	}
+
+	return solution_gradient_strings;
 }

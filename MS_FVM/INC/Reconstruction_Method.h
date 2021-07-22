@@ -3,6 +3,7 @@
 #include <string>
 
 #include "Gradient_Method.h"
+#include "PostAI.h"
 
 class RM {};	// Reconstruction Method
 
@@ -120,6 +121,8 @@ auto MLP_Base<Gradient_Method>::reconstruct_solutions(const std::vector<Solution
     auto solution_gradients = this->gradient_method.calculate_solution_gradients(solutions);
     const auto vnode_index_to_min_max_solution = this->calculate_vertex_node_index_to_min_max_solution(solutions);
 
+    PostAI::record_solution_datas(solutions, solution_gradients);
+
     const auto num_cell = solutions.size();
     for (size_t i = 0; i < num_cell; ++i) {
         auto& gradient = solution_gradients[i];
@@ -140,6 +143,8 @@ auto MLP_Base<Gradient_Method>::reconstruct_solutions(const std::vector<Solution
                 limiting_values[e] = min(limiting_values[e], limiting_value);
             }
         }
+
+        PostAI::record_limiting_value(i, limiting_values);
 
         for (size_t i = 0; i < num_equation_; ++i)
             for (size_t j = 0; j < space_dimension_; ++j)

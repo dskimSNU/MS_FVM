@@ -135,6 +135,12 @@ namespace ms {
 	bool is_there_icase(const std::string& str, const std::string& target) {
 		return ms::find_icase(str, target) != std::string::npos;
 	}
+
+	std::string double_to_str_sp(const double value) {
+		std::ostringstream os;
+		os << std::setprecision(16) << std::showpoint << value;
+		return os.str();
+	}
 }
 
 
