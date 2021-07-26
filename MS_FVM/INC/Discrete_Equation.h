@@ -8,13 +8,13 @@
 template <typename Time_Integral_Method>
 class Discrete_Equation
 {
-    static_require(ms::is_time_integral_method<Time_Integral_Method>, "Wrong time integral method");
+    static_require(ms::is_time_integral_method<Time_Integral_Method>, "It should be time integral method");
 
 public: 
     template<typename Time_Step_Method, typename Solve_End_Condition, typename Solve_Post_Condition, typename SDE, typename Solution>
     static void solve(const SDE& semi_discrete_eq, std::vector<Solution>& solutions) {
-        static_require(ms::is_solve_end_condtion<Solve_End_Condition>, "Wrong solve end condition");
-        static_require(ms::is_solve_post_condtion<Solve_Post_Condition>, "Wrong solve post condition");
+        static_require(ms::is_solve_end_condtion<Solve_End_Condition>,      "It should be solve end condition");
+        static_require(ms::is_solve_post_condtion<Solve_Post_Condition>,    "It should be solve post condition");
          
         double current_time = 0.0;
         Post::solution(solutions, current_time, "initial");

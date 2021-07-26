@@ -111,9 +111,6 @@ Inner_Faces_FVM_Linear<space_dimension>::Inner_Faces_FVM_Linear(Grid<space_dimen
         const auto oc_to_face_vector = inner_face_center - oc_center;
         const auto nc_to_face_vector = inner_face_center - nc_center;
 
-        //const auto oc_to_face_vector = oc_center - inner_face_center;
-        //const auto nc_to_face_vector = nc_center - inner_face_center;
-
         this->oc_nc_to_face_vector_pairs_.push_back(std::make_pair(oc_to_face_vector, nc_to_face_vector));
     }
 

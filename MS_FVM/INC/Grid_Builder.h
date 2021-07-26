@@ -1,5 +1,5 @@
 #pragma once
-#include "Grid_File_Convertor.h"
+#include "Grid_Element_Builder.h"
 
 #include <set>
 #include <unordered_map>
@@ -14,10 +14,10 @@ struct Grid_Connectivity
 	std::vector<size_t> boundary_oc_indexes;
 	std::vector<EuclideanVector<space_dimension>> boundary_normals;
 
-	std::vector<std::pair<size_t, size_t>> periodic_boundary_oc_nc_index_pairs;		// {owner cell index,			neighbor cell index}
+	std::vector<std::pair<size_t, size_t>> periodic_boundary_oc_nc_index_pairs;		// {owner cell index, neighbor cell index}
 	std::vector<EuclideanVector<space_dimension>> periodic_boundary_normals;
 
-	std::vector<std::pair<size_t, size_t>> inner_face_oc_nc_index_pairs;			// {owner cell index,			neighbor cell index}
+	std::vector<std::pair<size_t, size_t>> inner_face_oc_nc_index_pairs;			// {owner cell index, neighbor cell index}
 	std::vector<EuclideanVector<space_dimension>> inner_face_normals;
 };
 
@@ -35,10 +35,10 @@ class Grid_Builder
 {
 private:
 	using Space_Vector_		= EuclideanVector<space_dimension>;
-	using Element_			= Element<space_dimension>;
 
 public:
-	static Grid<space_dimension> build(Grid_Elements<space_dimension>&& grid_elements);
+	template <typename Grid_File_Type>
+	static Grid<space_dimension> build(const std::string& grid_file_name);
 
 private:
 	static Grid_Connectivity<space_dimension> make_grid_connectivity(const Grid_Elements<space_dimension>& grid_elements);
@@ -48,9 +48,13 @@ private:
 
 //template definition part
 template <size_t space_dimension>
-Grid<space_dimension> Grid_Builder<space_dimension>::build(Grid_Elements<space_dimension>&& grid_elements) {	
-	auto grid_connectivity = make_grid_connectivity(grid_elements);
-	return Grid<space_dimension>({ std::move(grid_elements),std::move(grid_connectivity) });
+template <typename Grid_File_Type>
+Grid<space_dimension> Grid_Builder<space_dimension>::build(const std::string& grid_file_name) {
+	static_require(ms::is_grid_file_type<Grid_File_Type>, "It should be grid file type");
+
+	const auto grid_elements		= Grid_Element_Builder<Grid_File_Type, space_dimension>::build_from_grid_file(grid_file_name);
+	const auto grid_connectivity	= make_grid_connectivity(grid_elements);
+	return { grid_elements,grid_connectivity };
 }
 
 
@@ -76,7 +80,7 @@ Grid_Connectivity<space_dimension> Grid_Builder<space_dimension>::make_grid_conn
 	//boudnary grid connectivity
 	const auto num_boundary = boundary_elements.size();
 	std::vector<size_t> boudnary_oc_indexes(num_boundary);
-	std::vector<EuclideanVector<space_dimension>> boundary_normals(num_boundary);
+	std::vector<Space_Vector_> boundary_normals(num_boundary);
 
 	for (size_t i = 0; i < num_boundary; ++i) {
 		const auto& boundary_element = boundary_elements[i];
@@ -98,7 +102,7 @@ Grid_Connectivity<space_dimension> Grid_Builder<space_dimension>::make_grid_conn
 	//periodic boundary grid connectivity
 	const auto num_pbdry_pair = periodic_boundary_element_pairs.size();
 	std::vector<std::pair<size_t, size_t>> periodic_boundary_oc_nc_index_pairs(num_pbdry_pair);
-	std::vector<EuclideanVector<space_dimension>> periodic_boundary_normals(num_pbdry_pair);
+	std::vector<Space_Vector_> periodic_boundary_normals(num_pbdry_pair);
 
 	for (size_t i = 0; i < num_pbdry_pair; ++i) {
 		const auto& [i_pbdry_element, j_pbdry_element] = periodic_boundary_element_pairs[i];
@@ -158,7 +162,7 @@ Grid_Connectivity<space_dimension> Grid_Builder<space_dimension>::make_grid_conn
 	//inner face grid connectivity
 	const auto num_inner_face = inner_face_elements.size();
 	std::vector<std::pair<size_t, size_t>> inner_face_oc_nc_index_pairs(num_inner_face);
-	std::vector<EuclideanVector<space_dimension>> inner_face_normals(num_inner_face);
+	std::vector<Space_Vector_> inner_face_normals(num_inner_face);
 
 	for (size_t i = 0; i < num_inner_face; ++i) {
 		const auto& inner_face_element = inner_face_elements[i];

@@ -4,21 +4,20 @@
 #include "../INC/Post.h"
 #include "../INC/Log.h"
 
-using Grid_File_Convertor_		= Grid_File_Convertor<GRID_FILE_TYPE, DIMENSION>;
 using Grid_Builder_				= Grid_Builder<DIMENSION>;
 using Semi_Discrete_Equation_	= Semi_Discrete_Equation<GOVERNING_EQUATION, SPATIAL_DISCRETE_METHOD, RECONSTRUCTION_METHOD, NUMERICAL_FLUX>;
 using Discrete_Equation_		= Discrete_Equation<TIME_INTEGRAL_METHOD>;
 
 int main(void) {
-	const auto path = "E:/Code/Result/MS_FVM/" + GOVERNING_EQUATION::name() + "/" + INITIAL_CONDITION::name() + "/" + SPATIAL_DISCRETE_METHOD::name() + "_" + RECONSTRUCTION_METHOD::name()  + "/" + GRID_FILE_NAME + "/";
-	Log::set_path(path);
-	Post::set_path(path);
+	Log::set_path(PATH);
+	Post::set_path(PATH);
+	PostAI::set_path(PATH + "AI_Data/");
 
-	auto grid_elements	= Grid_File_Convertor_::convert_to_grid_elements(GRID_FILE_NAME);
-	auto grid			= Grid_Builder_::build(std::move(grid_elements));
+	auto grid = Grid_Builder_::build<GRID_FILE_TYPE>(GRID_FILE_NAME);
 
 	Post::intialize<GOVERNING_EQUATION>();
 	Post::grid(grid.elements.cell_elements);
+	PostAI::intialize(grid);
 
 	const auto semi_discrete_eq = Semi_Discrete_Equation_(std::move(grid));
 	auto solutions				= semi_discrete_eq.calculate_initial_solutions<INITIAL_CONDITION>();

@@ -42,7 +42,7 @@ private:
 //template definition part
 template <typename Governing_Equation>
 void Post::intialize(void) {
-	static_require(ms::is_governing_equation<Governing_Equation>,			"Wrong governing equation");
+	static_require(ms::is_governing_equation<Governing_Equation>, "It should be governing equation");
 
 	if constexpr (ms::is_scalar_conservation_law<Governing_Equation>) {
 		if constexpr (Governing_Equation::space_dimension() == 2) {
@@ -51,7 +51,12 @@ void Post::intialize(void) {
 			zone_type_ = "ZoneType = FETriangle";
 		}
 	}
-	else
+	else if constexpr (std::is_same_v<Governing_Equation, Euler_2D>) {
+		grid_variables_ = "Variables = X Y";
+		solution_variables_ = "Variables = rho rhou rhov rhoE u v p a";
+		zone_type_ = "ZoneType = FETriangle";
+	}
+	else 
 		throw std::runtime_error("wrong post initialize");
 }
 

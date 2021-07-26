@@ -7,10 +7,10 @@
 template <typename Governing_Equation, typename Spatial_Discrete_Method, typename Reconstruction_Method, typename Numerical_Flux_Function>
 class Semi_Discrete_Equation
 {
-    static_require(ms::is_governing_equation<Governing_Equation>,               "Wrong governing equation");
-    static_require(ms::is_spatial_discrete_method<Spatial_Discrete_Method>,     "Wrong spatial discrete method");
-    static_require(ms::is_reconsturction_method<Reconstruction_Method>,         "Wrong reconstruction method");
-    static_require(ms::is_numeirical_flux_function<Numerical_Flux_Function>,    "Wrong numerical flux function");
+    static_require(ms::is_governing_equation<Governing_Equation>,               "It should be governing equation");
+    static_require(ms::is_spatial_discrete_method<Spatial_Discrete_Method>,     "It should be spatial discrete method");
+    static_require(ms::is_reconsturction_method<Reconstruction_Method>,         "It should be reconstruction method");
+    static_require(ms::is_numeirical_flux_function<Numerical_Flux_Function>,    "It should be numerical flux function");
 
     static constexpr size_t space_dimension_ = Governing_Equation::space_dimension();
     static constexpr size_t num_equation_ = Governing_Equation::num_equation();

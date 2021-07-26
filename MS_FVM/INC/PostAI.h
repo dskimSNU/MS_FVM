@@ -11,6 +11,7 @@ public:
 	inline static size_t num_data_;
 	inline static std::vector<Text> ai_data_text_set_;
 	inline static std::vector<std::vector<size_t>> vertex_share_cell_indexes_set_;
+	inline static std::vector<size_t> target_cell_indexes_;
 
 public:
 	static void set_path(const std::string& path) {
@@ -51,6 +52,7 @@ void PostAI::intialize(const Grid<space_dimension>& grid) {
 
 	vertex_share_cell_indexes_set_.reserve(num_data_);
 	ai_data_text_set_.resize(num_data_);
+	target_cell_indexes_.reserve(num_data_);
 
 	const auto face_share_cell_indexes_set = calculate_face_share_cell_indexes_set(grid);
 	const auto vnodes_coordinate_string_set = calculate_vertex_nodes_coordinate_string_set(grid);
@@ -89,7 +91,7 @@ void PostAI::intialize(const Grid<space_dimension>& grid) {
 		vertex_share_cell_indexes.insert(vertex_share_cell_indexes.end(), vertex_share_cell_indexes_temp.begin(), vertex_share_cell_indexes_temp.end());
 
 		// header string
-		ai_data_text_set_[i] << "#########################" + std::to_string(i);
+		ai_data_text_set_[i] << "temporary header text";
 		
 		// node number string
 		const auto num_node = vertex_share_cell_indexes.size();
@@ -141,6 +143,21 @@ void PostAI::record_solution_datas(const std::vector<EuclideanVector<num_equatio
 	std::string cell_gradient_string;
 	for (size_t i = 0; i < num_data_; ++i) {
 		const auto& vertex_share_cell_indexes = vertex_share_cell_indexes_set_[i];
+		const auto num_vertex_share_cell = vertex_share_cell_indexes.size();
+
+
+		std::vector<double> vertex_share_cell_solutions(num_vertex_share_cell);
+		for (size_t i = 0; i < num_vertex_share_cell; ++i)
+			vertex_share_cell_solutions[i] = solutions[vertex_share_cell_indexes[i]][0];
+
+		const auto min_solution = *std::min_element(vertex_share_cell_solutions.begin(), vertex_share_cell_solutions.end());
+		const auto max_solution = *std::max_element(vertex_share_cell_solutions.begin(), vertex_share_cell_solutions.end());
+		const auto solution_diff = max_solution - min_solution;
+
+		if (solution_diff < 0.01)
+			continue;
+			
+		target_cell_indexes_.push_back(i);
 
 		cell_average_string = "@cellAverage\n";
 		cell_gradient_string = "@cellGradient\n";
@@ -157,6 +174,9 @@ void PostAI::record_solution_datas(const std::vector<EuclideanVector<num_equatio
 
 template <size_t num_equation>
 void PostAI::record_limiting_value(const size_t index, const std::array<double, num_equation>& limiting_value) {
+	if (std::find(target_cell_indexes_.begin(), target_cell_indexes_.end(), index) == target_cell_indexes_.end())
+		return;
+
 	std::string limiting_value_string = "@limiterFunction\n";
 
 	for (size_t i = 0; i < num_equation; ++i)
@@ -168,15 +188,29 @@ void PostAI::record_limiting_value(const size_t index, const std::array<double, 
 
 void PostAI::post(void) {
 	static size_t num_post = 1;
+	static size_t num_post_data = 1;
 
-	const auto file_name = "AI_Solver_Data_" + std::to_string(num_post++) + ".txt";
-	const auto file_path = path_ + file_name;
+	auto file_name = "AI_Solver_Data_" + std::to_string(num_post) + ".txt";
+	auto file_path = path_ + file_name;
 
 	constexpr size_t num_solution_str = 3;
-	for (auto& data_text : ai_data_text_set_) {
+	for (const auto target_cell_index : target_cell_indexes_) {
+		auto& data_text = ai_data_text_set_.at(target_cell_index);
+
+		data_text.front() = "#########################" + std::to_string(num_post_data++);
+
 		data_text.add_write(file_path);
-		data_text.erase(data_text.end() - num_solution_str, data_text.end()); //
+		data_text.erase(data_text.end() - num_solution_str, data_text.end());
+
+		if (10000 < num_post_data) {
+			num_post_data = 1;
+			
+			file_name = "AI_Solver_Data_" + std::to_string(++num_post) + ".txt";
+			file_path = path_ + file_name;
+		}
 	}
+
+	target_cell_indexes_.clear();
 }
 
 

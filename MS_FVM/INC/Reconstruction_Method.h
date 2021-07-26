@@ -151,6 +151,8 @@ auto MLP_Base<Gradient_Method>::reconstruct_solutions(const std::vector<Solution
                 gradient.at(i, j) *= limiting_values.at(i);
     }
 
+    PostAI::post();
+
     //dynamic matrix to matrix
     std::vector<Matrix<num_equation_, space_dimension_>> limited_solution_gradient;
     limited_solution_gradient.reserve(num_cell);

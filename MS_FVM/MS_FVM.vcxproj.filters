@@ -30,7 +30,7 @@
     <ClInclude Include="INC\Text.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="INC\Grid_File_Convertor.h">
+    <ClInclude Include="INC\Grid_Element_Builder.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="INC\Element.h">
@@ -132,6 +132,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SRC\Element.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SRC\Numerical_Flux_Function.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

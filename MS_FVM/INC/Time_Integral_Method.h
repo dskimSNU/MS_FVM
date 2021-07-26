@@ -3,10 +3,6 @@
 
 class TIM {};
 
-namespace ms {
-    template<typename T>
-    inline constexpr bool is_time_integral_method = std::is_base_of_v<TIM, T>;
-}
 
 class SSPRK33 : public TIM {
 public:
@@ -34,3 +30,9 @@ public:
 private:
     static constexpr double c3_ = 1.0 / 3.0;
 };
+
+
+namespace ms {
+    template<typename T>
+    inline constexpr bool is_time_integral_method = std::is_base_of_v<TIM, T>;
+}

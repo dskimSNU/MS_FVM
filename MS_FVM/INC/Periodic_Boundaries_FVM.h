@@ -113,9 +113,6 @@ Periodic_Boundaries_FVM_Linear<space_dimension>::Periodic_Boundaries_FVM_Linear(
         const auto oc_to_oc_side_face_vector = oc_side_center - oc_center;
         const auto nc_to_nc_side_face_vector = nc_side_center - nc_center;
 
-        //const auto oc_to_oc_side_face_vector = oc_center - oc_side_center;
-        //const auto nc_to_nc_side_face_vector = nc_center - nc_side_center;
-
         this->oc_nc_to_oc_nc_side_face_vector_pairs_.push_back(std::make_pair(oc_to_oc_side_face_vector, nc_to_nc_side_face_vector));
     }
 

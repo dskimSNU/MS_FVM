@@ -132,6 +132,5 @@ GTEST_TEST(PostAI, post) {
 	for (size_t i = 0; i < num_solution; ++i)
 		PostAI::record_limiting_value(i, limiter_value);
 
-
 	PostAI::post();
 }

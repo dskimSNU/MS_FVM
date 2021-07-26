@@ -1,9 +1,9 @@
 #pragma once
 #define DIMENSION						2
 #define GRID_FILE_TYPE					Gmsh
-#define GRID_FILE_NAME					"Tri60"
+#define GRID_FILE_NAME					"Quad50"
 #define GOVERNING_EQUATION_NAME			Linear_Advection
-#define INITIAL_CONDITION_NAME			Sine_Wave
+#define INITIAL_CONDITION_NAME			Square_Wave
 #define SPATIAL_DISCRETE_METHOD			FVM
 #define RECONSTRUCTION_ORDER			1
 #define RECONSTRUCTION_TYPE				MLP_u1
@@ -16,12 +16,12 @@
 #define	END_CONDITION_CONSTANT			2.0
 #define POST_CONDITION_NAME				Time
 #define POST_CONDITION_CONSTANT			0.1
-
+#define PATH							"E:/Code/Result/MS_FVM/" + GOVERNING_EQUATION::name() + "/" + INITIAL_CONDITION::name() + "/" + SPATIAL_DISCRETE_METHOD::name() + "_" + RECONSTRUCTION_METHOD::name()  + "/" + GRID_FILE_NAME + "/"
 
 
 //Availiable List
 
-//PHYSICAL_DOMAIN_DIMENSION			2
+//DIMENSION							2
 //GRID_FILE_TYPE					Gmsh
 //GRID_FILE_NAME					"-"
 //GOVERNING_EQUATION_NAME			Linear_Advection, Burgers
@@ -65,3 +65,4 @@
 #else
 	#define RECONSTRUCTION_METHOD	RECONSTRUCTION_TYPE<GRADIENT_METHOD<GOVERNING_EQUATION::num_equation(), DIMENSION>>
 #endif
+
