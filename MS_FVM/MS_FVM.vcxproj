@@ -163,6 +163,9 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="INC\Boundaries.h" />
+    <ClInclude Include="INC\Boundaries_FVM.h" />
+    <ClInclude Include="INC\Boundary_Flux_Function.h" />
     <ClInclude Include="INC\Cells.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
@@ -309,6 +312,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="SRC\Boundary_Flux_Function.cpp" />
     <ClCompile Include="SRC\Element.cpp" />
     <ClCompile Include="SRC\Governing_Equation.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -336,7 +340,6 @@
     </ClCompile>
     <ClCompile Include="SRC\Matrix.cpp" />
     <ClCompile Include="SRC\Numerical_Flux_Function.cpp" />
-    <ClCompile Include="SRC\Post.cpp" />
     <ClCompile Include="SRC\Profiler.cpp" />
     <ClCompile Include="SRC\Text.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>

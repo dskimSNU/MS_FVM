@@ -105,6 +105,15 @@
     <ClInclude Include="INC\PostAI.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="INC\Boundaries.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Boundaries_FVM.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Boundary_Flux_Function.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SRC\Governing_Equation.cpp">
@@ -122,9 +131,6 @@
     <ClCompile Include="SRC\Grid_File_Type.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SRC\Post.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="SRC\Profiler.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -135,6 +141,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SRC\Numerical_Flux_Function.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SRC\Boundary_Flux_Function.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

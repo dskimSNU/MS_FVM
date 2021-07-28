@@ -2,6 +2,7 @@
 #include "Grid_Builder.h"
 #include "Governing_Equation.h"
 #include "Inital_Condition.h"
+#include "Setting.h"
 
 class PostAI
 {
@@ -14,9 +15,7 @@ public:
 	inline static std::vector<size_t> target_cell_indexes_;
 
 public:
-	static void set_path(const std::string& path) {
-		path_ = path;
-	}
+	static void set_path(const std::string& path);
 
 	template <size_t space_dimension>
 	static void intialize(const Grid<space_dimension>& grid);
@@ -44,8 +43,18 @@ public:
 
 
 //template definition part
+void PostAI::set_path(const std::string& path) {
+#ifdef POST_AI_DATA
+
+	path_ = path;
+
+#endif
+}
+
 template <size_t space_dimension>
 void PostAI::intialize(const Grid<space_dimension>& grid) {
+#ifdef POST_AI_DATA
+
 	const auto& vnode_index_to_share_cell_indexes = grid.connectivity.vnode_index_to_share_cell_indexes;
 	const auto& cell_elements = grid.elements.cell_elements;
 	num_data_ = cell_elements.size();
@@ -61,7 +70,7 @@ void PostAI::intialize(const Grid<space_dimension>& grid) {
 		const auto& cell_element = cell_elements[i];
 		const auto& cell_geometry = cell_element.geometry_;
 
-			//vertex share cell indexes temp
+		//vertex share cell indexes temp
 		std::set<size_t> vertex_share_cell_indexes_temp;
 
 		const auto vnode_indexes = cell_element.vertex_node_indexes();
@@ -70,7 +79,7 @@ void PostAI::intialize(const Grid<space_dimension>& grid) {
 			vertex_share_cell_indexes_temp.insert(vnode_share_cell_indexes.begin(), vnode_share_cell_indexes.end());
 		}
 
-			//chunk edge connectivities //quad3에서는 제대로 작동하지 않는 algorithm
+		//chunk edge connectivities //quad3에서는 제대로 작동하지 않는 algorithm
 		std::set<std::set<size_t>> face_share_cell_index_pairs;
 
 		for (const auto chunk_cell_index : vertex_share_cell_indexes_temp) {
@@ -92,7 +101,7 @@ void PostAI::intialize(const Grid<space_dimension>& grid) {
 
 		// header string
 		ai_data_text_set_[i] << "temporary header text";
-		
+
 		// node number string
 		const auto num_node = vertex_share_cell_indexes.size();
 		ai_data_text_set_[i] << "@nodeNumber\n" + std::to_string(num_node);
@@ -128,11 +137,15 @@ void PostAI::intialize(const Grid<space_dimension>& grid) {
 		//vertex_share_cell_indexes
 		vertex_share_cell_indexes_set_.push_back(std::move(vertex_share_cell_indexes));
 	}
+
+#endif
 }
 
 
 template <size_t num_equation>
 void PostAI::record_solution_datas(const std::vector<EuclideanVector<num_equation>>& solutions, const std::vector<Dynamic_Matrix_>& solution_gradients) {
+#ifdef POST_AI_DATA
+
 	dynamic_require(num_data_ == solutions.size(),			"number of solution should be same with number of data");
 	dynamic_require(num_data_ == solution_gradients.size(), "number of solution gradient should be same with number of data");
 
@@ -170,10 +183,14 @@ void PostAI::record_solution_datas(const std::vector<EuclideanVector<num_equatio
 
 		ai_data_text_set_[i] << std::move(cell_average_string) << std::move(cell_gradient_string);
 	}
+
+#endif
 }
 
 template <size_t num_equation>
 void PostAI::record_limiting_value(const size_t index, const std::array<double, num_equation>& limiting_value) {
+#ifdef POST_AI_DATA
+
 	if (std::find(target_cell_indexes_.begin(), target_cell_indexes_.end(), index) == target_cell_indexes_.end())
 		return;
 
@@ -184,9 +201,13 @@ void PostAI::record_limiting_value(const size_t index, const std::array<double, 
 	limiting_value_string += "\n";
 
 	ai_data_text_set_[index] << std::move(limiting_value_string);
+
+#endif
 }
 
 void PostAI::post(void) {
+#ifdef POST_AI_DATA
+
 	static size_t num_post = 1;
 	static size_t num_post_data = 1;
 
@@ -211,6 +232,8 @@ void PostAI::post(void) {
 	}
 
 	target_cell_indexes_.clear();
+
+#endif
 }
 
 

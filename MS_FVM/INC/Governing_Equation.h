@@ -72,19 +72,20 @@ private:
 
 public:
     static Solution_ conservative_to_primitive(const Solution_& conservative_variable);
-    static std::array<std::vector<double>, space_dimension_> coordinate_projected_maximum_lambdas(const std::vector<Solution_>& primitive_variables);
+    static std::vector<std::array<double, space_dimension_>> coordinate_projected_maximum_lambdas(const std::vector<Solution_>& primitive_variables);
+    static Physical_Flux_ physical_flux(const Solution_& conservative_variable);
     static Physical_Flux_ physical_flux(const Solution_& conservative_variable, const Solution_& primitivie_variable);
     static std::vector<Physical_Flux_> physical_fluxes(const std::vector<Solution_>& conservative_variables, const std::vector<Solution_>& primitive_variables);
     static double inner_face_maximum_lambda(const Solution_& oc_primitive_variable, const Solution_& nc_primitive_variable, const Space_Vector_& nomal_vector);
     
     static constexpr size_t space_dimension(void) { return space_dimension_; };
     static constexpr size_t num_equation(void) { return num_equation_; };
-    static std::string name(void) { return "Burgers_2D"; };
+    static std::string name(void) { return "Euler_2D"; };
 };
 
 namespace ms {
     template <typename T>
     inline constexpr bool is_governing_equation = std::is_base_of_v<GE, T>;
     template <typename T>
-    inline constexpr bool is_scalar_conservation_law = std::is_base_of_v<SCL_2D, T>;
+    inline constexpr bool is_SCL_2D = std::is_base_of_v<SCL_2D, T>;
 }

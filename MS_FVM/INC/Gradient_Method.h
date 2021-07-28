@@ -176,7 +176,7 @@ Face_Least_Square<num_equation, space_dimension>::Face_Least_Square(const Grid<s
 
             const auto my_index_pos_iter = std::find(this_face_share_cell_indexes.begin(), this_face_share_cell_indexes.end(), i);
             this_face_share_cell_indexes.erase(my_index_pos_iter);
-            dynamic_require(this_face_share_cell_indexes.size() == 1, "face share cell should be unique");
+            //dynamic_require(this_face_share_cell_indexes.size() == 1, "face share cell should be unique"); // debug
             face_share_cell_indexes.push_back(this_face_share_cell_indexes.front());
         }
 

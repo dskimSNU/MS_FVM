@@ -3,7 +3,12 @@
 
 #include <type_traits>
 
+using index = unsigned int;
+using order = unsigned short;
+
+
 class GFT {}; //Grid File Type
+
 
 enum class GmshFigureType
 {
@@ -17,10 +22,11 @@ enum class GmshFigureType
 	PYRA_P1 = 7, PYRA_P2 = 14, PYRA_P3 = 118, PYRA_P4 = 119
 };
 
+
 class Gmsh : public GFT {
 public:
-	static size_t figure_type_index_to_figure_order(const size_t figure_type_indx);
-	static Figure figure_type_index_to_element_figure(const size_t figure_type_index);
+	static order figure_type_index_to_figure_order(const index figure_type_index);
+	static Figure figure_type_index_to_element_figure(const index figure_type_index);
 };
 
 

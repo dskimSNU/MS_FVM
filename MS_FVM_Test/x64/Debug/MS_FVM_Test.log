@@ -1,2 +1,3 @@
-﻿  test_PostAI.cpp
+﻿  test_Governing_Equation.cpp
+  test_Boundary_Flux_Function.cpp
   MS_FVM_Test.vcxproj -> C:\Users\KimMinSeok\source\repos\MS_FVM\x64\Debug\MS_FVM_Test.exe

@@ -9,7 +9,7 @@ template <typename Governing_Equation>
 class LLF : public NFF  // Local Lax Fridrich method
 {
 private:
-    static_require(ms::is_governing_equation<Governing_Equation>, "Wrong Governing Equation");
+    static_require(ms::is_governing_equation<Governing_Equation>, "It should be Governing Equation");
 
     using Space_Vector_     = typename Governing_Equation::Space_Vector_;
     using Solution_         = typename Governing_Equation::Solution_;

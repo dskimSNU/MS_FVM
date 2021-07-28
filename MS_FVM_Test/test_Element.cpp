@@ -5,7 +5,7 @@
 
 GTEST_TEST(Geometry, volume_1){
 	const Figure fig = Figure::quadrilateral;
-	const size_t fig_order = 1;
+	const order fig_order = 1;
 	const ReferenceGeometry ref_geometry(fig, fig_order);
 
 	const EuclideanVector n1 = { 1,1 };
@@ -22,7 +22,7 @@ GTEST_TEST(Geometry, volume_1){
 }
 GTEST_TEST(Geometry, volume_2) {
 	const Figure fig = Figure::quadrilateral;
-	const size_t fig_order = 1;
+	const order fig_order = 1;
 	const ReferenceGeometry ref_geometry(fig, fig_order);
 
 	const EuclideanVector n1 = { 1,1 };
@@ -40,7 +40,7 @@ GTEST_TEST(Geometry, volume_2) {
 }
 GTEST_TEST(ReferenceGeometry, volume_3) {
 	const Figure fig = Figure::quadrilateral;
-	const size_t fig_order = 1;
+	const order fig_order = 1;
 	const ReferenceGeometry ref_geometry(fig, fig_order);
 
 	const EuclideanVector n1 = { 1,1 };
@@ -57,7 +57,7 @@ GTEST_TEST(ReferenceGeometry, volume_3) {
 }
 GTEST_TEST(ReferenceGeometry, volume_4) {
 	const Figure fig = Figure::triangle;
-	const size_t fig_order = 1;
+	const order fig_order = 1;
 	const ReferenceGeometry ref_geometry(fig, fig_order);
 
 	const EuclideanVector n1 = { 1,1 };
@@ -74,7 +74,7 @@ GTEST_TEST(ReferenceGeometry, volume_4) {
 }
 GTEST_TEST(ReferenceGeometry, volume_5) {
 	const Figure fig = Figure::triangle;
-	const size_t fig_order = 1;
+	const order fig_order = 1;
 	const ReferenceGeometry ref_geometry(fig, fig_order);
 
 	const EuclideanVector n1 = { 1.524,1 };
@@ -95,7 +95,7 @@ GTEST_TEST(ReferenceGeometry, volume_5) {
 
 //GTEST_TEST(Geometry, faces_nodes_1) {
 //	const Figure fig = Figure::triangle;
-//	const size_t fig_order = 1;
+//	const order_t fig_order = 1;
 //	const ReferenceGeometry ref_geometry(fig, fig_order);
 
 //	const EuclideanVector n1 = { 1.524,1 };
@@ -130,7 +130,7 @@ GTEST_TEST(ReferenceGeometry, volume_5) {
 
 GTEST_TEST(Geometry, coordinate_projected_volume_1) {
 	const Figure fig = Figure::triangle;
-	const size_t fig_order = 1;
+	const order fig_order = 1;
 	const ReferenceGeometry ref_geometry(fig, fig_order);
 
 	const EuclideanVector n1 = { 1.524,1 };
@@ -147,7 +147,7 @@ GTEST_TEST(Geometry, coordinate_projected_volume_1) {
 }
 GTEST_TEST(Geometry, coordinate_projected_volume_2) {
 	const Figure fig = Figure::quadrilateral;
-	const size_t fig_order = 1;
+	const order fig_order = 1;
 	const ReferenceGeometry ref_geometry(fig, fig_order);
 
 	const EuclideanVector n1 = { 1,1 };
@@ -166,7 +166,7 @@ GTEST_TEST(Geometry, coordinate_projected_volume_2) {
 
 GTEST_TEST(Geometry, center_1) {
 	const Figure fig = Figure::quadrilateral;
-	const size_t fig_order = 1;
+	const order fig_order = 1;
 	const ReferenceGeometry ref_geometry(fig, fig_order);
 
 	const EuclideanVector n1 = { 1,1 };
@@ -185,7 +185,7 @@ GTEST_TEST(Geometry, center_1) {
 
 GTEST_TEST(Geometry, calculate_normal_1) {
 	const Figure fig = Figure::line;
-	const size_t fig_order = 1;
+	const order fig_order = 1;
 	const ReferenceGeometry ref_geometry(fig, fig_order);
 
 	const EuclideanVector n1 = { 1,1 };
@@ -215,7 +215,7 @@ GTEST_TEST(Geometry, calculate_normal_1) {
 }
 GTEST_TEST(Geometry, calculate_normal_2) {
 	const Figure fig = Figure::line;
-	const size_t fig_order = 1;
+	const order fig_order = 1;
 	const ReferenceGeometry ref_geometry(fig, fig_order);
 
 	const EuclideanVector n1 = { 1,1 };
@@ -246,7 +246,7 @@ GTEST_TEST(Geometry, calculate_normal_2) {
 } 
 GTEST_TEST(Geometry, is_axis_parallel_1) {
 	const Figure fig = Figure::line;
-	const size_t fig_order = 1;
+	const order fig_order = 1;
 	const ReferenceGeometry ref_geometry(fig, fig_order);
 
 	const EuclideanVector n1 = { 0,0 };
@@ -266,7 +266,7 @@ GTEST_TEST(Geometry, is_axis_parallel_1) {
 
 GTEST_TEST(Element, vertex_node_indexes_1) {
 	const Figure fig = Figure::quadrilateral;
-	const size_t fig_order = 1;
+	const order fig_order = 1;
 	const ReferenceGeometry ref_geometry(fig, fig_order);
 
 	const EuclideanVector n1 = { 1,1 };
@@ -289,7 +289,7 @@ GTEST_TEST(Element, vertex_node_indexes_1) {
 
 GTEST_TEST(Element, face_node_indexes_set) {
 	const Figure fig = Figure::quadrilateral;
-	const size_t fig_order = 1;
+	const order fig_order = 1;
 	const ReferenceGeometry ref_geometry(fig, fig_order);
 
 	const EuclideanVector n1 = { 1,1 };
@@ -313,7 +313,7 @@ GTEST_TEST(Element, face_node_indexes_set) {
 
 GTEST_TEST(Element, face_vertex_node_indexes_set) {
 	const Figure fig = Figure::quadrilateral;
-	const size_t fig_order = 1;
+	const order fig_order = 1;
 	const ReferenceGeometry ref_geometry(fig, fig_order);
 
 	const EuclideanVector n1 = { 1,1 };
@@ -336,7 +336,7 @@ GTEST_TEST(Element, face_vertex_node_indexes_set) {
 
 //GTEST_TEST(Geometry, periodic_match_2) {
 //	const Figure fig = Figure::line;
-//	const size_t fig_order = 1;
+//	const order_t fig_order = 1;
 //	const ReferenceGeometry ref_geometry(fig, fig_order);
 //
 //	const EuclideanVector n1 = { 1,0 };
@@ -358,7 +358,7 @@ GTEST_TEST(Element, face_vertex_node_indexes_set) {
 //}
 //GTEST_TEST(Geometry, periodic_match_3) {
 //	const Figure fig = Figure::line;
-//	const size_t fig_order = 1;
+//	const order_t fig_order = 1;
 //	const ReferenceGeometry ref_geometry(fig, fig_order);
 //
 //	const EuclideanVector n1 = { 1,0 };
@@ -381,7 +381,7 @@ GTEST_TEST(Element, face_vertex_node_indexes_set) {
 //
 //GTEST_TEST(Geometry, faces_geometry_1) {
 //	const Figure fig = Figure::triangle;
-//	const size_t fig_order = 1;
+//	const order_t fig_order = 1;
 //	const ReferenceGeometry ref_geometry(fig, fig_order);
 //
 //	const EuclideanVector n1 = { 1,1 };
@@ -420,7 +420,7 @@ GTEST_TEST(Element, face_vertex_node_indexes_set) {
 //
 //GTEST_TEST(Geometry, vertex_node_indexes_1) {
 //	const Figure fig = Figure::quadrilateral;
-//	const size_t fig_order = 1;
+//	const order_t fig_order = 1;
 //	const ReferenceGeometry ref_geometry(fig, fig_order);
 //
 //	const EuclideanVector n1 = { 1,1 };

@@ -1,6 +1,6 @@
 #include "../INC/Grid_File_Type.h"
 
-size_t Gmsh::figure_type_index_to_figure_order(const size_t element_type_indx) {
+order Gmsh::figure_type_index_to_figure_order(const index element_type_indx) {
 	switch (static_cast<GmshFigureType>(element_type_indx)) {
 	case GmshFigureType::POINT:			return 0;
 	case GmshFigureType::LINE_P1:
@@ -46,7 +46,7 @@ size_t Gmsh::figure_type_index_to_figure_order(const size_t element_type_indx) {
 }
 
 
-Figure Gmsh::figure_type_index_to_element_figure(const size_t element_type_index) {
+Figure Gmsh::figure_type_index_to_element_figure(const index element_type_index) {
 	switch (static_cast<GmshFigureType>(element_type_index)) {
 	case GmshFigureType::POINT:			return Figure::point;
 	case GmshFigureType::LINE_P1:

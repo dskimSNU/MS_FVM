@@ -23,30 +23,35 @@ enum class ElementType
 };
 
 
+using index = unsigned int;
+using order = unsigned short;
+using count = unsigned int;
+
+
 class ReferenceGeometry
 {
 public:
-	ReferenceGeometry(const Figure figure, const size_t figure_order) : figure_(figure), figure_order_(figure_order) {};
+	ReferenceGeometry(const Figure figure, const order figure_order) : figure_(figure), figure_order_(figure_order) {};
 
 	bool operator==(const ReferenceGeometry& other) const;
 	bool operator!=(const ReferenceGeometry& other) const;
 
 	size_t num_vertex(void) const;
-	std::vector<size_t> vertex_node_index_orders(void) const;
-	std::vector<std::vector<size_t>> face_vertex_node_index_orders_set(void) const;
-	std::vector<std::vector<size_t>> face_node_index_orders_set(void) const;
+	std::vector<order> vertex_node_index_orders(void) const;
+	std::vector<std::vector<order>> face_vertex_node_index_orders_set(void) const;
+	std::vector<std::vector<order>> face_node_index_orders_set(void) const;
 	std::vector<ReferenceGeometry> faces_reference_geometry(void) const;
-	std::vector<std::vector<size_t>> local_connectivities(void) const;
+	std::vector<std::vector<order>> local_connectivities(void) const;
 
-	template <typename Space_Vector>
-	Space_Vector calculate_normal(const std::vector<Space_Vector>& nodes) const;
-	template <typename Space_Vector>
-	double calculate_volume(const std::vector<Space_Vector>& nodes) const;
+	template <typename Space_Vector_>
+	Space_Vector_ calculate_normal(const std::vector<Space_Vector_>& nodes) const;
+	template <typename Space_Vector_>
+	double calculate_volume(const std::vector<Space_Vector_>& nodes) const;
 
 
 private:
 	Figure figure_;
-	size_t figure_order_;
+	order figure_order_;
 };
 
 
@@ -54,29 +59,29 @@ template <size_t space_dimension>
 class Geometry
 {
 private:
-	using Space_Vector = EuclideanVector<space_dimension>;
+	using Space_Vector_ = EuclideanVector<space_dimension>;
 
 public:
 	ReferenceGeometry reference_geometry_;
 
 private:	
-	std::vector<Space_Vector> nodes_;
+	std::vector<Space_Vector_> nodes_;
 		
 public:
-	Geometry(const ReferenceGeometry reference_geometry, std::vector<Space_Vector>&& consisting_nodes)
+	Geometry(const ReferenceGeometry reference_geometry, std::vector<Space_Vector_>&& consisting_nodes)
 		: reference_geometry_(reference_geometry), nodes_(std::move(consisting_nodes)) {};
 
-	Space_Vector center_node(void) const;
-	Space_Vector normal_vector(const Space_Vector& owner_cell_center) const;
+	Space_Vector_ center_node(void) const;
+	Space_Vector_ normal_vector(const Space_Vector_& owner_cell_center) const;
 	double volume(void) const;
 	std::array<double, space_dimension> coordinate_projected_volume(void) const;
 	std::vector<Geometry> faces_geometry(void) const;
-	std::vector<Space_Vector> vertex_nodes(void) const;
+	std::vector<Space_Vector_> vertex_nodes(void) const;
 	bool is_axis_parallel(const Geometry& other, const size_t axis_tag) const;
 
 	//private: for test
-	std::vector<std::vector<Space_Vector>> calculate_faces_nodes(void) const;
-	bool is_axis_parallel_node(const Space_Vector& node, const size_t axis_tag) const;
+	std::vector<std::vector<Space_Vector_>> calculate_faces_nodes(void) const;
+	bool is_axis_parallel_node(const Space_Vector_& node, const size_t axis_tag) const;
 };
 
 
@@ -94,6 +99,7 @@ public:
 	Element(const ElementType element_type, Geometry<space_dimension>&& geometry, std::vector<size_t>&& node_indexes)
 		: element_type_(element_type), geometry_(std::move(geometry)), node_indexes_(std::move(node_indexes)) {};
 
+	ElementType type(void) const;
 	std::vector<size_t> vertex_node_indexes(void) const;
 	std::vector<Element> make_inner_face_elements(void) const;
 	bool is_periodic_pair(const Element& other) const;
@@ -109,8 +115,8 @@ public:
 
 //template definition part
 
-template <typename Space_Vector>
-Space_Vector ReferenceGeometry::calculate_normal(const std::vector<Space_Vector>& nodes) const {
+template <typename Space_Vector_>
+Space_Vector_ ReferenceGeometry::calculate_normal(const std::vector<Space_Vector_>& nodes) const {
 	switch (this->figure_) {
 	case Figure::line: {
 		// 0 式式式> 1
@@ -126,8 +132,8 @@ Space_Vector ReferenceGeometry::calculate_normal(const std::vector<Space_Vector>
 	}
 }
 
-template <typename Space_Vector>
-double ReferenceGeometry::calculate_volume(const std::vector<Space_Vector>& nodes) const {
+template <typename Space_Vector_>
+double ReferenceGeometry::calculate_volume(const std::vector<Space_Vector_>& nodes) const {
 	switch (this->figure_) {
 	case Figure::line: {
 		// 0 式式式> 1
@@ -219,7 +225,7 @@ std::vector<Geometry<space_dimension>> Geometry<space_dimension>::faces_geometry
 		const auto& node_index_orders = faces_node_index_orders[i];
 		const auto num_node = node_index_orders.size();
 
-		std::vector<Space_Vector> face_nodes(num_node);
+		std::vector<Space_Vector_> face_nodes(num_node);
 		for (size_t j = 0; j < num_node; ++j) 
 			face_nodes[j] = this->nodes_[node_index_orders[j]];
 
@@ -234,7 +240,7 @@ std::vector<EuclideanVector<space_dimension>> Geometry<space_dimension>::vertex_
 	const auto vertex_node_index_orders = this->reference_geometry_.vertex_node_index_orders();
 	const auto num_vertex_node = vertex_node_index_orders.size();
 
-	std::vector<Space_Vector> vertex_nodes(num_vertex_node);
+	std::vector<Space_Vector_> vertex_nodes(num_vertex_node);
 	for (size_t i = 0; i < num_vertex_node; ++i)
 		vertex_nodes[i] = this->nodes_[vertex_node_index_orders[i]];
 
@@ -242,11 +248,11 @@ std::vector<EuclideanVector<space_dimension>> Geometry<space_dimension>::vertex_
 }
 
 template<size_t space_dimension>
-std::vector<std::vector<typename Geometry<space_dimension>::Space_Vector>> Geometry<space_dimension>::calculate_faces_nodes(void) const {
+std::vector<std::vector<typename Geometry<space_dimension>::Space_Vector_>> Geometry<space_dimension>::calculate_faces_nodes(void) const {
 	const auto faces_node_index_orders = this->reference_geometry_.face_node_index_orders_set();
 	const auto num_face = faces_node_index_orders.size();
 
-	std::vector<std::vector<Space_Vector>> faces_nodes(num_face);
+	std::vector<std::vector<Space_Vector_>> faces_nodes(num_face);
 	for (size_t i = 0; i < num_face; ++i) {
 		const auto& face_node_index_orders = faces_node_index_orders[i];
 		const auto num_node = face_node_index_orders.size();
@@ -279,7 +285,7 @@ bool Geometry<space_dimension>::is_axis_parallel(const Geometry& other, const si
 }
 
 template<size_t space_dimension>
-bool Geometry<space_dimension>::is_axis_parallel_node(const Space_Vector& node, const size_t axis_tag) const {
+bool Geometry<space_dimension>::is_axis_parallel_node(const Space_Vector_& node, const size_t axis_tag) const {
 	for (const auto& my_node : this->nodes_) {
 		if (my_node.is_axis_translation(node,axis_tag))
 			return true;
@@ -288,8 +294,8 @@ bool Geometry<space_dimension>::is_axis_parallel_node(const Space_Vector& node, 
 }
 
 template<size_t space_dimension>
-Geometry<space_dimension>::Space_Vector Geometry<space_dimension>::center_node(void) const {
-	Space_Vector center;
+Geometry<space_dimension>::Space_Vector_ Geometry<space_dimension>::center_node(void) const {
+	Space_Vector_ center;
 	for (const auto& node : this->nodes_)
 		center += node;
 
@@ -298,7 +304,7 @@ Geometry<space_dimension>::Space_Vector Geometry<space_dimension>::center_node(v
 }
 
 template<size_t space_dimension>
-Geometry<space_dimension>::Space_Vector Geometry<space_dimension>::normal_vector(const Space_Vector& owner_cell_center) const {
+Geometry<space_dimension>::Space_Vector_ Geometry<space_dimension>::normal_vector(const Space_Vector_& owner_cell_center) const {
 	const auto normal = this->reference_geometry_.calculate_normal(this->nodes_);
 	const auto vector_pointing_outward = this->center_node() - owner_cell_center;
 
@@ -312,6 +318,12 @@ template<size_t space_dimension>
 double Geometry<space_dimension>::volume(void) const {
 	return this->reference_geometry_.calculate_volume(this->nodes_);
 }
+
+template<size_t space_dimension>
+ElementType Element<space_dimension>::type(void) const {
+	return this->element_type_;
+}
+
 
 template<size_t space_dimension>
 std::vector<size_t> Element<space_dimension>::vertex_node_indexes(void) const {

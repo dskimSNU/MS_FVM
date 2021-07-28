@@ -7,11 +7,11 @@
 template <size_t space_dimension>
 class Periodic_Boundaries_FVM_Base
 {
-    using Space_Vector = EuclideanVector<space_dimension>;
+    using Space_Vector_ = EuclideanVector<space_dimension>;
 
 protected:
     size_t num_pbdry_pair_ = 0;
-    std::vector<Space_Vector> normals_;
+    std::vector<Space_Vector_> normals_;
     std::vector<std::pair<size_t, size_t>> oc_nc_index_pairs_;
     std::vector<double> areas_;
 
@@ -25,10 +25,10 @@ template <size_t space_dimension>
 class Periodic_Boundaries_FVM_Constant : public Periodic_Boundaries_FVM_Base<space_dimension>
 {
 private:
-    using Space_Vector = EuclideanVector<space_dimension>;
+    using Space_Vector_ = EuclideanVector<space_dimension>;
 
 protected:
-    std::vector<std::pair<Space_Vector, Space_Vector>> oc_nc_to_oc_nc_side_face_vector_pairs_;
+    std::vector<std::pair<Space_Vector_, Space_Vector_>> oc_nc_to_oc_nc_side_face_vector_pairs_;
 
 public:
     Periodic_Boundaries_FVM_Constant(Grid<space_dimension>&& grid) : Periodic_Boundaries_FVM_Base<space_dimension>(std::move(grid)) {};
@@ -43,10 +43,10 @@ template <size_t space_dimension>
 class Periodic_Boundaries_FVM_Linear : public Periodic_Boundaries_FVM_Base<space_dimension>
 {
 private:
-    using Space_Vector = EuclideanVector<space_dimension>;
+    using Space_Vector_ = EuclideanVector<space_dimension>;
 
 protected:
-    std::vector<std::pair<Space_Vector, Space_Vector>> oc_nc_to_oc_nc_side_face_vector_pairs_;
+    std::vector<std::pair<Space_Vector_, Space_Vector_>> oc_nc_to_oc_nc_side_face_vector_pairs_;
 
 public:
     Periodic_Boundaries_FVM_Linear(Grid<space_dimension>&& grid);
@@ -80,7 +80,7 @@ template <size_t space_dimension>
 template<typename Numerical_Flux_Function, typename Residual, typename Solution>
 void Periodic_Boundaries_FVM_Constant<space_dimension>::calculate_RHS(std::vector<Residual>& RHS, const std::vector<Solution>& solutions) const {
     const auto numerical_fluxes = Numerical_Flux_Function::calculate(solutions, this->normals_, this->oc_nc_index_pairs_);
-    for (size_t i = 0; i < this->num_inner_face_; ++i) {
+    for (size_t i = 0; i < this->num_pbdry_pair_; ++i) {
         const auto [oc_index, nc_index] = this->oc_nc_index_pairs_[i];
         const auto delta_RHS = this->areas_[i] * numerical_fluxes[i];
         RHS[oc_index] -= delta_RHS;

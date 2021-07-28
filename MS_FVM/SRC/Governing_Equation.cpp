@@ -94,23 +94,30 @@ Euler_2D::Solution_ Euler_2D::conservative_to_primitive(const Solution_& conserv
 	return { u,v,p,a };
 }
 
-std::array<std::vector<double>, Euler_2D::space_dimension_> Euler_2D::coordinate_projected_maximum_lambdas(const std::vector<Solution_>& primitive_variables) {
+std::vector<std::array<double, Euler_2D::space_dimension_>> Euler_2D::coordinate_projected_maximum_lambdas(const std::vector<Solution_>& primitive_variables) {
 	static size_t num_solution = primitive_variables.size();
 
-	std::vector<double> x_projected_maximum_lambdas(num_solution);
-	std::vector<double> y_projected_maximum_lambdas(num_solution);
+	std::vector<std::array<double,space_dimension_>> coordinate_projected_maximum_lambdas(num_solution);
 
 	for (size_t i = 0; i < num_solution; ++i) {
 		const auto u = primitive_variables[i][0];
 		const auto v = primitive_variables[i][1];
 		const auto a = primitive_variables[i][3];
 
-		x_projected_maximum_lambdas[i] = std::abs(u) + a;
-		y_projected_maximum_lambdas[i] = std::abs(v) + a;
+		const auto x_projected_maximum_lambda = std::abs(u) + a;
+		const auto y_projected_maximum_lambda = std::abs(v) + a;
+
+		coordinate_projected_maximum_lambdas[i] = { x_projected_maximum_lambda, y_projected_maximum_lambda };
 	}
 
-	return { x_projected_maximum_lambdas, y_projected_maximum_lambdas };
+	return coordinate_projected_maximum_lambdas;
 }
+
+Euler_2D::Physical_Flux_ Euler_2D::physical_flux(const Solution_& cvariable) {
+	const auto pvariable = conservative_to_primitive(cvariable);
+	return physical_flux(cvariable, pvariable);
+}
+
 
 Euler_2D::Physical_Flux_ Euler_2D::physical_flux(const Solution_& conservative_variable, const Solution_& primitivie_variable) {
 	const auto rho = conservative_variable[0];

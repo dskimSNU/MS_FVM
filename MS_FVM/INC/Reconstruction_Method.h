@@ -11,7 +11,10 @@ class RM {};	// Reconstruction Method
 class Constant_Reconstruction : public RM 
 {
 public:
-	static std::string name(void) { return "Constant_Reconstruction"; };
+    template <size_t space_dimension>
+    Constant_Reconstruction(const Grid<space_dimension>& grid) {}; //because semi discrete equation constructor
+
+    static std::string name(void) { return "Constant_Reconstruction"; };
 };
 
 
@@ -96,6 +99,9 @@ private:
 namespace ms {
 	template <typename T>
 	inline constexpr bool is_reconsturction_method = std::is_base_of_v<RM, T>;
+
+    template <typename T>
+    inline constexpr bool is_constant_reconstruction = std::is_same_v<Constant_Reconstruction, T>;
 }
 
 

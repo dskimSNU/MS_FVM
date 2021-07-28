@@ -8,11 +8,11 @@ template <size_t space_dimension>
 class Inner_Faces_FVM_Base
 {
 private:
-    using Space_Vector = EuclideanVector<space_dimension>;
+    using Space_Vector_ = EuclideanVector<space_dimension>;
 
 protected:
     size_t num_inner_face_ = 0;
-    std::vector<Space_Vector> normals_;
+    std::vector<Space_Vector_> normals_;
     std::vector<std::pair<size_t, size_t>> oc_nc_index_pairs_;
     std::vector<double> areas_;
 
@@ -26,10 +26,7 @@ template <size_t space_dimension>
 class Inner_Faces_FVM_Constant : public Inner_Faces_FVM_Base<space_dimension>
 {
 private:
-    using Space_Vector = EuclideanVector<space_dimension>;
-
-protected:
-    std::vector<std::pair<Space_Vector, Space_Vector>> oc_nc_to_face_vector_pairs_;
+    using Space_Vector_ = EuclideanVector<space_dimension>;
 
 public:
     Inner_Faces_FVM_Constant(Grid<space_dimension>&& grid) : Inner_Faces_FVM_Base<space_dimension>(std::move(grid)) {};
@@ -45,10 +42,10 @@ template <size_t space_dimension>
 class Inner_Faces_FVM_Linear : public Inner_Faces_FVM_Base<space_dimension>
 {
 private:
-    using Space_Vector = EuclideanVector<space_dimension>;
+    using Space_Vector_ = EuclideanVector<space_dimension>;
 
 protected:
-    std::vector<std::pair<Space_Vector, Space_Vector>> oc_nc_to_face_vector_pairs_;
+    std::vector<std::pair<Space_Vector_, Space_Vector_>> oc_nc_to_face_vector_pairs_;
 
 public:
     Inner_Faces_FVM_Linear(Grid<space_dimension>&& grid);

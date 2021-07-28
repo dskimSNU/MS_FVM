@@ -1,6 +1,6 @@
 #include "../INC/Inital_Condition.h"
 
-std::vector<Sine_Wave_2D::Solution> Sine_Wave_2D::calculate_solutions(const std::vector<Space_Vector>& cell_centers) {
+std::vector<Sine_Wave_2D::Solution> Sine_Wave_2D::calculate_solutions(const std::vector<Space_Vector_>& cell_centers) {
 	const auto num_cell = cell_centers.size();
 	
 	std::vector<Solution> solutions_(num_cell);
@@ -15,7 +15,7 @@ std::vector<Sine_Wave_2D::Solution> Sine_Wave_2D::calculate_solutions(const std:
 
 
 template <>
-std::vector<Sine_Wave_2D::Solution> Sine_Wave_2D::calculate_exact_solutions<Linear_Advection_2D>(const std::vector<Space_Vector>& cell_centers, const double end_time){
+std::vector<Sine_Wave_2D::Solution> Sine_Wave_2D::calculate_exact_solutions<Linear_Advection_2D>(const std::vector<Space_Vector_>& cell_centers, const double end_time){
 	const auto num_cell = cell_centers.size();
 	const auto [x_advection_speed, y_advection_speed] = Linear_Advection_2D::advection_speed();
 
@@ -30,7 +30,7 @@ std::vector<Sine_Wave_2D::Solution> Sine_Wave_2D::calculate_exact_solutions<Line
 }
 
 
-std::vector<Square_Wave_2D::Solution> Square_Wave_2D::calculate_solutions(const std::vector<Space_Vector>& cell_centers) {
+std::vector<Square_Wave_2D::Solution> Square_Wave_2D::calculate_solutions(const std::vector<Space_Vector_>& cell_centers) {
 	const auto num_cell = cell_centers.size();
 
 	std::vector<Solution> solutions_(num_cell);
@@ -49,7 +49,7 @@ std::vector<Square_Wave_2D::Solution> Square_Wave_2D::calculate_solutions(const 
 
 
 template <>
-std::vector<Square_Wave_2D::Solution> Square_Wave_2D::calculate_exact_solutions<Linear_Advection_2D>(const std::vector<Space_Vector>& cell_centers, const double end_time) {
+std::vector<Square_Wave_2D::Solution> Square_Wave_2D::calculate_exact_solutions<Linear_Advection_2D>(const std::vector<Space_Vector_>& cell_centers, const double end_time) {
 	const auto num_cell = cell_centers.size();
 	const auto [x_advection_speed, y_advection_speed] = Linear_Advection_2D::advection_speed();
 
@@ -72,4 +72,42 @@ std::vector<Square_Wave_2D::Solution> Square_Wave_2D::calculate_exact_solutions<
 	}
 
 	return exact_solutions_;
+}
+
+std::vector<Modifid_SOD_2D::Solution_> Modifid_SOD_2D::calculate_solutions(const std::vector<Space_Vector_>& cell_centers) {
+	const auto num_cell = cell_centers.size();
+	
+	constexpr auto gamma = 1.4;
+	constexpr auto c = 1 / (1.4 - 1);
+	std::vector<Solution_> solutions(num_cell);
+	for (size_t i = 0; i < num_cell; ++i) {
+		const auto x_coordinate = cell_centers[i].at(0);
+
+		if (x_coordinate <= 0.3) {
+			const auto rho = 1.0;
+			const auto u = 0.75;
+			const auto v = 0.0;
+			const auto p = 1.0;
+
+			const auto rhou = rho * u;
+			const auto rhov = rho * v;
+			const auto rhoE = p * c + 0.5 * (rhou * u + rhov * v);
+
+			solutions[i] = { rho, rhou, rhov, rhoE };
+		}
+		else {
+			const auto rho = 0.125;
+			const auto u = 0.0;
+			const auto v = 0.0;
+			const auto p = 0.1;
+
+			const auto rhou = rho * u;
+			const auto rhov = rho * v;
+			const auto rhoE = p * c + 0.5 * (rhou * u + rhov * v);
+
+			solutions[i] = { rho, rhou, rhov, rhoE };
+		}
+	}
+
+	return solutions;
 }

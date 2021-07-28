@@ -1,4 +1,5 @@
 #pragma once
+#include "Boundaries.h"
 #include "Cells.h"
 #include "Inner_Faces.h"
 #include "Periodic_Boundaries.h"
@@ -15,16 +16,16 @@ class Semi_Discrete_Equation
     static constexpr size_t space_dimension_ = Governing_Equation::space_dimension();
     static constexpr size_t num_equation_ = Governing_Equation::num_equation();
 
+    using Boundaries_           = Boundaries<Governing_Equation, Spatial_Discrete_Method, Reconstruction_Method>;
     using Cells_                = Cells<Spatial_Discrete_Method, space_dimension_>;
     using Periodic_Boundaries_  = Periodic_Boundaries<Spatial_Discrete_Method, Reconstruction_Method, space_dimension_>;
     using Inner_Faces_          = Inner_Faces<Spatial_Discrete_Method, Reconstruction_Method, space_dimension_>;
 
     using Solution_             = typename Governing_Equation::Solution_;
-    using Residual_             = EuclideanVector<num_equation_>;
-    
-    
+    using Boundary_Flux_             = EuclideanVector<num_equation_>;
 
 private:
+    Boundaries_ boundaries_;
     Cells_ cells_;
     Periodic_Boundaries_ periodic_boundaries_;
     Inner_Faces_ inner_faces_;
@@ -32,14 +33,13 @@ private:
 
 public:
     Semi_Discrete_Equation(Grid<space_dimension_>&& grid)
-        : cells_(std::move(grid)), periodic_boundaries_(std::move(grid)), inner_faces_(std::move(grid)), reconstruction_method_(std::move(grid)) {
+        : boundaries_(std::move(grid)), cells_(grid), periodic_boundaries_(std::move(grid)), inner_faces_(std::move(grid)), reconstruction_method_(std::move(grid)) {
 
         Log::content_ << "================================================================================\n";
         Log::content_ << "\t\t\t Total ellapsed time: " << GET_TIME_DURATION << "s\n";
         Log::content_ << "================================================================================\n\n";
         Log::print();
     };
-
 
     template <typename Time_Step_Method>
     double calculate_time_step(const std::vector<Solution_>& solutions) const {
@@ -52,17 +52,19 @@ public:
             return time_step_constant_;
     }
 
-    std::vector<Residual_> calculate_RHS(const std::vector<Solution_>& solutions) const {
+    std::vector<Boundary_Flux_> calculate_RHS(const std::vector<Solution_>& solutions) const {
         static const auto num_solution = solutions.size();
-        std::vector<Residual_> RHS(num_solution);
+        std::vector<Boundary_Flux_> RHS(num_solution);
 
-        if constexpr (std::is_same_v<Reconstruction_Method, Constant_Reconstruction>) {
+        if constexpr (ms::is_constant_reconstruction<Reconstruction_Method>) {
+            this->boundaries_.calculate_RHS(RHS, solutions);
             this->periodic_boundaries_.calculate_RHS<Numerical_Flux_Function>(RHS, solutions);
             this->inner_faces_.calculate_RHS<Numerical_Flux_Function>(RHS, solutions);
             this->cells_.scale_RHS(RHS);            
         }
         else{
             const auto reconstructed_solutions = this->reconstruction_method_.reconstruct_solutions(solutions);
+            this->boundaries_.calculate_RHS(RHS, reconstructed_solutions);
             this->periodic_boundaries_.calculate_RHS<Numerical_Flux_Function, num_equation_>(RHS, reconstructed_solutions);
             this->inner_faces_.calculate_RHS<Numerical_Flux_Function, num_equation_>(RHS, reconstructed_solutions);
             this->cells_.scale_RHS(RHS);
