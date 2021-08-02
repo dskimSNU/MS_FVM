@@ -19,7 +19,7 @@
 #define PATH							"E:/Code/Result/MS_FVM/" + GOVERNING_EQUATION::name() + "/" + INITIAL_CONDITION::name() + "/" + SPATIAL_DISCRETE_METHOD::name() + "_" + RECONSTRUCTION_METHOD::name()  + "/" + GRID_FILE_NAME + "/"
 
 //mode 
-//#define POST_AI_DATA
+#define POST_AI_DATA
 
 //Availiable List
 
@@ -30,7 +30,7 @@
 //INITIAL_CONDITION_NAME			Sine_Wave, Square_Wave, Modifid_SOD
 //SPATIAL_DISCRETE_METHOD			FVM
 //RECONSTRUCTION_ORDER				0,1 (For FVM)
-//RECONSTRUCTION_TYPE				Linear_Reconstruction, MLP_u1				# will be ignored when reconstruction order is 0
+//RECONSTRUCTION_TYPE				Linear_Reconstruction, MLP_u1, AI			# will be ignored when reconstruction order is 0
 //GRADIENT_METHOD					Vertex_Least_Square, Face_Least_Square		# will be ignored when reconstruction order is 0
 //NUMERICAL_FLUX_NAME				LLF
 //TIME_INTGRAL_METHOD				SSPRK33

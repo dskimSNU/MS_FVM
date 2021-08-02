@@ -340,6 +340,7 @@
     </ClCompile>
     <ClCompile Include="SRC\Matrix.cpp" />
     <ClCompile Include="SRC\Numerical_Flux_Function.cpp" />
+    <ClCompile Include="SRC\PostAI.cpp" />
     <ClCompile Include="SRC\Profiler.cpp" />
     <ClCompile Include="SRC\Text.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>

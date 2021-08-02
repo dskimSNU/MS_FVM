@@ -141,6 +141,19 @@ namespace ms {
 		os << std::setprecision(16) << std::showpoint << value;
 		return os.str();
 	}
+
+	Text extract_file_name_text(const std::string& path) {
+		Text file_name_text;
+
+		std::filesystem::directory_iterator iter(path);
+		while (iter != std::filesystem::end(iter)) {
+			const auto& entry = *iter;
+			file_name_text << (ms::erase(entry.path().string(), path));
+			iter++;	
+		}
+
+		return file_name_text;
+	}
 }
 
 

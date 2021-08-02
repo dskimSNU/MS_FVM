@@ -176,14 +176,18 @@ Grid_Elements<space_dimension> Grid_Element_Builder<Gmsh, space_dimension>::make
 
 template<size_t space_dimension>
 std::vector<Element<space_dimension>> Grid_Element_Builder<Gmsh, space_dimension>::make_inner_face_elements(const std::vector<Element<space_dimension>>& cell_elements, const std::vector<Element<space_dimension>>& boundary_elements, const std::vector<Element<space_dimension>>& periodic_boundary_elements) {
-	//construct inner face elements
-	std::map<std::vector<size_t>, Element<space_dimension>> vnode_indexes_to_inner_face_element;
-	for (const auto& cell_element : cell_elements) {
-		auto inner_face_elements = cell_element.make_inner_face_elements();
-		for (auto& inner_face_element : inner_face_elements) {
-			auto vnode_indexes = inner_face_element.vertex_node_indexes();
+	//construct face elements
+	std::map<std::vector<size_t>, Element<space_dimension>> vnode_indexes_to_face_element;
+	for (const auto& cell_element : cell_elements) { 
+		auto face_elements = cell_element.make_face_elements();
+		for (auto& face_element : face_elements) {
+			auto vnode_indexes = face_element.vertex_node_indexes();
 			std::sort(vnode_indexes.begin(), vnode_indexes.end());	//to ignore index order
-			vnode_indexes_to_inner_face_element.emplace(std::move(vnode_indexes), std::move(inner_face_element));
+			//debug
+			if (vnode_indexes_to_face_element.find(vnode_indexes) == vnode_indexes_to_face_element.end())
+				vnode_indexes_to_face_element.emplace(std::move(vnode_indexes), std::move(face_element));
+			//
+			//vnode_indexes_to_face_element.emplace(std::move(vnode_indexes), std::move(face_element));
 		}
 	}
 
@@ -191,24 +195,25 @@ std::vector<Element<space_dimension>> Grid_Element_Builder<Gmsh, space_dimension
 	for (const auto& boundray_element : boundary_elements) {
 		auto vnode_indexes = boundray_element.vertex_node_indexes();
 		std::sort(vnode_indexes.begin(), vnode_indexes.end());	//to ignore index order
-		const auto result = vnode_indexes_to_inner_face_element.erase(vnode_indexes);
+		const auto result = vnode_indexes_to_face_element.erase(vnode_indexes);
 		dynamic_require(result == 1, "boundary geometry should be one of inner face");
 	}
 	for (const auto& periodic_boundray_element : periodic_boundary_elements) {
 		auto vnode_indexes = periodic_boundray_element.vertex_node_indexes();
 		std::sort(vnode_indexes.begin(), vnode_indexes.end());	//to ignore index order
-		const auto result = vnode_indexes_to_inner_face_element.erase(vnode_indexes);
+		const auto result = vnode_indexes_to_face_element.erase(vnode_indexes);
 		dynamic_require(result == 1, "periodic boundary geometry should be one of inner face");
 	}
 
 	// container change
 	std::vector<Element<space_dimension>> inner_face_elements;
 
-	const auto num_inner_face = vnode_indexes_to_inner_face_element.size();
+	const auto num_inner_face = vnode_indexes_to_face_element.size();
 	inner_face_elements.reserve(num_inner_face);
 
-	for (auto&& [key, value] : vnode_indexes_to_inner_face_element)
+	for (auto&& [key, value] : vnode_indexes_to_face_element) {
 		inner_face_elements.push_back(std::move(value));
+	}
 
 	return inner_face_elements;
 }

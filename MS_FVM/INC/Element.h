@@ -15,7 +15,7 @@ enum class Figure
 
 enum class ElementType
 {
-	cell, inner_face,
+	cell, face,
 	slip_wall_2D,
 	supersonic_outlet_2D,
 	x_periodic, y_periodic,
@@ -101,7 +101,7 @@ public:
 
 	ElementType type(void) const;
 	std::vector<size_t> vertex_node_indexes(void) const;
-	std::vector<Element> make_inner_face_elements(void) const;
+	std::vector<Element> make_face_elements(void) const;
 	bool is_periodic_pair(const Element& other) const;
 	std::vector<std::pair<size_t, size_t>> find_periodic_vnode_index_pairs(const Element& other) const;
 	std::vector<std::vector<size_t>> face_node_indexes_set(void) const;
@@ -333,7 +333,7 @@ std::vector<size_t> Element<space_dimension>::vertex_node_indexes(void) const {
 }
 
 template<size_t space_dimension>
-std::vector<Element<space_dimension>> Element<space_dimension>::make_inner_face_elements(void) const {
+std::vector<Element<space_dimension>> Element<space_dimension>::make_face_elements(void) const {
 	dynamic_require(this->element_type_ == ElementType::cell, "make inner face elements should be called from cell element");
 
 	auto faces_geometry = this->geometry_.faces_geometry();
@@ -344,7 +344,7 @@ std::vector<Element<space_dimension>> Element<space_dimension>::make_inner_face_
 	inner_face_elements.reserve(num_face);
 
 	for (size_t i = 0; i < num_face; ++i) 
-		inner_face_elements.push_back({ ElementType::inner_face, std::move(faces_geometry[i]), std::move(faces_node_indexes[i]) });
+		inner_face_elements.push_back({ ElementType::face, std::move(faces_geometry[i]), std::move(faces_node_indexes[i]) });
 
 	return inner_face_elements;
 }
