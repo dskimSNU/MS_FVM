@@ -32,7 +32,7 @@ public:
 	static void intialize(void);	
 	static void grid(const std::vector<Element<space_dimension_>>& cell_elements);	
 	static void syncronize_time(const double& current_time) { Post::time_ptr_ = &current_time; };
-	static void solution(const std::vector<EuclideanVector<num_equation_>>& solutions, const std::string& comment = "");
+	static void solution(const std::vector<Euclidean_Vector<num_equation_>>& solutions, const std::string& comment = "");
 
 private:
 	static Text header_text(const Post_File_Type file_type);
@@ -101,7 +101,7 @@ void Post<Governing_Equation>::grid(const std::vector<Element<space_dimension_>>
 }
 
 template <typename Governing_Equation>
-void Post<Governing_Equation>::solution(const std::vector<EuclideanVector<num_equation_>>& solutions, const std::string& comment) {
+void Post<Governing_Equation>::solution(const std::vector<Euclidean_Vector<num_equation_>>& solutions, const std::string& comment) {
 	static size_t count = 1;
 
 	std::string solution_file_path;

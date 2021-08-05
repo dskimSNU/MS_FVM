@@ -22,7 +22,7 @@ class Semi_Discrete_Equation
     using Inner_Faces_          = Inner_Faces<Spatial_Discrete_Method, Reconstruction_Method, space_dimension_>;
 
     using Solution_             = typename Governing_Equation::Solution_;
-    using Boundary_Flux_             = EuclideanVector<num_equation_>;
+    using Boundary_Flux_             = Euclidean_Vector<num_equation_>;
 
 private:
     Boundaries_ boundaries_;

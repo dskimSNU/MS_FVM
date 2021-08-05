@@ -34,7 +34,7 @@ private:
     static constexpr size_t num_equation_ = Governing_Equation::num_equation();
 
     using Solution_     = typename Governing_Equation::Solution_;
-    using Boundary_Flux_     = EuclideanVector<num_equation_>;
+    using Boundary_Flux_     = Euclidean_Vector<num_equation_>;
 
 public:
     Boundaries_FVM_Constant(Grid<space_dimension_>&& grid) : Boundaries_FVM_Base<Governing_Equation>(std::move(grid)) {};
@@ -51,9 +51,9 @@ private:
     static constexpr size_t space_dimension_ = Governing_Equation::space_dimension();
     static constexpr size_t num_equation_ = Governing_Equation::num_equation();
 
-    using Space_Vector_ = EuclideanVector <space_dimension_>;
+    using Space_Vector_ = Euclidean_Vector <space_dimension_>;
     using Solution_     = typename Governing_Equation::Solution_;
-    using Boundary_Flux_     = EuclideanVector<num_equation_>;
+    using Boundary_Flux_     = Euclidean_Vector<num_equation_>;
 
 private:
     std::vector<Space_Vector_> oc_to_boundary_vectors_;

@@ -12,13 +12,13 @@ struct Grid_Connectivity
 	std::unordered_map<size_t, std::set<size_t>> vnode_index_to_share_cell_indexes; // vnode				:= node at vertex, 
 																					// share_cell_indexes	:= cell indexes which shares vnode
 	std::vector<size_t> boundary_oc_indexes;
-	std::vector<EuclideanVector<space_dimension>> boundary_normals;
+	std::vector<Euclidean_Vector<space_dimension>> boundary_normals;
 
 	std::vector<std::pair<size_t, size_t>> periodic_boundary_oc_nc_index_pairs;		// {owner cell index, neighbor cell index}
-	std::vector<EuclideanVector<space_dimension>> periodic_boundary_normals;
+	std::vector<Euclidean_Vector<space_dimension>> periodic_boundary_normals;
 
 	std::vector<std::pair<size_t, size_t>> inner_face_oc_nc_index_pairs;			// {owner cell index, neighbor cell index}
-	std::vector<EuclideanVector<space_dimension>> inner_face_normals;
+	std::vector<Euclidean_Vector<space_dimension>> inner_face_normals;
 };
 
 
@@ -34,7 +34,7 @@ template<size_t space_dimension>
 class Grid_Builder
 {
 private:
-	using Space_Vector_		= EuclideanVector<space_dimension>;
+	using Space_Vector_		= Euclidean_Vector<space_dimension>;
 
 public:
 	template <typename Grid_File_Type>

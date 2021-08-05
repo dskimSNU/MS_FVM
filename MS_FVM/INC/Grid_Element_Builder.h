@@ -32,7 +32,7 @@ class Grid_Element_Builder;
 template <size_t space_dimension>
 class Grid_Element_Builder<Gmsh, space_dimension>
 {
-	using Space_Vector_ = EuclideanVector<space_dimension>;
+	using Space_Vector_ = Euclidean_Vector<space_dimension>;
 
 public:
 	Grid_Element_Builder(void) = delete;
@@ -78,7 +78,7 @@ Grid_Elements<space_dimension> Grid_Element_Builder<Gmsh, space_dimension>::buil
 }
 
 template <size_t space_dimension>
-std::vector<EuclideanVector<space_dimension>> Grid_Element_Builder<Gmsh, space_dimension>::make_node_datas(const Text& node_text) {
+std::vector<Euclidean_Vector<space_dimension>> Grid_Element_Builder<Gmsh, space_dimension>::make_node_datas(const Text& node_text) {
 	std::vector<Space_Vector_> node_datas;
 	node_datas.reserve(node_text.size());
 	for (const auto& node_data : node_text) {

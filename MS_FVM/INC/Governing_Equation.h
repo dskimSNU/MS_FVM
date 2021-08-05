@@ -15,8 +15,8 @@ private:
     SCL_2D(void) = delete;
 
 public:
-    using Space_Vector_  = EuclideanVector<space_dimension_>;
-    using Solution_      = EuclideanVector<num_equation_>;
+    using Space_Vector_  = Euclidean_Vector<space_dimension_>;
+    using Solution_      = Euclidean_Vector<num_equation_>;
     using Physical_Flux_ = Matrix<num_equation_, space_dimension_>;
 
     static constexpr size_t space_dimension(void) { return space_dimension_; };
@@ -63,8 +63,8 @@ protected:
     static constexpr size_t space_dimension_ = 2;
 
 public:
-    using Space_Vector_         = EuclideanVector<space_dimension_>;
-    using Solution_             = EuclideanVector<num_equation_>;
+    using Space_Vector_         = Euclidean_Vector<space_dimension_>;
+    using Solution_             = Euclidean_Vector<num_equation_>;
     using Physical_Flux_        = Matrix<num_equation_, space_dimension_>;
 
 private:

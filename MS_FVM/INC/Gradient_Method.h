@@ -8,7 +8,7 @@ public:
     static constexpr size_t space_dimension_    = space_dimension;
     static constexpr size_t num_equation_       = num_equation;
     
-    using Solution_ = EuclideanVector<num_equation>;
+    using Solution_ = Euclidean_Vector<num_equation>;
 
 protected:
     size_t num_cell_;

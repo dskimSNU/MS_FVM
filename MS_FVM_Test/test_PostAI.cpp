@@ -58,7 +58,7 @@ GTEST_TEST(PostAI, initialize) {
 }
 
 GTEST_TEST(PostAI, convert_to_solution_strings){
-	std::vector<EuclideanVector<1>> solutions;	
+	std::vector<Euclidean_Vector<1>> solutions;	
 	for (size_t i = 0; i < 10; ++i)
 		solutions.push_back({ i });
 	
@@ -86,7 +86,7 @@ GTEST_TEST(PostAI, convert_to_solution_gradient_strings) {
 //	PostAI::intialize(grid);
 //
 //	constexpr auto num_solution = 16;
-//	std::vector<EuclideanVector<1>> solutions;
+//	std::vector<Euclidean_Vector<1>> solutions;
 //	for (size_t i = 0; i < num_solution; ++i)
 //		solutions.push_back({ i });
 //
@@ -111,7 +111,7 @@ GTEST_TEST(PostAI, post) {
 	PostAI::intialize(grid);
 
 	constexpr auto num_solution = 16;
-	std::vector<EuclideanVector<1>> solutions;
+	std::vector<Euclidean_Vector<1>> solutions;
 	for (size_t i = 0; i < num_solution; ++i)
 		solutions.push_back({ i });
 

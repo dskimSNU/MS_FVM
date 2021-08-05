@@ -5,7 +5,7 @@
 template <size_t space_dimension>
 class Cells_FVM
 {
-    using SpaceVector = EuclideanVector<space_dimension>;
+    using SpaceVector = Euclidean_Vector<space_dimension>;
 public:
     Cells_FVM(const Grid<space_dimension>& grid);
 

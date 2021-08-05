@@ -1,6 +1,6 @@
 #pragma once
 #include <numbers>
-#include "EuclideanVector.h"
+#include "Euclidean_Vector.h"
 #include "Governing_Equation.h"
 
 class IC {}; //Initial Condition
@@ -10,8 +10,8 @@ class Sine_Wave_2D : public IC {
     static constexpr size_t dimension_ = 2;
     static constexpr double pi_ = std::numbers::pi;
 
-    using Space_Vector_  = EuclideanVector<dimension_>;
-    using Solution      = EuclideanVector<num_eqation_>;
+    using Space_Vector_  = Euclidean_Vector<dimension_>;
+    using Solution      = Euclidean_Vector<num_eqation_>;
 public:
     static std::vector<Solution> calculate_solutions(const std::vector<Space_Vector_>& cell_centers);
     static std::string name(void) { return "Sine_Wave_2D"; };
@@ -31,8 +31,8 @@ class Square_Wave_2D : public IC {
     static constexpr size_t num_eqation_ = 1;
     static constexpr size_t dimension_ = 2;
 
-    using Space_Vector_ = EuclideanVector<dimension_>;
-    using Solution = EuclideanVector<num_eqation_>;
+    using Space_Vector_ = Euclidean_Vector<dimension_>;
+    using Solution = Euclidean_Vector<num_eqation_>;
 public:
     static std::vector<Solution> calculate_solutions(const std::vector<Space_Vector_>& cell_centers);
     static std::string name(void) { return "Square_Wave_2D"; };
@@ -53,8 +53,8 @@ class Modifid_SOD_2D : public IC {
     static constexpr size_t num_eqation_ = 4;
     static constexpr size_t dimension_ = 2;
 
-    using Space_Vector_ = EuclideanVector<dimension_>;
-    using Solution_     = EuclideanVector<num_eqation_>;
+    using Space_Vector_ = Euclidean_Vector<dimension_>;
+    using Solution_     = Euclidean_Vector<num_eqation_>;
 public:
     static std::vector<Solution_> calculate_solutions(const std::vector<Space_Vector_>& cell_centers);
     static std::string name(void) { return "Modifid_SOD"; };

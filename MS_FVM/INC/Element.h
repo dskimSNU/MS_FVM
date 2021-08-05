@@ -59,7 +59,7 @@ template <size_t space_dimension>
 class Geometry
 {
 private:
-	using Space_Vector_ = EuclideanVector<space_dimension>;
+	using Space_Vector_ = Euclidean_Vector<space_dimension>;
 
 public:
 	ReferenceGeometry reference_geometry_;
@@ -236,7 +236,7 @@ std::vector<Geometry<space_dimension>> Geometry<space_dimension>::faces_geometry
 }
 
 template<size_t space_dimension>
-std::vector<EuclideanVector<space_dimension>> Geometry<space_dimension>::vertex_nodes(void) const {
+std::vector<Euclidean_Vector<space_dimension>> Geometry<space_dimension>::vertex_nodes(void) const {
 	const auto vertex_node_index_orders = this->reference_geometry_.vertex_node_index_orders();
 	const auto num_vertex_node = vertex_node_index_orders.size();
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "EuclideanVector.h"
+#include "Euclidean_Vector.h"
 #include <mkl.h>
 
 
@@ -18,7 +18,7 @@ public:
 
 	Matrix operator+(const Matrix & A) const;
 	Matrix operator*(const double scalar) const;
-	EuclideanVector<num_row> operator*(const EuclideanVector<num_column>&x) const;
+	Euclidean_Vector<num_row> operator*(const Euclidean_Vector<num_column>&x) const;
 	bool operator==(const Matrix & A) const;
 
 	double& at(const size_t row_index, const size_t column_index);
@@ -112,7 +112,7 @@ bool Matrix<num_row, num_column>::operator==(const Matrix& A) const {
 }
 
 template<size_t num_row, size_t num_column>
-EuclideanVector<num_row> Matrix<num_row, num_column>::operator*(const EuclideanVector<num_column>& x) const {
+Euclidean_Vector<num_row> Matrix<num_row, num_column>::operator*(const Euclidean_Vector<num_column>& x) const {
 	std::array<double, num_row> result = { 0 };
 	if constexpr (num_row * num_column < ms::blas_mv_criteria) {
 		for (size_t i = 0; i < num_row; ++i)

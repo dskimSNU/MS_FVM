@@ -18,9 +18,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="INC\EuclideanVector.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="INC\Governing_Equation.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -112,6 +109,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="INC\Boundary_Flux_Function.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="INC\Euclidean_Vector.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

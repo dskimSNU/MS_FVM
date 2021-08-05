@@ -8,7 +8,7 @@ template <size_t space_dimension>
 class Inner_Faces_FVM_Base
 {
 private:
-    using Space_Vector_ = EuclideanVector<space_dimension>;
+    using Space_Vector_ = Euclidean_Vector<space_dimension>;
 
 protected:
     size_t num_inner_face_ = 0;
@@ -26,7 +26,7 @@ template <size_t space_dimension>
 class Inner_Faces_FVM_Constant : public Inner_Faces_FVM_Base<space_dimension>
 {
 private:
-    using Space_Vector_ = EuclideanVector<space_dimension>;
+    using Space_Vector_ = Euclidean_Vector<space_dimension>;
 
 public:
     Inner_Faces_FVM_Constant(Grid<space_dimension>&& grid) : Inner_Faces_FVM_Base<space_dimension>(std::move(grid)) {};
@@ -42,7 +42,7 @@ template <size_t space_dimension>
 class Inner_Faces_FVM_Linear : public Inner_Faces_FVM_Base<space_dimension>
 {
 private:
-    using Space_Vector_ = EuclideanVector<space_dimension>;
+    using Space_Vector_ = Euclidean_Vector<space_dimension>;
 
 protected:
     std::vector<std::pair<Space_Vector_, Space_Vector_>> oc_nc_to_face_vector_pairs_;
@@ -51,7 +51,7 @@ public:
     Inner_Faces_FVM_Linear(Grid<space_dimension>&& grid);
 
     template<typename Numerical_Flux_Function, size_t num_equation>
-    void calculate_RHS(std::vector<EuclideanVector<num_equation>>& RHS, const Linear_Reconstructed_Solution<num_equation, space_dimension>& linear_reconstructed_solution) const;
+    void calculate_RHS(std::vector<Euclidean_Vector<num_equation>>& RHS, const Linear_Reconstructed_Solution<num_equation, space_dimension>& linear_reconstructed_solution) const;
 };
 
 
@@ -118,7 +118,7 @@ Inner_Faces_FVM_Linear<space_dimension>::Inner_Faces_FVM_Linear(Grid<space_dimen
 
 template <size_t space_dimension>
 template <typename Numerical_Flux_Function, size_t num_equation>
-void Inner_Faces_FVM_Linear<space_dimension>::calculate_RHS(std::vector<EuclideanVector<num_equation>>& RHS, const Linear_Reconstructed_Solution<num_equation, space_dimension>& linear_reconstructed_solution) const {
+void Inner_Faces_FVM_Linear<space_dimension>::calculate_RHS(std::vector<Euclidean_Vector<num_equation>>& RHS, const Linear_Reconstructed_Solution<num_equation, space_dimension>& linear_reconstructed_solution) const {
     const auto& solutions = linear_reconstructed_solution.solutions;
     const auto& solution_gradients = linear_reconstructed_solution.solution_gradients;
 

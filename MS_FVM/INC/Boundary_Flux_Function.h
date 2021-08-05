@@ -12,7 +12,7 @@ protected:
 
 	using Space_Vector_		= typename Governing_Equation::Space_Vector_;
 	using Solution_			= typename Governing_Equation::Solution_;
-	using Boundary_Flux_	= EuclideanVector<num_equation_>;
+	using Boundary_Flux_	= Euclidean_Vector<num_equation_>;
 
 public:
 	virtual Boundary_Flux_ calculate(const Solution_& oc_cvariable, const Space_Vector_& normal) abstract;
@@ -29,7 +29,7 @@ protected:
 
 	using Space_Vector_ = typename Governing_Equation::Space_Vector_;
 	using Solution_ = typename Governing_Equation::Solution_;
-	using Boundary_Flux_ = EuclideanVector<num_equation_>;
+	using Boundary_Flux_ = Euclidean_Vector<num_equation_>;
 
 public:
 	Boundary_Flux_ calculate(const Solution_& solution, const Space_Vector_& normal) override;
