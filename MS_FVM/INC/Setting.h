@@ -1,7 +1,7 @@
 #pragma once
 #define DIMENSION						2
 #define GRID_FILE_TYPE					Gmsh
-#define GRID_FILE_NAME					"Quad50"
+#define GRID_FILE_NAME					"Quad60"
 #define GOVERNING_EQUATION_NAME			Linear_Advection
 #define INITIAL_CONDITION_NAME			Square_Wave
 #define SPATIAL_DISCRETE_METHOD			FVM
@@ -15,7 +15,7 @@
 #define END_CONDITION_NAME				Time
 #define	END_CONDITION_CONSTANT			2.0
 #define POST_CONDITION_NAME				Time
-#define POST_CONDITION_CONSTANT			0.2
+#define POST_CONDITION_CONSTANT			0.4
 #define PATH							"E:/Code/Result/MS_FVM/" + GOVERNING_EQUATION::name() + "/" + INITIAL_CONDITION::name() + "/" + SPATIAL_DISCRETE_METHOD::name() + "_" + RECONSTRUCTION_METHOD::name()  + "/" + GRID_FILE_NAME + "/"
 
 //mode 
