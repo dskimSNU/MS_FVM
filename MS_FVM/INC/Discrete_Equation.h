@@ -32,9 +32,9 @@ public:
             if (Solve_End_Condition::inspect(current_time, time_step)) {
                 Time_Integral_Method::update_solutions(semi_discrete_eq, solutions, time_step);
                 current_time += time_step;
-                Log::content_ << "time/update: " << std::to_string(GET_TIME_DURATION) << "s   \t";
+                Log::content_ << "computation cost: " << std::to_string(GET_TIME_DURATION) << "s   \t";
 
-                Log::content_ << "current time: " << std::to_string(current_time) + "s  (100.00%)\n";
+                Log::content_ << "current time: " << std::to_string(current_time) + "  (100.00%)\n";
                 Post::solution(solutions, "final");
                 break;
             }
@@ -50,7 +50,7 @@ public:
                 current_time += time_step;
             }          
 
-            Log::content_ << "time/update: " << std::to_string(GET_TIME_DURATION) << "s   \t";
+            Log::content_ << "computation cost: " << std::to_string(GET_TIME_DURATION) << "s   \t";
             Log::print();                
         }
 

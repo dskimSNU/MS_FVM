@@ -238,7 +238,7 @@ bool Euclidean_Vector<dim>::is_axis_translation(const Euclidean_Vector& other, c
 		if (i == axis_tag)
 			continue;
 
-		if (std::abs(line_vector.at(i) > 1.0E-10))
+		if (std::abs(line_vector.at(i)) > 1.0E-10)
 			return false;
 	}
 	return true;

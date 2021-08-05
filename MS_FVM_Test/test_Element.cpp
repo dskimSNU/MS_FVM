@@ -244,6 +244,7 @@ GTEST_TEST(Geometry, calculate_normal_2) {
 	EXPECT_EQ(size, size_ref);
 	EXPECT_EQ(direction, direction_ref);
 } 
+
 GTEST_TEST(Geometry, is_axis_parallel_1) {
 	const Figure fig = Figure::line;
 	const order fig_order = 1;
@@ -256,6 +257,25 @@ GTEST_TEST(Geometry, is_axis_parallel_1) {
 
 	const Euclidean_Vector n3 = { 1,1 };
 	const Euclidean_Vector n4 = { 1,2 };
+	std::vector<Euclidean_Vector<2>> nodes2 = { n3,n4 };
+	Geometry geometry2(ref_geometry, std::move(nodes2));
+
+	constexpr size_t axis_tag = 0;
+	EXPECT_FALSE(geometry.is_axis_parallel(geometry2, axis_tag));
+}
+GTEST_TEST(Geometry, is_axis_parallel_2) {
+	const Figure fig = Figure::line;
+	const order fig_order = 1;
+	const ReferenceGeometry ref_geometry(fig, fig_order);
+
+	const Euclidean_Vector n1 = { 0,0 };
+	const Euclidean_Vector n2 = { 0,1 };
+	std::vector<Euclidean_Vector<2>> nodes = { n1,n2 };
+
+	Geometry geometry(ref_geometry, std::move(nodes));
+
+	const Euclidean_Vector n3 = { 0,1 };
+	const Euclidean_Vector n4 = { 0,2 };
 	std::vector<Euclidean_Vector<2>> nodes2 = { n3,n4 };
 	Geometry geometry2(ref_geometry, std::move(nodes2));
 
@@ -334,28 +354,7 @@ GTEST_TEST(Element, face_vertex_node_indexes_set) {
 	EXPECT_EQ(ref, result);
 }
 
-//GTEST_TEST(Geometry, periodic_match_2) {
-//	const Figure fig = Figure::line;
-//	const order_t fig_order = 1;
-//	const ReferenceGeometry ref_geometry(fig, fig_order);
-//
-//	const Euclidean_Vector n1 = { 1,0 };
-//	const Euclidean_Vector n2 = { 3,1 };
-//	std::vector<Euclidean_Vector<2>> nodes = { n1,n2 };
-//	
-//
-//	Geometry geometry(ref_geometry, std::move(nodes));
-//
-//	const Euclidean_Vector n3 = { 8,0 };
-//	const Euclidean_Vector n4 = { 10,1 };
-//	std::vector<Euclidean_Vector<2>> nodes2 = { n3,n4 };
-//	
-//
-//	Geometry geometry2(ref_geometry, std::move(nodes2));
-//
-//	constexpr size_t axis_tag = 1;
-//	EXPECT_FALSE(geometry.is_periodic_pair(geometry2, axis_tag));
-//}
+
 //GTEST_TEST(Geometry, periodic_match_3) {
 //	const Figure fig = Figure::line;
 //	const order_t fig_order = 1;

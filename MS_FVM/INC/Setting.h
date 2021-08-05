@@ -7,7 +7,7 @@
 #define SPATIAL_DISCRETE_METHOD			FVM
 #define RECONSTRUCTION_ORDER			1
 #define RECONSTRUCTION_TYPE				MLP_u1
-#define GRADIENT_METHOD					Vertex_Least_Square
+#define GRADIENT_METHOD					Face_Least_Square
 #define NUMERICAL_FLUX_NAME				LLF
 #define TIME_INTEGRAL_METHOD			SSPRK33
 #define TIME_STEP_METHOD_NAME			CFL
@@ -15,11 +15,11 @@
 #define END_CONDITION_NAME				Time
 #define	END_CONDITION_CONSTANT			2.0
 #define POST_CONDITION_NAME				Time
-#define POST_CONDITION_CONSTANT			2.0
-#define PATH							"D:/Code/Result/MS_FVM/" + GOVERNING_EQUATION::name() + "/" + INITIAL_CONDITION::name() + "/" + SPATIAL_DISCRETE_METHOD::name() + "_" + RECONSTRUCTION_METHOD::name()  + "/" + GRID_FILE_NAME + "/"
+#define POST_CONDITION_CONSTANT			0.2
+#define PATH							"E:/Code/Result/MS_FVM/" + GOVERNING_EQUATION::name() + "/" + INITIAL_CONDITION::name() + "/" + SPATIAL_DISCRETE_METHOD::name() + "_" + RECONSTRUCTION_METHOD::name()  + "/" + GRID_FILE_NAME + "/"
 
 //mode 
-#define POST_AI_DATA
+//#define POST_AI_DATA
 
 //Availiable List
 
