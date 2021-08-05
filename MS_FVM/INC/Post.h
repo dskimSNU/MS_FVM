@@ -27,6 +27,10 @@ private:
 	static inline size_t num_node_ = 0;
 
 	static inline const double* time_ptr_ = nullptr;
+
+private:
+	Post(void) = delete;
+
 public:
 	static void set_path(const std::string& path) { Post::path_ = path; };	
 	static void intialize(void);	
