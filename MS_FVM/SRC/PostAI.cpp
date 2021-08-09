@@ -25,14 +25,14 @@ void PostAI::post(void) {
 		data_text.front() = "#########################" + std::to_string(num_post_data++);
 
 		data_text.add_write(file_path);
-		data_text.erase(data_text.end() - num_solution_str, data_text.end());	// [start, end)
+		data_text.erase(data_text.end() - num_solution_str, data_text.end());	// erase [start, end)
 
 		if (10000 < num_post_data) {
 			num_post_data = 1;
 
 			file_name = "AI_Solver_Data_" + std::to_string(++num_post) + ".txt";
 			file_path = path_ + file_name;
-			comment.add_write(file_path);	//ok
+			comment.add_write(file_path);	
 		}
 	}
 

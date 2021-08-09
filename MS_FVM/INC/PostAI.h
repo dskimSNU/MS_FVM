@@ -11,7 +11,6 @@ public:
 	inline static std::string path_;	//inline static vs static?
 	inline static size_t num_data_;
 	inline static Text comment;			//comment 추가
-	//inline static std::vector<std::vector<size_t>> set_of_index_orders_; //김동석이 숙제
 
 
 	inline static std::vector<Text> ai_data_text_set_;
@@ -68,9 +67,9 @@ void PostAI::intialize(const Grid<space_dimension>& grid) {
 	const auto parsed_path = ms::parse(path_, '/');		
 	comment << "***********************************\n"
 		"***********************************\n"
+		"G.E : " + parsed_path[4] + "\n" +
+		"I.C : " + parsed_path[5] + "\n" +
 		"Grid : " + parsed_path[7] + "\n" +
-		"GE : " + parsed_path[4] + "\n" +
-		"IC : " + parsed_path[5] + "\n"
 		"***********************************\n"
 		"***********************************\n\n";
 	comment.add_write(file_path);
@@ -92,64 +91,6 @@ void PostAI::intialize(const Grid<space_dimension>& grid) {
 			const auto& share_cell_indexes = vnode_index_to_share_cell_indexes.at(vnode_index);
 			vertex_share_cell_indexes_temp.insert(share_cell_indexes.begin(), share_cell_indexes.end());
 		}
-
-		////make face share cell indexes
-		//std::vector<size_t> face_share_cell_indexes; //동석이 숙제
-
-		//const auto face_vnode_indexes_set = cell_element.face_vertex_node_indexes_set();
-		//for (const auto& face_vnode_indexes : face_vnode_indexes_set) {
-		//	//only work at 2D
-		//	std::vector<size_t> temp;
-
-		//	dynamic_require(face_vnode_indexes.size() == 2, "This algorithm only work at 2D");
-		//	const auto vnode_index0 = face_vnode_indexes[0];
-		//	const auto vnode_index1 = face_vnode_indexes[1];
-
-		//	const auto& set0 = vnode_index_to_share_cell_indexes.at(vnode_index0);
-		//	const auto& set1 = vnode_index_to_share_cell_indexes.at(vnode_index1);
-
-		//	std::set_intersection(set0.begin(), set0.end(), set1.begin(), set1.end(), std::back_inserter(temp));
-		//	dynamic_require(temp.size() == 2, "face share cell should be unique");
-
-		//	const auto& target_cell_index = i;
-		//	const auto target_cell_index_iter = std::find(temp.begin(), temp.end(), target_cell_index);			
-		//	temp.erase(target_cell_index_iter);
-		//	
-		//	face_share_cell_indexes.push_back(temp.front());
-		//}
-
-		////make cross vnode cell indexes
-		//std::set<size_t> set_of_cell_face_share_cell_indexes(face_share_cell_indexes.begin(), face_share_cell_indexes.end());
-
-		//std::vector<size_t> cross_vnode_cell_indexes;
-		//
-		//dynamic_require(vnode_indexes.size() == 4, "This algorithm only work for quadrilateral element");
-		//for (const auto vnode_index : vnode_indexes) {
-		//	const auto& share_cell_indexes = vnode_index_to_share_cell_indexes.at(vnode_index);
-
-		//	std::vector<size_t> temp; // 동석이 숙제
-		//	std::set_difference(share_cell_indexes.begin(), share_cell_indexes.end(), set_of_cell_face_share_cell_indexes.begin(), set_of_cell_face_share_cell_indexes.end(), std::back_inserter(temp));
-		//	dynamic_require(temp.size() == 2, "This algorithm only work for quadrilateral element");
-
-		//	const auto& target_cell_index = i;
-		//	const auto target_cell_index_iter = std::find(temp.begin(), temp.end(), target_cell_index);
-		//	temp.erase(target_cell_index_iter);
-
-		//	cross_vnode_cell_indexes.push_back(temp.front());
-		//}
-
-		////make index orders
-		//auto& index_orders = set_of_index_orders_[i];
-		//for (size_t j = 0; j < 4; ++j) {
-		//	if (j == 3) {
-		//		index_orders.push_back(face_share_cell_indexes[j]);
-		//		index_orders.push_back(cross_vnode_cell_indexes.front());
-		//	}
-
-		//	index_orders.push_back(face_share_cell_indexes[j]);
-		//	index_orders.push_back(cross_vnode_cell_indexes[j + 1]);
-		//}
-
 
 
 		//chunk edge connectivities //quad3에서는 제대로 작동하지 않는 algorithm

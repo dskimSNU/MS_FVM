@@ -84,26 +84,26 @@ std::vector<Modifid_SOD_2D::Solution_> Modifid_SOD_2D::calculate_solutions(const
 		const auto x_coordinate = cell_centers[i].at(0);
 
 		if (x_coordinate <= 0.3) {
-			const auto rho = 1.0;
-			const auto u = 0.75;
-			const auto v = 0.0;
-			const auto p = 1.0;
+			constexpr auto rho = 1.0;
+			constexpr auto u = 0.75;
+			constexpr auto v = 0.0;
+			constexpr auto p = 1.0;
 
-			const auto rhou = rho * u;
-			const auto rhov = rho * v;
-			const auto rhoE = p * c + 0.5 * (rhou * u + rhov * v);
+			constexpr auto rhou = rho * u;
+			constexpr auto rhov = rho * v;
+			constexpr auto rhoE = p * c + 0.5 * (rhou * u + rhov * v);
 
 			solutions[i] = { rho, rhou, rhov, rhoE };
 		}
 		else {
-			const auto rho = 0.125;
-			const auto u = 0.0;
-			const auto v = 0.0;
-			const auto p = 0.1;
+			constexpr auto rho = 0.125;
+			constexpr auto u = 0.0;
+			constexpr auto v = 0.0;
+			constexpr auto p = 0.1;
 
-			const auto rhou = rho * u;
-			const auto rhov = rho * v;
-			const auto rhoE = p * c + 0.5 * (rhou * u + rhov * v);
+			constexpr auto rhou = rho * u;
+			constexpr auto rhov = rho * v;
+			constexpr auto rhoE = p * c + 0.5 * (rhou * u + rhov * v);
 
 			solutions[i] = { rho, rhou, rhov, rhoE };
 		}

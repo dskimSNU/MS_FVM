@@ -51,7 +51,7 @@ public:
 //template definition part
 template <size_t space_dimension>
 Grid_Elements<space_dimension> Grid_Element_Builder<Gmsh, space_dimension>::build_from_grid_file(const std::string& grid_file_name) {
-	SET_TIME_POINT;
+	SET_TIME_POINT;		
 	Log::content_ << "================================================================================\n";
 	Log::content_ << "\t\t\t\t PreProcessing \n";
 	Log::content_ << "================================================================================\n";	
@@ -69,7 +69,7 @@ Grid_Elements<space_dimension> Grid_Element_Builder<Gmsh, space_dimension>::buil
 	const auto node_datas			= make_node_datas(node_text);
 	
 	const auto element_text			= read_about(grid_file_stream, "Elements");	
-	const auto physical_name_text	= read_about(grid_file_stream, "PhysicalNames");
+	const auto physical_name_text	= read_about(grid_file_stream, "PhysicalNames");	//?
 
 	Log::content_ << std::left << std::setw(50) << "@ Read Grid File" << " ----------- " << GET_TIME_DURATION << "s\n\n";
 	Log::print();
@@ -109,7 +109,7 @@ Grid_Elements<space_dimension> Grid_Element_Builder<Gmsh, space_dimension>::make
 		const auto name					= ms::erase(parsed_sentence_set[2], "\"");
 		const auto element_type			= ms::string_to_element_type(name);
 
-		physical_group_index_to_element_type.emplace(physical_group_index, element_type);
+		physical_group_index_to_element_type.emplace(physical_group_index, element_type);	//emplace?
 	}
 
 	std::vector<Element<space_dimension>> cell_elements;
