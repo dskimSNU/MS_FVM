@@ -7,11 +7,20 @@ std::vector<Sine_Wave_2D::Solution> Sine_Wave_2D::calculate_solutions(const std:
 	for (size_t i = 0; i < num_cell; ++i) {
 		const auto x_coord = cell_centers[i][0];
 		const auto y_coord = cell_centers[i][1];
-		solutions_[i] = std::sin(2 * pi_ * x_coord) * std::sin(2 * pi_ * y_coord);
+		//solutions_[i] = std::sin(2 * pi_ * x_coord) * std::sin(2 * pi_ * y_coord);
+
+		const auto x_wave_number = 2 * pi_ / x_wave_length_;
+		const auto y_wave_number = 2 * pi_ / y_wave_length_;
+
+		solutions_[i] = std::sin(x_wave_number * x_coord ) * std::sin(y_wave_number * y_coord);
 	}
 
 	return solutions_;
 }
+
+std::string Sine_Wave_2D::name(void) {
+	return "Sine_Wave_2D_WL(" + ms::d_to_str_with_precision(x_wave_length_, 2) + "," + ms::d_to_str_with_precision(y_wave_length_, 2) + ")"; 
+};
 
 
 template <>
@@ -74,6 +83,7 @@ std::vector<Square_Wave_2D::Solution> Square_Wave_2D::calculate_exact_solutions<
 	return exact_solutions_;
 }
 
+
 std::vector<Modifid_SOD_2D::Solution_> Modifid_SOD_2D::calculate_solutions(const std::vector<Space_Vector_>& cell_centers) {
 	const auto num_cell = cell_centers.size();
 	
@@ -110,4 +120,12 @@ std::vector<Modifid_SOD_2D::Solution_> Modifid_SOD_2D::calculate_solutions(const
 	}
 
 	return solutions;
+}
+
+namespace ms {
+	std::string d_to_str_with_precision(const double value, const ushort precision) {
+		std::ostringstream os;
+		os << std::setprecision(precision) << value;
+		return os.str();
+	}
 }

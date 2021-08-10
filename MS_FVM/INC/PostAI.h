@@ -61,7 +61,6 @@ void PostAI::intialize(const Grid<space_dimension>& grid) {
 	vertex_share_cell_indexes_set_.reserve(num_data_);
 	ai_data_text_set_.resize(num_data_);
 	target_cell_indexes_.reserve(num_data_);
-	//set_of_index_orders_.reserve(num_data_);
 
 	auto file_path = path_ + "AI_Solver_Data_1.txt";	//Ãß°¡
 	const auto parsed_path = ms::parse(path_, '/');		

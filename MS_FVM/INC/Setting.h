@@ -1,9 +1,10 @@
 #pragma once
+
 #define DIMENSION						2
 #define GRID_FILE_TYPE					Gmsh
-#define GRID_FILE_NAME					"Quad10"
+#define GRID_FILE_NAME					"Quad50"
 #define GOVERNING_EQUATION_NAME			Linear_Advection
-#define INITIAL_CONDITION_NAME			Square_Wave
+#define INITIAL_CONDITION_NAME			Sine_Wave
 #define SPATIAL_DISCRETE_METHOD			FVM
 #define RECONSTRUCTION_ORDER			1
 #define RECONSTRUCTION_TYPE				MLP_u1
@@ -20,6 +21,13 @@
 
 //mode 
 #define POST_AI_DATA
+
+
+//IC user define
+ 
+//Sine wave
+#define X_WAVE_LENGTH				0.5		
+#define Y_WAVE_LENGTH				0.5	
 
 //Availiable List
 
@@ -42,18 +50,16 @@
 //POST_CONDITION_CONSTANT			-
 
 
-
 //FORMAT SETTER
 #define FORMAT1(x,y) x ## _ ## y ## D
 #define SET_FORMAT1(x,y) FORMAT1(x,y) 
 #define FORMAT2(x,y) x ## _ ## y 
 #define SET_FORMAT2(x,y) FORMAT2(x,y)
 
-
 //USING MACRO
 //FORMAT1(X,Y) := X_YD
 #define GOVERNING_EQUATION		SET_FORMAT1(GOVERNING_EQUATION_NAME	, DIMENSION)
-#define INITIAL_CONDITION		SET_FORMAT1(INITIAL_CONDITION_NAME	, DIMENSION)
+#define INITIAL_CONDITION		SET_FORMAT1(INITIAL_CONDITION_NAME, DIMENSION)
 
 //FORAMT2(X,Y) := X_Y
 #define SOLVE_END_CONDITION		SET_FORMAT2(End_By					, END_CONDITION_NAME)<END_CONDITION_CONSTANT>		

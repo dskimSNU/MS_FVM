@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Boundaries.h"
 #include "Cells.h"
 #include "Inner_Faces.h"
@@ -73,7 +74,7 @@ public:
         return RHS;
     }
 
-    template <typename Initial_Condition>
+    template <typename Initial_Condition>   //수정 필요!
     std::vector<Solution_> calculate_initial_solutions(void)const {
         return cells_.calculate_initial_solutions<Initial_Condition>();
     }
